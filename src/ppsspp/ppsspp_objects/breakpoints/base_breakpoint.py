@@ -1,5 +1,4 @@
 import json
-from typing import Dict
 
 
 class BaseBreakpoint:
@@ -15,7 +14,7 @@ class BaseBreakpoint:
     def to_dict(self):
         raise NotImplementedError
 
-    def from_dict(self, dictionary: Dict):
+    def from_dict(self, dictionary: dict):
         raise NotImplementedError
 
     def to_json(self):

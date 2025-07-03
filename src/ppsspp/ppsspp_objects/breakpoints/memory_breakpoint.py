@@ -1,5 +1,4 @@
 from src.ppsspp.ppsspp_objects.breakpoints.base_breakpoint import BaseBreakpoint
-from typing import Dict
 
 
 class MemoryBreakpoint(BaseBreakpoint):
@@ -25,7 +24,7 @@ class MemoryBreakpoint(BaseBreakpoint):
             "logFormat": self.fmt
         }
 
-    def from_dict(self, dictionary: Dict):
+    def from_dict(self, dictionary: dict):
         try:
             self.address = dictionary["address"]
             self.enabled = dictionary["enabled"]

@@ -1,0 +1,10 @@
+from src.ppsspp.events.base_event import BaseEvent
+from src.ppsspp.ppsspp_objects.game.game_info import GameInfo
+
+
+class GameStartEvent(BaseEvent):
+    __slots__ = "game"
+
+    def __init__(self):
+        BaseEvent.__init__(self, "game.start")
+        self.game: GameInfo | None = None

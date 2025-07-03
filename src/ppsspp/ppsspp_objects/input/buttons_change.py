@@ -1,5 +1,4 @@
 from src.ppsspp.ppsspp_objects.input.button import Button
-from typing import Dict
 
 
 class ButtonsChange:
@@ -36,7 +35,7 @@ class ButtonsChange:
     def to_dict(self):
         return self._button_values.copy()
 
-    def from_dict(self, dictionary: Dict):
+    def from_dict(self, dictionary: dict):
         self._button_values.clear()
         for button in Button:
             try:

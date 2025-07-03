@@ -1,5 +1,4 @@
 from src.ppsspp.ppsspp_objects.input.analog import Analog
-from typing import Dict
 
 
 class AnalogState:
@@ -17,7 +16,7 @@ class AnalogState:
             "y": self.y
         }
 
-    def from_dict(self, dictionary: Dict):
+    def from_dict(self, dictionary: dict):
         try:
             stick = dictionary["stick"]
             self.x = dictionary["x"]

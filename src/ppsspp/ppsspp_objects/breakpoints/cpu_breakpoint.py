@@ -1,5 +1,4 @@
 from src.ppsspp.ppsspp_objects.breakpoints.base_breakpoint import BaseBreakpoint
-from typing import Dict
 
 
 # So far this type of breakpoint doesn't have any special fields
@@ -18,7 +17,7 @@ class CPUBreakpoint(BaseBreakpoint):
             "logFormat": self.fmt
         }
 
-    def from_dict(self, dictionary: Dict):
+    def from_dict(self, dictionary: dict):
         try:
             self.address = dictionary["address"]
             self.enabled = dictionary["enabled"]
