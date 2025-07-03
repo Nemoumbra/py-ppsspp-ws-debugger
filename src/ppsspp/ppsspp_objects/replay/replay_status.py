@@ -1,0 +1,3 @@
+
+class ReplayStatus:
+    pass

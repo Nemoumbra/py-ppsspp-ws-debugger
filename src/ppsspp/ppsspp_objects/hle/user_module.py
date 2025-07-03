@@ -1,0 +1,3 @@
+
+class UserModule:
+    pass

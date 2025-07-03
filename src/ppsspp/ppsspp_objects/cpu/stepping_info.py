@@ -1,0 +1,3 @@
+
+class SteppingInfo:
+    pass

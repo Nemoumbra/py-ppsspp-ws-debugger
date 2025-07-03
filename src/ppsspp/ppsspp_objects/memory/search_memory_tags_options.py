@@ -1,0 +1,3 @@
+
+class SearchMemTagsOptions:
+    pass

@@ -1,0 +1,30 @@
+from enum import Enum, auto
+
+
+class Button(Enum):
+    cross = auto()
+    circle = auto()
+    triangle = auto()
+    square = auto()
+    up = auto()
+    down = auto()
+    left = auto()
+    right = auto()
+    start = auto()
+    select = auto()
+    home = auto()
+    screen = auto()
+    note = auto()
+    ltrigger = auto()
+    rtrigger = auto()
+    hold = auto()
+    wlan = auto()
+    remote_hold = auto()
+    vol_up = auto()
+    vol_down = auto()
+    disc = auto()
+    memstick = auto()
+    forward = auto()
+    back = auto()
+    playpause = auto()
+
