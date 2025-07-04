@@ -2,13 +2,14 @@
 import json
 from threading import Thread
 
-from src.ppsspp.events.base_event import BaseEvent
 from src.ppsspp.connection import PpssppConnection
+from src.ppsspp.events.base_event import BaseEvent
 from src.ppsspp.parsers.detailed_parsers.cpu.cpu_event_parser import CPUEventParser
 from src.ppsspp.parsers.detailed_parsers.game.game_event_parser import GameEventParser
 from src.ppsspp.parsers.detailed_parsers.input.input_event_parser import InputEventParser
 from src.ppsspp.parsers.detailed_parsers.log.log_event_parser import LogEventParser
 from src.ppsspp.parsers.detailed_parsers.version.version_event_parser import VersionEventParser
+from src.ppsspp.ppsspp_request import PPSSPPRequest
 from src.ppsspp.requests.request_builders.input.input_request_builder import InputRequestBuilder
 from src.ppsspp.requests.request_builders.version.version_request_builder import VersionRequestBuilder
 
@@ -47,6 +48,8 @@ def process_events(queue: EventQueue, event_handler_man: EventHandlerManager):
             event_handler_man.handle_event(event)
         except QueueClosedError:
             return
+        except Exception as e:
+            continue
     pass
 
 class Session:
@@ -81,6 +84,7 @@ class Session:
         self.producer_thread: Thread = Thread()
         self.consumer_thread: Thread = Thread()
 
+        self._connection: PpssppConnection | None = None
 
     def Run(self, connection: PpssppConnection):
         self.producer_thread = Thread(
@@ -91,7 +95,7 @@ class Session:
             target=process_events, name="PpssppEventHandler",
             args=(self._event_queue, self._event_handler_man)
         )
-
+        self._connection = connection
         self.producer_thread.start()
         self.consumer_thread.start()
 
@@ -100,7 +104,7 @@ class Session:
         self.producer_thread.join()
         self.consumer_thread.join()
         self._event_handler_man.clear()
-
+        self._connection = None
 
     def log_handler(self):
         def decorator(handler_func: EventHandler):
@@ -125,3 +129,9 @@ class Session:
             self._event_handler_man.subscribe_input(handler_func)
             return handler_func
         return decorator
+
+    def send_request(self, request: PPSSPPRequest, handler: EventHandler):
+        ticket = self._ticket_man.get_ticket()
+        request.set_ticket(ticket)
+        self._event_handler_man.subscribe(ticket, handler)
+        self._connection.send(str(request))
