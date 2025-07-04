@@ -15,7 +15,7 @@ class InputEventParser(BaseEventParser):
         # input.buttons.press
         # input.analog.send
 
-        self._detailed_lookup_table = {
+        self._lookup_table = {
             "input.buttons": input_buttons,
             "input.analog": input_analog
         }

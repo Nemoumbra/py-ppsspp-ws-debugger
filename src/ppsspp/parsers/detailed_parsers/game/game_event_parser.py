@@ -10,7 +10,7 @@ class GameEventParser(BaseEventParser):
 
         # game.reset
         # game.status
-        self._detailed_lookup_table = {
+        self._lookup_table = {
             "game.start": game_start,
             "game.quit": game_quit,
             "game.resume": game_resume,

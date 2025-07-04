@@ -6,7 +6,7 @@ from src.ppsspp.events.other.version import VersionEvent
 class VersionEventParser(BaseEventParser):
     def __init__(self):
         BaseEventParser.__init__(self)
-        self._detailed_lookup_table = {
+        self._lookup_table = {
             "version": version,
         }
 

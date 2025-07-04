@@ -34,9 +34,9 @@ def populate_event_queue(queue: EventQueue, connection: PpssppConnection, dispat
             event = dispatcher.parse_event(data)
             queue.put(event)
         except json.JSONDecodeError as e:
-            continue
+            print(e)
         except EventParseError as e:
-            continue
+            print(e)
         except QueueClosedError:
             return
     pass
@@ -49,6 +49,7 @@ def process_events(queue: EventQueue, event_handler_man: EventHandlerManager):
         except QueueClosedError:
             return
         except Exception as e:
+            print(e)
             continue
     pass
 
@@ -104,6 +105,7 @@ class Session:
         self.producer_thread.join()
         self.consumer_thread.join()
         self._event_handler_man.clear()
+        self._connection.close()
         self._connection = None
 
     def log_handler(self):

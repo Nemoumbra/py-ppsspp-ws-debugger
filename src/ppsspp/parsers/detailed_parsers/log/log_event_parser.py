@@ -7,7 +7,7 @@ from src.ppsspp.events.other.log import LogEvent
 class LogEventParser(BaseEventParser):
     def __init__(self):
         BaseEventParser.__init__(self)
-        self._detailed_lookup_table = {
+        self._lookup_table = {
             "log": log
         }
 

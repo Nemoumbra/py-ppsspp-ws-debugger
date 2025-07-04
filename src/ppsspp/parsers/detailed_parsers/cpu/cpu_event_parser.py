@@ -19,7 +19,7 @@ class CPUEventParser(BaseEventParser):
         # cpu.getReg
         # cpu.setReg
         # cpu.evaluate
-        self._detailed_lookup_table = {
+        self._lookup_table = {
             "cpu.stepping": stepping,
             "cpu.resume": resumed
         }
