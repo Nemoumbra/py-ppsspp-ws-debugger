@@ -1,0 +1,3 @@
+
+class MemoryEventParser:
+    pass
