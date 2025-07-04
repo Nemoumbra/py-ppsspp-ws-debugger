@@ -5,9 +5,8 @@ from src.ppsspp.exceptions.queue_closed_error import QueueClosedError
 
 class EventQueue:
     def __init__(self):
-        self.queue: SimpleQueue[BaseEvent] = SimpleQueue()
+        self.queue: SimpleQueue[BaseEvent | None] = SimpleQueue()
         self.closed = False
-
 
     def put(self, event: BaseEvent):
         if self.closed:
@@ -16,15 +15,13 @@ class EventQueue:
         self.queue.put(event)
 
     def get(self):
-        if not self.closed:
-            return self.queue.get()
-
-        # Queue's closed => no one can put new objects into the queue
-        if self.queue.empty():
+        item = self.queue.get()
+        if item is None:
             raise QueueClosedError
 
-        # There's still something, let's return it
-        return self.queue.get()
+        return item
 
     def close(self):
         self.closed = True
+        # Poison pill
+        self.queue.put(None)

@@ -4,6 +4,7 @@ from threading import Thread
 
 from src.ppsspp.connection import PpssppConnection
 from src.ppsspp.events.base_event import BaseEvent
+from src.ppsspp.exceptions.connection_terminated import ConnectionTerminated
 from src.ppsspp.parsers.detailed_parsers.cpu.cpu_event_parser import CPUEventParser
 from src.ppsspp.parsers.detailed_parsers.game.game_event_parser import GameEventParser
 from src.ppsspp.parsers.detailed_parsers.input.input_event_parser import InputEventParser
@@ -37,7 +38,11 @@ def populate_event_queue(queue: EventQueue, connection: PpssppConnection, dispat
             print(e)
         except EventParseError as e:
             print(e)
+        except ConnectionTerminated:
+            # print("'populate_event_queue' returning...")
+            return
         except QueueClosedError:
+            # print("'populate_event_queue' returning...")
             return
     pass
 
@@ -47,6 +52,7 @@ def process_events(queue: EventQueue, event_handler_man: EventHandlerManager):
             event = queue.get()
             event_handler_man.handle_event(event)
         except QueueClosedError:
+            # print("'process_events' returning...")
             return
         except Exception as e:
             print(e)
@@ -102,10 +108,13 @@ class Session:
 
     def Stop(self):
         self._event_queue.close()
-        self.producer_thread.join()
-        self.consumer_thread.join()
-        self._event_handler_man.clear()
         self._connection.close()
+        self.producer_thread.join()
+        # print("Producer joined!")
+        self.consumer_thread.join()
+        # print("Consumer joined!")
+        self._event_handler_man.clear()
+
         self._connection = None
 
     def log_handler(self):

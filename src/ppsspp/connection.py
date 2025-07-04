@@ -5,6 +5,7 @@ from websocket import (
 from typing import Callable
 
 import json
+from src.ppsspp.exceptions.connection_terminated import ConnectionTerminated
 
 
 OnDisconnectedHandler = Callable[['PpssppConnection'], bool]
@@ -12,7 +13,7 @@ OnDisconnectedHandler = Callable[['PpssppConnection'], bool]
 
 class PpssppConnection:
     def __init__(self):
-        self._on_disconnected: OnDisconnectedHandler = lambda connection: True
+        self._on_disconnected: OnDisconnectedHandler = lambda connection: False
         self._ws: WebSocket = WebSocket()
 
         self.close_code: int | None = None
@@ -51,7 +52,7 @@ class PpssppConnection:
                     # Reset the fields
                     self.close_code = self.reason = None
                     if not go_on:
-                        raise RuntimeError("Can't recv!")
+                        raise ConnectionTerminated()
 
                     # Okay, let's try it one more time
                     continue
