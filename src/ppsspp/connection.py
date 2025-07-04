@@ -70,6 +70,7 @@ class PpssppConnection:
 
         # Successfully read the data
 
+        # Note: this may raise if PPSSPP goes mad and sends us invalid JSON
         return json.loads(data)
 
     def send(self, data: str):

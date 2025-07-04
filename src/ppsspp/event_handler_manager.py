@@ -55,16 +55,16 @@ class EventHandlerManager:
         self.session._ticket_manager.finalize_ticket(ticket)
         pass
 
-    def register_log(self, event_handler: EventHandler):
+    def subscribe_log(self, event_handler: EventHandler):
         self._log_handlers.append(event_handler)
 
-    def register_stepping(self, event_handler: EventHandler):
+    def subscribe_stepping(self, event_handler: EventHandler):
         self._stepping_handlers.append(event_handler)
 
-    def register_game(self, event_handler: EventHandler):
+    def subscribe_game(self, event_handler: EventHandler):
         self._game_handlers.append(event_handler)
 
-    def register_input(self, event_handler: EventHandler):
+    def subscribe_input(self, event_handler: EventHandler):
         self._input_handlers.append(event_handler)
 
     def _handle_log(self, event: BaseEvent):
@@ -82,3 +82,10 @@ class EventHandlerManager:
     def _handle_input(self, event: BaseEvent):
         for handler in self._input_handlers:
             handler(event)
+
+    def clear(self):
+        self._log_handlers.clear()
+        self._stepping_handlers.clear()
+        self._input_handlers.clear()
+        self._game_handlers.clear()
+        self._subscribers.clear()
