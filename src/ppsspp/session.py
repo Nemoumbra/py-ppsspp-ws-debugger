@@ -141,8 +141,10 @@ class Session:
             return handler_func
         return decorator
 
-    def send_request(self, request: PPSSPPRequest, handler: EventHandler):
-        ticket = self._ticket_man.get_ticket()
-        request.set_ticket(ticket)
-        self._event_handler_man.subscribe(ticket, handler)
+    def send_request(self, request: PPSSPPRequest, handler: EventHandler | None = None):
+        if handler is not None:
+            ticket = self._ticket_man.get_ticket()
+            request.set_ticket(ticket)
+            self._event_handler_man.subscribe(ticket, handler)
+
         self._connection.send(str(request))
