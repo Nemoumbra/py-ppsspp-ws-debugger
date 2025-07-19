@@ -2,6 +2,7 @@
 from src.ppsspp.exceptions.event_parse_error import EventParseError
 
 
+# TODO: instead of the lookup table, use the retorts from adaptix
 class BaseEventParser:
     def __init__(self):
         self._lookup_table = {}

@@ -17,6 +17,7 @@ class EventQueue:
     def get(self):
         item = self.queue.get()
         if item is None:
+            # Poison pill
             raise QueueClosedError
 
         return item

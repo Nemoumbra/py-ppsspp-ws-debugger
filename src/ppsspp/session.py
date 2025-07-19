@@ -80,7 +80,7 @@ class Session:
     def __init__(self):
         self._event_queue: EventQueue = EventQueue()
         self._ticket_man: TicketManager = TicketManager(0x8)
-        self._event_handler_man: EventHandlerManager = EventHandlerManager(self)
+        self._event_handler_man: EventHandlerManager = EventHandlerManager(self._ticket_man)
 
         event_lookup_table = self.init_parsers()
         self._event_dispatcher: EventDispatcher = EventDispatcher(event_lookup_table)

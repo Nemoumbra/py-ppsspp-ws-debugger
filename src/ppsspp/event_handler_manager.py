@@ -5,17 +5,14 @@ from typing import Callable
 from src.ppsspp.events.event_groups import (
     kBroadcastEvents, kCpuEvents, kInputEvents, kGameEvents, kLoggingEvents
 )
-
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    from src.ppsspp.session import Session
+from src.ppsspp.ticket_manager import TicketManager
 
 
 EventHandler = Callable[[BaseEvent], None]
 
 class EventHandlerManager:
-    def __init__(self, session: 'Session'):
-        self.session = session
+    def __init__(self, ticket_manager: TicketManager):
+        self.ticket_manager = ticket_manager
 
         self._log_handlers: list[EventHandler] = []
         self._stepping_handlers: list[EventHandler] = []
@@ -57,7 +54,7 @@ class EventHandlerManager:
 
         # The ticket has been dealt with!
         self._subscribers.pop(ticket)
-        self.session._ticket_man.finalize_ticket(ticket)
+        self.ticket_manager.finalize_ticket(ticket)
         pass
 
     def subscribe_log(self, event_handler: EventHandler):
