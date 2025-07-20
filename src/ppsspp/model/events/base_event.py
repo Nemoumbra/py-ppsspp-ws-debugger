@@ -1,7 +1,9 @@
 
-class BaseEvent:
-    __slots__ = ("event", "ticket")
+from dataclasses import dataclass
 
-    def __init__(self, event: str):
-        self.event = event
-        self.ticket: str | None = None
+
+@dataclass
+class BaseEvent:
+    event: str
+    ticket: str | None = None
+
