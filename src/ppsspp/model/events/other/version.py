@@ -1,10 +1,10 @@
+
+from dataclasses import dataclass
 from src.ppsspp.model.events.base_event import BaseEvent
 
 
+@dataclass(kw_only=True)
 class VersionEvent(BaseEvent):
-    __slots__ = ("name", "version")
+    name: str
+    version: str
 
-    def __init__(self):
-        BaseEvent.__init__(self, "version")
-        self.name: str = ""
-        self.version: str = ""
