@@ -1,5 +1,5 @@
 from src.ppsspp.model.events.base_event import BaseEvent
-from src.ppsspp.ppsspp_objects.input.analog_state import AnalogState
+from src.ppsspp.model.ppsspp_objects.input.analog_state import AnalogState
 
 
 class InputAnalogEvent(BaseEvent):

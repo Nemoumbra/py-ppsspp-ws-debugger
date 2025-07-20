@@ -1,5 +1,5 @@
 from src.ppsspp.model.events.base_event import BaseEvent
-from src.ppsspp.ppsspp_objects.logs.log import PPSSPPLog
+from src.ppsspp.model.ppsspp_objects.logs.log import PPSSPPLog
 
 
 class LogEvent(BaseEvent):

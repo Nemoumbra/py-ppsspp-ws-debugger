@@ -1,5 +1,5 @@
 from src.ppsspp.model.events.base_event import BaseEvent
-from src.ppsspp.ppsspp_objects.game.game_info import GameInfo
+from src.ppsspp.model.ppsspp_objects.game.game_info import GameInfo
 
 
 class GameStartEvent(BaseEvent):

@@ -1,4 +1,4 @@
-from src.ppsspp.ppsspp_objects.input.analog import Analog
+from src.ppsspp.model.ppsspp_objects.input.analog import Analog
 
 
 class AnalogState:

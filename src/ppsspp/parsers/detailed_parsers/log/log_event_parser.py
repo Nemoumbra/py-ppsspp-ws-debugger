@@ -1,6 +1,6 @@
 from src.ppsspp.parsers.base_event_parser import BaseEventParser
 from src.ppsspp.exceptions.event_parse_error import EventParseError
-from src.ppsspp.ppsspp_objects.logs.log import PPSSPPLog
+from src.ppsspp.model.ppsspp_objects.logs.log import PPSSPPLog
 from src.ppsspp.model.events.other.log import LogEvent
 
 

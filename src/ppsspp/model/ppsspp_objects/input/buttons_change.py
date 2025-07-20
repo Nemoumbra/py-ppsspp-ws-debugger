@@ -1,4 +1,4 @@
-from src.ppsspp.ppsspp_objects.input.button import Button
+from src.ppsspp.model.ppsspp_objects.input.button import Button
 
 
 class ButtonsChange:

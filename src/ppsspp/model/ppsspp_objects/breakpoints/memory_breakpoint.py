@@ -1,4 +1,4 @@
-from src.ppsspp.ppsspp_objects.breakpoints.base_breakpoint import BaseBreakpoint
+from src.ppsspp.model.ppsspp_objects.breakpoints.base_breakpoint import BaseBreakpoint
 
 
 class MemoryBreakpoint(BaseBreakpoint):

@@ -3,7 +3,7 @@ from src.ppsspp.model.events.game.game_start import GameStartEvent
 from src.ppsspp.model.events.game.game_quit import GameQuitEvent
 from src.ppsspp.model.events.game.game_resume import GameResumeEvent
 from src.ppsspp.model.events.game.game_pause import GamePauseEvent
-from src.ppsspp.ppsspp_objects.game.game_info import GameInfo
+from src.ppsspp.model.ppsspp_objects.game.game_info import GameInfo
 
 
 def game_start(event: dict):
