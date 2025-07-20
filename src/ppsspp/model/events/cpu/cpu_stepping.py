@@ -1,4 +1,4 @@
-from src.ppsspp.events.base_event import BaseEvent
+from src.ppsspp.model.events.base_event import BaseEvent
 
 
 class SteppingEvent(BaseEvent):

@@ -1,6 +1,6 @@
 from src.ppsspp.parsers.base_event_parser import BaseEventParser
 from src.ppsspp.exceptions.event_parse_error import EventParseError
-from src.ppsspp.events.other.version import VersionEvent
+from src.ppsspp.model.events.other.version import VersionEvent
 
 
 class VersionEventParser(BaseEventParser):

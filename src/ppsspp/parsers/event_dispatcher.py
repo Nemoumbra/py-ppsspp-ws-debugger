@@ -1,7 +1,7 @@
 
 from src.ppsspp.exceptions.event_parse_error import EventParseError
 from src.ppsspp.parsers.base_event_parser import BaseEventParser
-from src.ppsspp.events.error_event import ErrorEvent, kErrorEvent
+from src.ppsspp.model.events.error_event import ErrorEvent, kErrorEvent
 
 
 class EventDispatcher:

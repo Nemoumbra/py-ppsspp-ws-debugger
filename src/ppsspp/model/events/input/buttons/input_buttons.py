@@ -1,4 +1,4 @@
-from src.ppsspp.events.base_event import BaseEvent
+from src.ppsspp.model.events.base_event import BaseEvent
 from src.ppsspp.ppsspp_objects.input.buttons_state import ButtonsState
 from src.ppsspp.ppsspp_objects.input.buttons_change import ButtonsChange
 

@@ -1,9 +1,9 @@
 
-from src.ppsspp.events.base_event import BaseEvent
+from src.ppsspp.model.events.base_event import BaseEvent
 from typing import Callable
 
-from src.ppsspp.events.event_groups import (
-    kBroadcastEvents, kCpuEvents, kInputEvents, kGameEvents, kLoggingEvents
+from src.ppsspp.model.events.event_groups import (
+    kCpuEvents, kInputEvents, kGameEvents, kLoggingEvents
 )
 from src.ppsspp.ticket_manager import TicketManager
 

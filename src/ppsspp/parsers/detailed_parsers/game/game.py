@@ -1,8 +1,8 @@
 from src.ppsspp.exceptions.event_parse_error import EventParseError
-from src.ppsspp.events.game.game_start import GameStartEvent
-from src.ppsspp.events.game.game_quit import GameQuitEvent
-from src.ppsspp.events.game.game_resume import GameResumeEvent
-from src.ppsspp.events.game.game_pause import GamePauseEvent
+from src.ppsspp.model.events.game.game_start import GameStartEvent
+from src.ppsspp.model.events.game.game_quit import GameQuitEvent
+from src.ppsspp.model.events.game.game_resume import GameResumeEvent
+from src.ppsspp.model.events.game.game_pause import GamePauseEvent
 from src.ppsspp.ppsspp_objects.game.game_info import GameInfo
 
 

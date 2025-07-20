@@ -1,5 +1,5 @@
 from src.ppsspp.exceptions.event_parse_error import EventParseError
-from src.ppsspp.events.input.analog.input_analog import InputAnalogEvent
+from src.ppsspp.model.events.input.analog.input_analog import InputAnalogEvent
 from src.ppsspp.ppsspp_objects.input.analog_state import AnalogState
 
 

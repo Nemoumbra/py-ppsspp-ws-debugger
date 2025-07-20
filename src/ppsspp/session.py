@@ -3,7 +3,6 @@ import json
 from threading import Thread
 
 from src.ppsspp.connection import PpssppConnection
-from src.ppsspp.events.base_event import BaseEvent
 from src.ppsspp.exceptions.connection_terminated import ConnectionTerminated
 from src.ppsspp.parsers.detailed_parsers.cpu.cpu_event_parser import CPUEventParser
 from src.ppsspp.parsers.detailed_parsers.game.game_event_parser import GameEventParser

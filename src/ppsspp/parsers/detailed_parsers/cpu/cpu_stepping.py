@@ -1,6 +1,6 @@
 from src.ppsspp.exceptions.event_parse_error import EventParseError
-from src.ppsspp.events.cpu.cpu_stepping import SteppingEvent
-from src.ppsspp.events.cpu.cpu_resume import ResumedEvent
+from src.ppsspp.model.events.cpu.cpu_stepping import SteppingEvent
+from src.ppsspp.model.events.cpu.cpu_resume import ResumedEvent
 
 
 def stepping(event: dict):
