@@ -17,6 +17,7 @@ class EventDispatcher:
 
         event_group = event_name.split(".")[0]
         if event_group == kErrorEvent:
+            # TODO: implement the retort here
             error = ErrorEvent()
             try:
                 error.from_dict(event)
@@ -28,6 +29,8 @@ class EventDispatcher:
             raise EventParseError(f"Unknown event type '{event_group}' (full name '{event_name}')")
         # Now we delegate the parsing to a detailed parser
         result = self._event_lookup_table[event_group].parse(event)
+
+        # TODO: no need for the explicit ticket parsing
         # Finally, we set up the ticket
         result.ticket = event.get("ticket")
         return result
