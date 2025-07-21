@@ -1,18 +1,20 @@
+
 from src.ppsspp.parsers.base_event_parser import BaseEventParser
-from src.ppsspp.parsers.detailed_parsers.game.game import (
-    game_start, game_quit, game_pause, game_resume
+
+from src.ppsspp.model.events.game.common import (
+    GameResetEvent, GameStatusEvent, GamePauseEvent, GameResumeEvent, GameStartEvent, GameQuitEvent
 )
 
 
 class GameEventParser(BaseEventParser):
     def __init__(self):
-        BaseEventParser.__init__(self)
-
-        # game.reset
-        # game.status
-        self._lookup_table = {
-            "game.start": game_start,
-            "game.quit": game_quit,
-            "game.resume": game_resume,
-            "game.pause": game_pause
+        lookup_table = {
+            "game.reset": GameResetEvent,
+            "game.status": GameStatusEvent,
+            "game.pause": GamePauseEvent,
+            "game.resume": GameResumeEvent,
+            "game.start": GameStartEvent,
+            "game.quit": GameQuitEvent,
         }
+
+        BaseEventParser.__init__(self, lookup_table)
