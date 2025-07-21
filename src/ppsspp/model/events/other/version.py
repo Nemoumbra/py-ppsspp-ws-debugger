@@ -7,4 +7,3 @@ from src.ppsspp.model.events.base_event import BaseEvent
 class VersionEvent(BaseEvent):
     name: str
     version: str
-
