@@ -1,25 +1,13 @@
+
 from src.ppsspp.parsers.base_event_parser import BaseEventParser
-from src.ppsspp.exceptions.event_parse_error import EventParseError
-from src.ppsspp.model.ppsspp_objects.logs.log import PPSSPPLog
+
 from src.ppsspp.model.events.other.log import LogEvent
 
 
 class LogEventParser(BaseEventParser):
     def __init__(self):
-        BaseEventParser.__init__(self)
-        self._lookup_table = {
-            "log": log
+        lookup_table = {
+            "log": LogEvent
         }
 
-
-def log(event: dict):
-    try:
-        log_event = LogEvent()
-
-        ppsspp_log = PPSSPPLog()
-        ppsspp_log.from_dict(event)
-
-        log_event.log = ppsspp_log
-        return log_event
-    except ValueError as e:
-        raise EventParseError(e) from None
+        BaseEventParser.__init__(self, lookup_table)
