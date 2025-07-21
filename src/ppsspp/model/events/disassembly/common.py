@@ -1,6 +1,5 @@
 
 from dataclasses import dataclass
-from xml.dom.domreg import well_known_implementations
 
 from src.ppsspp.model.events.base_event import BaseEvent
 from src.ppsspp.model.ppsspp_objects.disassembly.branches import BranchGuide
