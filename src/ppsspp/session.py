@@ -4,11 +4,18 @@ from threading import Thread
 
 from src.ppsspp.connection import PpssppConnection
 from src.ppsspp.exceptions.connection_terminated import ConnectionTerminated
-from src.ppsspp.parsers.detailed_parsers.cpu.cpu_event_parser import CPUEventParser
-from src.ppsspp.parsers.detailed_parsers.game.game_event_parser import GameEventParser
-from src.ppsspp.parsers.detailed_parsers.input.input_event_parser import InputEventParser
-from src.ppsspp.parsers.detailed_parsers.log.log_event_parser import LogEventParser
-from src.ppsspp.parsers.detailed_parsers.version.version_event_parser import VersionEventParser
+
+from src.ppsspp.parsers.detailed_parsers.broadcast_config import BroadcastConfigEventParser
+from src.ppsspp.parsers.detailed_parsers.cpu import CPUEventParser
+from src.ppsspp.parsers.detailed_parsers.game import GameEventParser
+from src.ppsspp.parsers.detailed_parsers.gpu import GPUEventParser
+from src.ppsspp.parsers.detailed_parsers.hle import HLEEventParser
+from src.ppsspp.parsers.detailed_parsers.input import InputEventParser
+from src.ppsspp.parsers.detailed_parsers.log import LogEventParser
+from src.ppsspp.parsers.detailed_parsers.memory import MemoryEventParser
+from src.ppsspp.parsers.detailed_parsers.replay import ReplayEventParser
+from src.ppsspp.parsers.detailed_parsers.version import VersionEventParser
+
 from src.ppsspp.ppsspp_request import PPSSPPRequest
 from src.ppsspp.requests.request_builders.input.input_request_builder import InputRequestBuilder
 from src.ppsspp.requests.request_builders.version.version_request_builder import VersionRequestBuilder
@@ -62,11 +69,16 @@ class Session:
     @staticmethod
     def init_parsers():
         return {
-            "log": LogEventParser(),
-            "input": InputEventParser(),
-            "version": VersionEventParser(),
+            "broadcast": BroadcastConfigEventParser(),
             "cpu": CPUEventParser(),
             "game": GameEventParser(),
+            "gpu": GPUEventParser(),
+            "hle": HLEEventParser(),
+            "input": InputEventParser(),
+            "log": LogEventParser(),
+            "memory": MemoryEventParser(),
+            "replay": ReplayEventParser(),
+            "version": VersionEventParser(),
         }
 
     @staticmethod
