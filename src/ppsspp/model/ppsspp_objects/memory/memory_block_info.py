@@ -2,9 +2,11 @@
 from dataclasses import dataclass
 
 @dataclass
-class MemoryRangeInfo:
+class MemoryBlockInfo:
     type: str
-    subtype: str
-    name: str
     address: int
     size: int
+    ticks: float
+    pc: int
+    tag: str
+    allocated: bool
