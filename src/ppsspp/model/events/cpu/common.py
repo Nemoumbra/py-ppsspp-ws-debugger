@@ -8,8 +8,8 @@ from src.ppsspp.model.events.base_event import BaseEvent
 class CpuSteppingEvent(BaseEvent):
     pc: int
     ticks: float
-    reason: str | None
-    related_address: int | None
+    reason: str | None = None
+    related_address: int | None = None
 
 
 @dataclass(kw_only=True)

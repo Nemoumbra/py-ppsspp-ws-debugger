@@ -1,4 +1,7 @@
 
+from adaptix import Retort, name_mapping, NameStyle
+from src.ppsspp.model.ppsspp_objects.disassembly.disasm_line import DisasmLine
+
 from src.ppsspp.parsers.base_event_parser import BaseEventParser
 
 from src.ppsspp.model.events.breakpoints.memory import (
@@ -48,3 +51,7 @@ class MemoryEventParser(BaseEventParser):
         }
 
         BaseEventParser.__init__(self, lookup_table)
+        self._retort = Retort(recipe=[
+            name_mapping(name_style=NameStyle.CAMEL),
+            name_mapping(DisasmLine, map={"is_current_pc": "isCurrentPC"})
+        ])

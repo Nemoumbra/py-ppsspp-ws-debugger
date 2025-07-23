@@ -8,7 +8,7 @@ from src.ppsspp.model.events.base_event import BaseEvent
 class GpuBufferScreenshotUriEvent(BaseEvent):
     width: int
     height: int
-    is_framebuffer: bool | None
+    is_framebuffer: bool | None = None
     uri: str
 
 @dataclass(kw_only=True)
@@ -17,7 +17,7 @@ class GpuBufferScreenshotB64Event(BaseEvent):
     height: int
     flipped: bool
     format: str
-    is_framebuffer: bool | None
+    is_framebuffer: bool | None = None
     base64: str
 
 
@@ -25,7 +25,7 @@ class GpuBufferScreenshotB64Event(BaseEvent):
 class GpuBufferRenderColorUriEvent(BaseEvent):
     width: int
     height: int
-    is_framebuffer: bool | None
+    is_framebuffer: bool | None = None
     uri: str
 
 @dataclass(kw_only=True)
@@ -34,7 +34,7 @@ class GpuBufferRenderColorB64Event(BaseEvent):
     height: int
     flipped: bool
     format: str
-    is_framebuffer: bool | None
+    is_framebuffer: bool | None = None
     base64: str
 
 
@@ -42,7 +42,7 @@ class GpuBufferRenderColorB64Event(BaseEvent):
 class GpuBufferRenderDepthUriEvent(BaseEvent):
     width: int
     height: int
-    is_framebuffer: bool | None
+    is_framebuffer: bool | None = None
     uri: str
 
 @dataclass(kw_only=True)
@@ -51,7 +51,7 @@ class GpuBufferRenderDepthB64Event(BaseEvent):
     height: int
     flipped: bool
     format: str
-    is_framebuffer: bool | None
+    is_framebuffer: bool | None = None
     base64: str
 
 
@@ -59,7 +59,7 @@ class GpuBufferRenderDepthB64Event(BaseEvent):
 class GpuBufferRenderStencilUriEvent(BaseEvent):
     width: int
     height: int
-    is_framebuffer: bool | None
+    is_framebuffer: bool | None = None
     uri: str
 
 @dataclass(kw_only=True)
@@ -68,7 +68,7 @@ class GpuBufferRenderStencilB64Event(BaseEvent):
     height: int
     flipped: bool
     format: str
-    is_framebuffer: bool | None
+    is_framebuffer: bool | None = None
     base64: str
 
 
@@ -76,7 +76,7 @@ class GpuBufferRenderStencilB64Event(BaseEvent):
 class GpuBufferTextureUriEvent(BaseEvent):
     width: int
     height: int
-    is_framebuffer: bool | None
+    is_framebuffer: bool | None = None
     uri: str
 
 @dataclass(kw_only=True)
@@ -85,7 +85,7 @@ class GpuBufferTextureB64Event(BaseEvent):
     height: int
     flipped: bool
     format: str
-    is_framebuffer: bool | None
+    is_framebuffer: bool | None = None
     base64: str
 
 
@@ -93,7 +93,7 @@ class GpuBufferTextureB64Event(BaseEvent):
 class GpuBufferClutUriEvent(BaseEvent):
     width: int
     height: int
-    is_framebuffer: bool | None
+    is_framebuffer: bool | None = None
     uri: str
 
 @dataclass(kw_only=True)
@@ -102,5 +102,5 @@ class GpuBufferClutB64Event(BaseEvent):
     height: int
     flipped: bool
     format: str
-    is_framebuffer: bool | None
+    is_framebuffer: bool | None = None
     base64: str

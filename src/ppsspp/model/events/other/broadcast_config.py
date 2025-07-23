@@ -7,8 +7,8 @@ from src.ppsspp.model.events.base_event import BaseEvent
 
 @dataclass(kw_only=True)
 class BroadcastConfigGetEvent(BaseEvent):
-    disallowed: dict[str: bool]
+    disallowed: dict
 
 @dataclass(kw_only=True)
 class BroadcastConfigSetEvent(BaseEvent):
-    disallowed: dict[str: bool]
+    disallowed: dict

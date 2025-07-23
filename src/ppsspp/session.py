@@ -50,6 +50,8 @@ def populate_event_queue(queue: EventQueue, connection: PpssppConnection, dispat
         except QueueClosedError:
             # print("'populate_event_queue' returning...")
             return
+        # except Exception as e:
+        #     print(data)
     pass
 
 def process_events(queue: EventQueue, event_handler_man: EventHandlerManager):

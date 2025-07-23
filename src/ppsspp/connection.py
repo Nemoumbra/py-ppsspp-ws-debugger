@@ -60,8 +60,10 @@ class PpssppConnection:
                     # This really shouldn't happen with PPSSPP
                     raise RuntimeError("Unexpected binary data from the server!")
 
-            except WebSocketConnectionClosedException:
-                # Not sure if this can trigger, so it's just a precaution
+            except (OSError, ConnectionResetError, WebSocketConnectionClosedException):
+                # I don't know why yet, but I got 'OSError: [WinError 10038]' twice
+                # TODO: investigate the causes
+
                 go_on = self._on_disconnected(self)
                 # Reset the fields
                 self.close_code = self.reason = None
