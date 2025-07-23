@@ -1,3 +1,0 @@
-
-class StackFrame:
-    pass

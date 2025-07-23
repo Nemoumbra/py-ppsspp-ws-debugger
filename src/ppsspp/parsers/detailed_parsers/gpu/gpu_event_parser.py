@@ -1,3 +1,0 @@
-
-class GPUEventParser:
-    pass

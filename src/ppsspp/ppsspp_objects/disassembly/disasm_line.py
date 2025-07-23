@@ -1,3 +1,0 @@
-
-class DisasmLine:
-    pass
