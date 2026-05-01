@@ -63,7 +63,7 @@ def process_events(queue: EventQueue, event_handler_man: EventHandlerManager):
             # print("'process_events' returning...")
             return
         except Exception as e:
-            print(e)
+            print("Process events error:", e)
             continue
     pass
 
@@ -105,6 +105,7 @@ class Session:
         self.consumer_thread: Thread = Thread()
 
         self._connection: PpssppConnection | None = None
+        self._running: bool = False
 
     def Run(self, connection: PpssppConnection):
         self.producer_thread = Thread(
@@ -118,8 +119,12 @@ class Session:
         self._connection = connection
         self.producer_thread.start()
         self.consumer_thread.start()
+        self._running = True
 
     def Stop(self):
+        if not self._running:
+            return False
+
         self._event_queue.close()
         self._connection.close()
         self.producer_thread.join()
@@ -129,6 +134,7 @@ class Session:
         self._event_handler_man.clear()
 
         self._connection = None
+        return True
 
     def log_handler(self):
         def decorator(handler_func: EventHandler):
