@@ -26,7 +26,7 @@ from src.ppsspp.parsers.event_dispatcher import EventDispatcher
 from src.ppsspp.exceptions.event_parse_error import EventParseError
 from src.ppsspp.requests.request_dispatcher import RequestDispatcher
 
-from src.ppsspp.event_queue import EventQueue
+from src.ppsspp.event_queue import EventQueue, EventQueueReader
 from src.ppsspp.exceptions.queue_closed_error import QueueClosedError
 
 

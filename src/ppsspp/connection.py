@@ -26,6 +26,7 @@ class PpssppConnection:
         self._ws.connect(uri)
 
     def recv(self):
+        # Can't use the high-level _ws.recv(), because it returns "" for close frames
         while True:
             try:
                 received: bytes
