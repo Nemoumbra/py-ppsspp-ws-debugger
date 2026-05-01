@@ -8,6 +8,7 @@ import json
 from src.ppsspp.exceptions.connection_terminated import ConnectionTerminated
 
 
+# Returns whether the connection was reestablished
 OnDisconnectedHandler = Callable[['PpssppConnection'], bool]
 
 
@@ -16,13 +17,24 @@ class PpssppConnection:
         self._on_disconnected: OnDisconnectedHandler = lambda connection: False
         self._ws: WebSocket = WebSocket()
 
+        # TODO: reevaluate if this is user-friendly
         self.close_code: int | None = None
         self.reason: str | None = None
 
     def set_disconnected_handler(self, handler: OnDisconnectedHandler):
         self._on_disconnected = handler
 
+    def on_disconnected(self, handler: OnDisconnectedHandler):
+        # TODO: figure out why the wrong signature for the @ syntax doesn't trigger any warnings:
+        # @connection.on_disconnected
+        # def wrong(arg: int, value: str):
+        #     return [1.5, 2.5]
+
+        self.set_disconnected_handler(handler)
+        return handler
+
     def connect(self, uri: str):
+        # TODO: what if this raises?
         self._ws.connect(uri)
 
     def recv(self):
@@ -38,6 +50,7 @@ class PpssppConnection:
                 elif opcode == ABNF.OPCODE_CLOSE:
                     # It's a close frame. Let's parse it:
                     if len(received) >= 2:
+                        # TODO: wait, but what if len(received) > 2? Are we okay with that?
                         self.close_code = int.from_bytes(received[0:2])
                         self.reason = received[2:]
                     elif len(received) == 0:
@@ -53,7 +66,7 @@ class PpssppConnection:
                     # Reset the fields
                     self.close_code = self.reason = None
                     if not go_on:
-                        raise ConnectionTerminated()
+                        raise ConnectionTerminated
 
                     # Okay, let's try it one more time
                     continue
@@ -83,6 +96,7 @@ class PpssppConnection:
                 self._ws.send(data)
                 return
             except WebSocketConnectionClosedException:
+                # TODO: is this reachable?
                 reconnect = self._on_disconnected(self)
                 if not reconnect:
                     raise
