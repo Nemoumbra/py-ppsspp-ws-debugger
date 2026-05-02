@@ -104,7 +104,7 @@ class AsyncEventHandlerManager:
 
         self._subscribers: dict[str, AsyncEventHandler] = {}
 
-    async def subscribe(self, ticket: str, handler: AsyncEventHandler):
+    def subscribe(self, ticket: str, handler: AsyncEventHandler):
         self._subscribers[ticket] = handler
 
     async def handle_event(self, event: BaseEvent):

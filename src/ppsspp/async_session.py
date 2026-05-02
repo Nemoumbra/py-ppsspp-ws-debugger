@@ -38,6 +38,7 @@ async def populate_event_queue(queue: AsyncEventQueue, connection: AsyncPpssppCo
         try:
             data = await connection.recv()
             if not isinstance(data, dict):
+                print(f"Something weird has happened: got '{data}' from async connection!")
                 continue
 
             event = dispatcher.parse_event(data)
@@ -164,6 +165,6 @@ class AsyncSession:
         if handler is not None:
             ticket = self._ticket_man.get_ticket()
             request.set_ticket(ticket)
-            await self._event_handler_man.subscribe(ticket, handler)
+            self._event_handler_man.subscribe(ticket, handler)
 
         await self._connection.send(str(request))

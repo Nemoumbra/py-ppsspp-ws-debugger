@@ -1,4 +1,4 @@
-
+import json
 from typing import Callable, Awaitable
 
 import websockets
@@ -55,7 +55,8 @@ class AsyncPpssppConnection:
                     raise ConnectionTerminated from None
 
     async def recv(self):
-        return await self._execute_action(lambda: self._ws.recv())
+        data = await self._execute_action(lambda: self._ws.recv())
+        return json.loads(data)
 
     async def send(self, data: str):
         await self._execute_action(lambda: self._ws.send(data))
