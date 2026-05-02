@@ -5,6 +5,8 @@ import websockets
 from websockets import ConnectionClosedOK, ConnectionClosedError
 from websockets.asyncio.client import ClientConnection
 
+from src.ppsspp.exceptions.connection_terminated import ConnectionTerminated
+
 # Returns whether the connection was reestablished
 AsyncOnDisconnectedHandler = Callable[['AsyncPpssppConnection'], Awaitable[bool]]
 
@@ -36,18 +38,21 @@ class AsyncPpssppConnection:
         return handler
 
     async def _execute_action(self, action: Callable[[], Awaitable]):
-        try:
-            return await action()
-        except ConnectionClosedOK:
-            self.closed_ok = True
-            self.closed_code = self._ws.close_code
-            self.closed_reason = self._ws.close_reason
-            await self._on_disconnected(self)
-        except ConnectionClosedError:
-            self.closed_ok = False
-            self.closed_code = self._ws.close_code
-            self.closed_reason = self._ws.close_reason
-            await self._on_disconnected(self)
+        while True:
+            try:
+                return await action()
+            except ConnectionClosedOK:
+                self.closed_ok = True
+                self.closed_code = self._ws.close_code
+                self.closed_reason = self._ws.close_reason
+                if not await self._on_disconnected(self):
+                    raise ConnectionTerminated from None
+            except ConnectionClosedError:
+                self.closed_ok = False
+                self.closed_code = self._ws.close_code
+                self.closed_reason = self._ws.close_reason
+                if not await self._on_disconnected(self):
+                    raise ConnectionTerminated from None
 
     async def recv(self):
         return await self._execute_action(lambda: self._ws.recv())

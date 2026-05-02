@@ -81,6 +81,7 @@ class PpssppConnection:
                 # Reset the fields
                 self.close_code = self.reason = None
                 if not go_on:
+                    # TODO: why not reraise as ConnectionTerminated?
                     raise
                 continue
 
