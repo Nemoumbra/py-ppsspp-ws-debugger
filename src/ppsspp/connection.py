@@ -50,7 +50,6 @@ class PpssppConnection:
                 elif opcode == ABNF.OPCODE_CLOSE:
                     # It's a close frame. Let's parse it:
                     if len(received) >= 2:
-                        # TODO: wait, but what if len(received) > 2? Are we okay with that?
                         self.close_code = int.from_bytes(received[0:2])
                         self.reason = received[2:]
                     elif len(received) == 0:
