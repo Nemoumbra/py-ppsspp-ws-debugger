@@ -1,6 +1,6 @@
 
 from src.ppsspp.model.events.base_event import BaseEvent
-from typing import Callable
+from typing import Callable, Awaitable
 
 from src.ppsspp.model.events.event_groups import (
     kCpuEvents, kInputEvents, kGameEvents, kLoggingEvents
@@ -9,8 +9,9 @@ from src.ppsspp.ticket_manager import TicketManager
 
 
 EventHandler = Callable[[BaseEvent], None]
+AsyncEventHandler = Callable[[BaseEvent], Awaitable]
 
-class EventHandlerManager:
+class SyncEventHandlerManager:
     def __init__(self, ticket_manager: TicketManager):
         self.ticket_manager = ticket_manager
 
@@ -84,6 +85,89 @@ class EventHandlerManager:
     def _handle_input(self, event: BaseEvent):
         for handler in self._input_handlers:
             handler(event)
+
+    def clear(self):
+        self._log_handlers.clear()
+        self._stepping_handlers.clear()
+        self._input_handlers.clear()
+        self._game_handlers.clear()
+        self._subscribers.clear()
+
+class AsyncEventHandlerManager:
+    def __init__(self, ticket_manager: TicketManager):
+        self.ticket_manager = ticket_manager
+
+        self._log_handlers: list[AsyncEventHandler] = []
+        self._stepping_handlers: list[AsyncEventHandler] = []
+        self._game_handlers: list[AsyncEventHandler] = []
+        self._input_handlers: list[AsyncEventHandler] = []
+
+        self._subscribers: dict[str, AsyncEventHandler] = {}
+
+    async def subscribe(self, ticket: str, handler: AsyncEventHandler):
+        self._subscribers[ticket] = handler
+
+    async def handle_event(self, event: BaseEvent):
+        await self._notify_listeners(event)
+        await self._report_to_subscriber(event)
+
+    async def _notify_listeners(self, event: BaseEvent):
+        event_type = type(event)
+        if event_type in kLoggingEvents:
+            await self._handle_log(event)
+        elif event_type in kCpuEvents:
+            await self._handle_stepping(event)
+        elif event_type in kGameEvents:
+            await self._handle_game(event)
+        elif event_type in kInputEvents:
+            await self._handle_input(event)
+
+    async def _report_to_subscriber(self, event: BaseEvent):
+        # Of course, there may not be a subscriber (for instance, if that's a Log event)
+        ticket = event.ticket
+        if ticket is None:
+            return
+
+        # That shouldn't happen, but let's make a check anyway
+        if ticket not in self._subscribers:
+            raise RuntimeError(f"Unknown ticket {ticket}")
+
+        # Run the callback
+        await self._subscribers[ticket](event)
+
+        # The ticket has been dealt with!
+        self._subscribers.pop(ticket)
+        self.ticket_manager.finalize_ticket(ticket)
+        pass
+
+    def subscribe_log(self, event_handler: AsyncEventHandler):
+        self._log_handlers.append(event_handler)
+
+    def subscribe_stepping(self, event_handler: AsyncEventHandler):
+        self._stepping_handlers.append(event_handler)
+
+    def subscribe_game(self, event_handler: AsyncEventHandler):
+        self._game_handlers.append(event_handler)
+
+    def subscribe_input(self, event_handler: AsyncEventHandler):
+        self._input_handlers.append(event_handler)
+
+    # TODO: maybe asyncio.gather?
+    async def _handle_log(self, event: BaseEvent):
+        for handler in self._log_handlers:
+            await handler(event)
+
+    async def _handle_stepping(self, event: BaseEvent):
+        for handler in self._stepping_handlers:
+            await handler(event)
+
+    async def _handle_game(self, event: BaseEvent):
+        for handler in self._game_handlers:
+            await handler(event)
+
+    async def _handle_input(self, event: BaseEvent):
+        for handler in self._input_handlers:
+            await handler(event)
 
     def clear(self):
         self._log_handlers.clear()
