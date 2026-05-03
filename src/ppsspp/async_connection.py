@@ -23,7 +23,7 @@ class AsyncPpssppConnection:
         self._on_disconnected: AsyncOnDisconnectedHandler = _default_on_disconnect_handler
 
     async def connect(self, uri: str):
-        self._ws = await websockets.connect(uri)
+        self._ws = await websockets.connect(uri, max_size=None)
 
     def set_disconnected_handler(self, handler: AsyncOnDisconnectedHandler):
         self._on_disconnected = handler
@@ -41,13 +41,18 @@ class AsyncPpssppConnection:
         while True:
             try:
                 return await action()
-            except ConnectionClosedOK:
+
+            # TODO: actually look into 'e.sent', 'e.rcvd' and 'e.rcvd_then_sent' instead of ws properties
+            # The latter seemingly corresponds to the reader's (client's) perspective, which may be misleading.
+            # Like if the app sends the close frame first, then the server sends EOF and the event loop
+            # registers this as "connection closed" and tells that to the websocket => you get ABNORMAL_CLOSURE.
+            except ConnectionClosedOK as e:
                 self.closed_ok = True
                 self.closed_code = self._ws.close_code
                 self.closed_reason = self._ws.close_reason
                 if not await self._on_disconnected(self):
                     raise ConnectionTerminated from None
-            except ConnectionClosedError:
+            except ConnectionClosedError as e:
                 self.closed_ok = False
                 self.closed_code = self._ws.close_code
                 self.closed_reason = self._ws.close_reason
