@@ -171,7 +171,7 @@ class AsyncSession:
 
         await self._connection.send(str(request))
 
-    async def execute(self, request: PPSSPPRequest):
+    async def execute(self, request: PPSSPPRequest) -> BaseEvent:
         ppsspp_responded = asyncio.Event()
         result: BaseEvent
         async def handler(event: BaseEvent):
@@ -180,6 +180,5 @@ class AsyncSession:
             ppsspp_responded.set()
 
         await self.send_request(request, handler)
-        await ppsspp_responded
+        await ppsspp_responded.wait()
         return result
-
