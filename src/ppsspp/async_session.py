@@ -112,7 +112,14 @@ class AsyncSession:
         self._connection: AsyncPpssppConnection | None = None
         self._running: bool = False
 
-    async def Run(self, connection: AsyncPpssppConnection):
+    async def run(self, connection: AsyncPpssppConnection):
+        """
+        Initiates the PPSSPP debugging session.
+
+        Pre-condition: the call to 'connection.connect' has completed.
+        :param connection: the connection to be used by the session
+        :return: None
+        """
         self.producer_task = asyncio.create_task(
             populate_event_queue(self._event_queue, connection, self._event_dispatcher), name="PpssppEventReader"
         )
@@ -122,7 +129,13 @@ class AsyncSession:
         self._connection = connection
         self._running = True
 
-    async def Stop(self):
+    async def stop(self):
+        """
+        Terminates the PPSSPP debugging session. Automatically closes the connection.
+        Keep in mind that this will most likely trigger the 'on_disconnected' handler. Reconnecting is meaningless:
+        the internal queue will be closed by then, so the session will shut down nonetheless.
+        :return: None
+        """
         if not self._running:
             return False
 
@@ -189,6 +202,11 @@ class AsyncSession:
         await self._connection.send(str(request))
 
     async def execute(self, request: PPSSPPRequest) -> BaseEvent:
+        """
+        The mid-level API for executing the remote PPSSPP requests and acquiring the result
+        :param request: the request
+        :return: the event returned by PPSSPP
+        """
         ppsspp_responded = asyncio.Event()
         result: BaseEvent
         async def handler(event: BaseEvent):

@@ -23,6 +23,11 @@ class AsyncPpssppConnection:
         self._on_disconnected: AsyncOnDisconnectedHandler = _default_on_disconnect_handler
 
     async def connect(self, uri: str):
+        """
+        Attempts to connect to the provided URI, raises on failure.
+        :param uri: the URI to be used for the connection
+        :return: None
+        """
         self._ws = await websockets.connect(uri, max_size=None)
 
     def set_disconnected_handler(self, handler: AsyncOnDisconnectedHandler):
@@ -60,11 +65,26 @@ class AsyncPpssppConnection:
                     raise ConnectionTerminated from None
 
     async def recv(self):
+        """
+        Attempts to receive the next websockets message and parse it as JSON.
+        Might trigger the `on_disconnected` handler
+        :return: whatever the message deserializes to from JSON
+        """
         data = await self._execute_action(lambda: self._ws.recv())
         return json.loads(data)
 
     async def send(self, data: str):
+        """
+        Attempts to send the data into the websocket connection
+        Might trigger the `on_disconnect` handler
+        :param data: the text data to be sent
+        :return: None
+        """
         await self._execute_action(lambda: self._ws.send(data))
 
     async def close(self):
+        """
+        Closes the underlying websockets connection (performs the closing handshake)
+        :return:
+        """
         await self._ws.close()
