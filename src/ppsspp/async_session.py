@@ -6,7 +6,9 @@ from asyncio.tasks import Task
 
 from src.ppsspp.async_connection import AsyncPpssppConnection
 from src.ppsspp.exceptions.connection_terminated import ConnectionTerminated
+from src.ppsspp.exceptions.request_failed import RequestFailedError
 from src.ppsspp.model.events.base_event import BaseEvent
+from src.ppsspp.model.events.error_event import ErrorEvent
 
 from src.ppsspp.parsers.detailed_parsers.broadcast_config import BroadcastConfigEventParser
 from src.ppsspp.parsers.detailed_parsers.cpu import CPUEventParser
@@ -201,9 +203,9 @@ class AsyncSession:
 
         await self._connection.send(str(request))
 
-    async def execute(self, request: PPSSPPRequest) -> BaseEvent:
+    async def execute_unchecked(self, request: PPSSPPRequest) -> BaseEvent:
         """
-        The mid-level API for executing the remote PPSSPP requests and acquiring the result
+        The mid-level API for executing the remote PPSSPP requests and acquiring the result.
         :param request: the request
         :return: the event returned by PPSSPP
         """
@@ -216,4 +218,16 @@ class AsyncSession:
 
         await self.send_request(request, handler)
         await ppsspp_responded.wait()
+        return result
+
+    async def execute(self, request: PPSSPPRequest) -> BaseEvent:
+        """
+        The mid-level API for executing the remote PPSSPP requests and acquiring the result.
+        If PPSSPP responds with the ``ErrorEvent``, ``RequestFailedError`` is raised.
+        :param request: the request
+        :return: the event returned by PPSSPP
+        """
+        result = await self.execute_unchecked(request)
+        if isinstance(result, ErrorEvent):
+            raise RequestFailedError(result, request)
         return result
