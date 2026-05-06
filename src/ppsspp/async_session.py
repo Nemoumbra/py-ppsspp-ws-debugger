@@ -6,6 +6,7 @@ from asyncio.tasks import Task
 
 from src.ppsspp.async_connection import AsyncPpssppConnection
 from src.ppsspp.exceptions.connection_terminated import ConnectionTerminated
+from src.ppsspp.model.events.base_event import BaseEvent
 
 from src.ppsspp.parsers.detailed_parsers.broadcast_config import BroadcastConfigEventParser
 from src.ppsspp.parsers.detailed_parsers.cpu import CPUEventParser
@@ -58,16 +59,17 @@ async def populate_event_queue(queue: AsyncEventQueue, connection: AsyncPpssppCo
     pass
 
 async def process_events(queue: AsyncEventQueue, event_handler_man: AsyncEventHandlerManager):
-    while True:
-        try:
-            event = await queue.get()
-            await event_handler_man.handle_event(event)
-        except QueueClosedError:
-            # print("'process_events' returning...")
-            return
-        except Exception as e:
-            print("Process events error:", e)
-            continue
+    async with asyncio.TaskGroup() as tg:
+        while True:
+            try:
+                event = await queue.get()
+                tg.create_task(event_handler_man.handle_event(event))
+            except QueueClosedError:
+                # print("'process_events' returning...")
+                return
+            except Exception as e:
+                print("Process events error:", e)
+                continue
     pass
 
 class AsyncSession:
@@ -168,3 +170,16 @@ class AsyncSession:
             self._event_handler_man.subscribe(ticket, handler)
 
         await self._connection.send(str(request))
+
+    async def execute(self, request: PPSSPPRequest):
+        ppsspp_responded = asyncio.Event()
+        result: BaseEvent
+        async def handler(event: BaseEvent):
+            nonlocal result, ppsspp_responded
+            result = event
+            ppsspp_responded.set()
+
+        await self.send_request(request, handler)
+        await ppsspp_responded
+        return result
+

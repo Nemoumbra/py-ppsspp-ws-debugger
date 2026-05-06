@@ -1,9 +1,11 @@
+import asyncio
+from asyncio import TaskGroup
 
 from src.ppsspp.model.events.base_event import BaseEvent
 from typing import Callable, Awaitable
 
 from src.ppsspp.model.events.event_groups import (
-    kCpuEvents, kInputEvents, kGameEvents, kLoggingEvents
+    kCpuEvents, kInputEvents, kGameEvents, kLoggingEvents, kBroadcastEvents
 )
 from src.ppsspp.ticket_manager import TicketManager
 
@@ -108,8 +110,11 @@ class AsyncEventHandlerManager:
         self._subscribers[ticket] = handler
 
     async def handle_event(self, event: BaseEvent):
-        await self._notify_listeners(event)
-        await self._report_to_subscriber(event)
+        # TODO: should we use the caller's TaskGroup?
+        async with asyncio.TaskGroup() as tg:
+            # Maybe check if type(event) is in kBroadcastEvents?
+            tg.create_task(self._notify_listeners(event))
+            tg.create_task(self._report_to_subscriber(event))
 
     async def _notify_listeners(self, event: BaseEvent):
         event_type = type(event)
@@ -154,20 +159,24 @@ class AsyncEventHandlerManager:
 
     # TODO: maybe asyncio.gather?
     async def _handle_log(self, event: BaseEvent):
-        for handler in self._log_handlers:
-            await handler(event)
+        async with TaskGroup() as tg:
+            for handler in self._log_handlers:
+                tg.create_task(handler(event))
 
     async def _handle_stepping(self, event: BaseEvent):
-        for handler in self._stepping_handlers:
-            await handler(event)
+        async with TaskGroup() as tg:
+            for handler in self._stepping_handlers:
+                tg.create_task(handler(event))
 
     async def _handle_game(self, event: BaseEvent):
-        for handler in self._game_handlers:
-            await handler(event)
+        async with TaskGroup() as tg:
+            for handler in self._game_handlers:
+                tg.create_task(handler(event))
 
     async def _handle_input(self, event: BaseEvent):
-        for handler in self._input_handlers:
-            await handler(event)
+        async with TaskGroup() as tg:
+            for handler in self._input_handlers:
+                tg.create_task(handler(event))
 
     def clear(self):
         self._log_handlers.clear()
