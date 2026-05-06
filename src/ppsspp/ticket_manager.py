@@ -20,6 +20,9 @@ class TicketManager:
         self._unresolved_tickets.add(ticket)
         return ticket
 
+    def add_custom_ticket(self, ticket: str):
+        self._unresolved_tickets.add(ticket)
+
     def finalize_ticket(self, ticket: str):
         if ticket not in self._unresolved_tickets:
             raise ValueError(f"Ticket '{ticket}' was not expected!")

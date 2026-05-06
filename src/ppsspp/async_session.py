@@ -164,9 +164,26 @@ class AsyncSession:
         return decorator
 
     async def send_request(self, request: PPSSPPRequest, handler: AsyncEventHandler | None = None):
-        if handler is not None:
-            ticket = self._ticket_man.get_ticket()
-            request.set_ticket(ticket)
+        """
+        The low-level API for sending requests to PPSSPP.
+        If handler is provided and request contains a ticket, schedules the handler once PPSSPP echoes
+        the same ticket in its response. If handler is provided with no ticket, generates a ticket automatically.
+
+        Never provide a ticket without the handler!
+        :param request: the request
+        :param handler: optional handler to be called once PPSSPP responds to this request
+        :return: None
+        """
+        if handler is None:
+            assert request.get_ticket() is None
+        else:
+            ticket = request.get_ticket()
+            if ticket is None:
+                ticket = self._ticket_man.get_ticket()
+                request.set_ticket(ticket)
+            else:
+                self._ticket_man.add_custom_ticket(ticket)
+
             self._event_handler_man.subscribe(ticket, handler)
 
         await self._connection.send(str(request))
