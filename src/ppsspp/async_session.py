@@ -76,7 +76,7 @@ async def process_events(queue: AsyncEventQueue, event_handler_man: AsyncEventHa
 
 class AsyncSession:
     @staticmethod
-    def init_parsers():
+    def _init_parsers():
         return {
             "broadcast": BroadcastConfigEventParser(),
             "cpu": CPUEventParser(),
@@ -91,7 +91,7 @@ class AsyncSession:
         }
 
     @staticmethod
-    def init_builders():
+    def _init_builders():
         return {
             "version": VersionRequestBuilder(),
             "input": InputRequestBuilder(),
@@ -102,10 +102,10 @@ class AsyncSession:
         self._ticket_man: TicketManager = TicketManager(0x8)
         self._event_handler_man: AsyncEventHandlerManager = AsyncEventHandlerManager(self._ticket_man)
 
-        event_lookup_table = self.init_parsers()
+        event_lookup_table = self._init_parsers()
         self._event_dispatcher: EventDispatcher = EventDispatcher(event_lookup_table)
 
-        request_lookup_table = self.init_builders()
+        request_lookup_table = self._init_builders()
         self._request_dispatcher: RequestDispatcher = RequestDispatcher(request_lookup_table)
 
         self.producer_task: Task | None = None
@@ -206,6 +206,9 @@ class AsyncSession:
     async def execute_unchecked(self, request: PPSSPPRequest) -> BaseEvent:
         """
         The mid-level API for executing the remote PPSSPP requests and acquiring the result.
+
+        Warning! PPSSPP may not respond to certain events at all! This may cause ``execute_unchecked`` to never return!
+
         :param request: the request
         :return: the event returned by PPSSPP
         """
@@ -224,6 +227,9 @@ class AsyncSession:
         """
         The mid-level API for executing the remote PPSSPP requests and acquiring the result.
         If PPSSPP responds with the ``ErrorEvent``, ``RequestFailedError`` is raised.
+
+        Warning! PPSSPP may not respond to certain events at all! This may cause ``execute`` to never return!
+
         :param request: the request
         :return: the event returned by PPSSPP
         """
