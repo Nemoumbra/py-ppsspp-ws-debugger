@@ -6,7 +6,7 @@ from asyncio.tasks import Task
 
 from src.ppsspp.async_connection import AsyncPpssppConnection
 from src.ppsspp.exceptions.connection_terminated import ConnectionTerminated
-from src.ppsspp.exceptions.request_failed import RequestFailedError
+from src.ppsspp.exceptions.request_failed_error import RequestFailedError
 from src.ppsspp.model.events.base_event import BaseEvent
 from src.ppsspp.model.events.error_event import ErrorEvent
 

@@ -109,6 +109,7 @@ class AsyncEventHandlerManager:
     def subscribe(self, ticket: str, handler: AsyncEventHandler):
         self._subscribers[ticket] = handler
 
+    # TODO: introduce high-priority self-removing handlers for awaiting special events
     async def handle_event(self, event: BaseEvent):
         # TODO: should we use the caller's TaskGroup?
         async with asyncio.TaskGroup() as tg:
