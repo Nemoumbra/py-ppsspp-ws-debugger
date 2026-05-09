@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "py-ppsspp-ws-debugger"
+version = "1.0.0a1"
+requires-python = ">= 3.10"
+description = "Unofficial low-level and middle-level websocket debugger for PPSSPP"
+dependencies = [
+    "adaptix==3.0.0b11",
+    "websockets==16.0",
+    "websocket-client==1.8.0",
+]
+
+[project.urls]
+Repository = "https://github.com/Nemoumbra/py-ppsspp-ws-debugger.git"
