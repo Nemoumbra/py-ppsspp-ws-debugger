@@ -1,7 +1,7 @@
 
-from src.ppsspp.parsers.base_event_parser import BaseEventParser
+from ppsspp.parsers.base_event_parser import BaseEventParser
 
-from src.ppsspp.model.events.game.common import (
+from ppsspp.model.events.game.common import (
     GameResetEvent, GameStatusEvent, GamePauseEvent, GameResumeEvent, GameStartEvent, GameQuitEvent
 )
 

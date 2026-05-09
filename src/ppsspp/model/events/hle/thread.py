@@ -1,8 +1,8 @@
 
 from dataclasses import dataclass
 
-from src.ppsspp.model.events.base_event import BaseEvent
-from src.ppsspp.model.ppsspp_objects.hle.thread import ThreadInfo
+from ppsspp.model.events.base_event import BaseEvent
+from ppsspp.model.ppsspp_objects.hle.thread import ThreadInfo
 
 
 @dataclass(kw_only=True)

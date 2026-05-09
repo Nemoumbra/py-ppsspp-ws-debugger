@@ -1,13 +1,13 @@
 import asyncio
 from asyncio import TaskGroup
 
-from src.ppsspp.model.events.base_event import BaseEvent
+from ppsspp.model.events.base_event import BaseEvent
 from typing import Callable, Awaitable
 
-from src.ppsspp.model.events.event_groups import (
+from ppsspp.model.events.event_groups import (
     kCpuEvents, kInputEvents, kGameEvents, kLoggingEvents, kBroadcastEvents
 )
-from src.ppsspp.ticket_manager import TicketManager
+from ppsspp.ticket_manager import TicketManager
 
 
 EventHandler = Callable[[BaseEvent], None]

@@ -1,6 +1,6 @@
 
-from src.ppsspp.model.ppsspp_objects.logs.log_level import LogLevel
-from src.ppsspp.model.events.base_event import BaseEvent
+from ppsspp.model.ppsspp_objects.logs.log_level import LogLevel
+from ppsspp.model.events.base_event import BaseEvent
 
 from dataclasses import dataclass
 

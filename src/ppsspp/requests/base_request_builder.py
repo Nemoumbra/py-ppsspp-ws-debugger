@@ -1,5 +1,5 @@
-from src.ppsspp.ppsspp_request import PPSSPPRequest
-from src.ppsspp.exceptions.request_build_error import RequestBuildError
+from ppsspp.ppsspp_request import PPSSPPRequest
+from ppsspp.exceptions.request_build_error import RequestBuildError
 
 
 class BaseRequestBuilder:

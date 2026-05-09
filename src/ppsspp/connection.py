@@ -5,7 +5,7 @@ from websocket import (
 from typing import Callable
 
 import json
-from src.ppsspp.exceptions.connection_terminated import ConnectionTerminated
+from ppsspp.exceptions.connection_terminated import ConnectionTerminated
 
 
 # Returns whether the connection was reestablished

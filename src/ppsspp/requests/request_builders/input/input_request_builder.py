@@ -1,10 +1,10 @@
-from src.ppsspp.requests.base_request_builder import BaseRequestBuilder
-from src.ppsspp.ppsspp_request import PPSSPPRequest
-from src.ppsspp.exceptions.request_build_error import RequestBuildError
+from ppsspp.requests.base_request_builder import BaseRequestBuilder
+from ppsspp.ppsspp_request import PPSSPPRequest
+from ppsspp.exceptions.request_build_error import RequestBuildError
 
-from src.ppsspp.model.ppsspp_objects.input.buttons_change import ButtonsChange
-from src.ppsspp.model.ppsspp_objects.input.button import Button
-from src.ppsspp.model.ppsspp_objects.input.analog import Analog
+from ppsspp.model.ppsspp_objects.input.buttons_change import ButtonsChange
+from ppsspp.model.ppsspp_objects.input.button import Button
+from ppsspp.model.ppsspp_objects.input.analog import Analog
 
 
 class InputRequestBuilder(BaseRequestBuilder):

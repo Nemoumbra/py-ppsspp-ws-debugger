@@ -1,6 +1,6 @@
-from src.ppsspp.requests.base_request_builder import BaseRequestBuilder
-from src.ppsspp.ppsspp_request import PPSSPPRequest
-from src.ppsspp.exceptions.request_build_error import RequestBuildError
+from ppsspp.requests.base_request_builder import BaseRequestBuilder
+from ppsspp.ppsspp_request import PPSSPPRequest
+from ppsspp.exceptions.request_build_error import RequestBuildError
 
 
 class HLERequestBuilder(BaseRequestBuilder):

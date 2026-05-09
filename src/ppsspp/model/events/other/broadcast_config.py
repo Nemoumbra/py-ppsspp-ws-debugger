@@ -1,7 +1,7 @@
 
 from dataclasses import dataclass
 
-from src.ppsspp.model.events.base_event import BaseEvent
+from ppsspp.model.events.base_event import BaseEvent
 
 # TODO: maybe wrap these into objects?
 

@@ -1,21 +1,21 @@
 
 from adaptix import Retort, name_mapping, NameStyle
-from src.ppsspp.model.ppsspp_objects.disassembly.disasm_line import DisasmLine
+from ppsspp.model.ppsspp_objects.disassembly.disasm_line import DisasmLine
 
-from src.ppsspp.parsers.base_event_parser import BaseEventParser
+from ppsspp.parsers.base_event_parser import BaseEventParser
 
-from src.ppsspp.model.events.breakpoints.memory import (
+from ppsspp.model.events.breakpoints.memory import (
     MemoryBreakpointAddEvent, MemoryBreakpointUpdateEvent, MemoryBreakpointRemoveEvent, MemoryBreakpointListEvent
 )
-from src.ppsspp.model.events.disassembly.common import (
+from ppsspp.model.events.disassembly.common import (
     MemoryBaseEvent, MemoryDisasmEvent, MemorySearchDisasmEvent, MemoryAssembleEvent
 )
-from src.ppsspp.model.events.memory.common import (
+from ppsspp.model.events.memory.common import (
     MemoryReadU8Event, MemoryReadU16Event, MemoryReadU32Event, MemoryReadEvent,
     MemoryReadStringUtf8Event, MemoryReadStringB64Event,
     MemoryWriteU8Event, MemoryWriteU16Event, MemoryWriteU32Event, MemoryWriteEvent
 )
-from src.ppsspp.model.events.memory.memory_info import (
+from ppsspp.model.events.memory.memory_info import (
     MemoryMappingEvent,
     MemoryInfoConfigEvent, MemoryInfoSetEvent, MemoryInfoListEvent, MemoryInfoSearchEvent
 )

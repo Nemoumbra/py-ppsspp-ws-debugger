@@ -1,4 +1,4 @@
-from src.ppsspp.model.ppsspp_objects.input.button import Button
+from ppsspp.model.ppsspp_objects.input.button import Button
 
 
 class ButtonsState:

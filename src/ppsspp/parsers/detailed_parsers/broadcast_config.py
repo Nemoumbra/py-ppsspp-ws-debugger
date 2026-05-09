@@ -1,6 +1,6 @@
-from src.ppsspp.parsers.base_event_parser import BaseEventParser
+from ppsspp.parsers.base_event_parser import BaseEventParser
 
-from src.ppsspp.model.events.other.broadcast_config import (
+from ppsspp.model.events.other.broadcast_config import (
     BroadcastConfigGetEvent, BroadcastConfigSetEvent
 )
 

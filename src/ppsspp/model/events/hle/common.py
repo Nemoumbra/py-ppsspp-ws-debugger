@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
-from src.ppsspp.model.events.base_event import BaseEvent
-from src.ppsspp.model.ppsspp_objects.hle.stack_frame import StackFrameInfo
-from src.ppsspp.model.ppsspp_objects.hle.user_module import UserModuleInfo
+from ppsspp.model.events.base_event import BaseEvent
+from ppsspp.model.ppsspp_objects.hle.stack_frame import StackFrameInfo
+from ppsspp.model.ppsspp_objects.hle.user_module import UserModuleInfo
 
 
 @dataclass(kw_only=True)

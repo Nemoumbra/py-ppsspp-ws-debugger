@@ -1,5 +1,5 @@
 
-from src.ppsspp.exceptions.event_parse_error import EventParseError
+from ppsspp.exceptions.event_parse_error import EventParseError
 
 from adaptix import Retort, name_mapping, NameStyle
 

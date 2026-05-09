@@ -1,8 +1,8 @@
 
 from dataclasses import dataclass
 
-from src.ppsspp.model.events.base_event import BaseEvent
-from src.ppsspp.model.ppsspp_objects.gpu.gpu_stats import FpsInfo, VblankCyclesInfo, TimingInfo
+from ppsspp.model.events.base_event import BaseEvent
+from ppsspp.model.ppsspp_objects.gpu.gpu_stats import FpsInfo, VblankCyclesInfo, TimingInfo
 
 
 @dataclass(kw_only=True)

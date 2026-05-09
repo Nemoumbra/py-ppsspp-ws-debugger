@@ -1,7 +1,7 @@
 
-from src.ppsspp.parsers.base_event_parser import BaseEventParser
+from ppsspp.parsers.base_event_parser import BaseEventParser
 
-from src.ppsspp.model.events.other.version import VersionEvent
+from ppsspp.model.events.other.version import VersionEvent
 
 
 class VersionEventParser(BaseEventParser):

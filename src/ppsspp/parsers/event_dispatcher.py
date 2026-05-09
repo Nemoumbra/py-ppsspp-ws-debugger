@@ -1,8 +1,8 @@
 
-from src.ppsspp.exceptions.event_parse_error import EventParseError
-from src.ppsspp.parsers.base_event_parser import BaseEventParser
+from ppsspp.exceptions.event_parse_error import EventParseError
+from ppsspp.parsers.base_event_parser import BaseEventParser
 
-from src.ppsspp.model.events.error_event import ErrorEvent, kErrorEvent
+from ppsspp.model.events.error_event import ErrorEvent, kErrorEvent
 
 from adaptix import Retort
 

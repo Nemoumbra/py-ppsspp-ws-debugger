@@ -1,16 +1,16 @@
 
 from typing import Type
 
-from src.ppsspp.model.events.game.common import (
+from ppsspp.model.events.game.common import (
     GameStartEvent, GameQuitEvent, GamePauseEvent, GameResumeEvent
 )
 
-from src.ppsspp.model.events.other.log import LogEvent
+from ppsspp.model.events.other.log import LogEvent
 
-from src.ppsspp.model.events.input.analog import InputAnalogEvent
-from src.ppsspp.model.events.input.buttons import InputButtonsEvent
+from ppsspp.model.events.input.analog import InputAnalogEvent
+from ppsspp.model.events.input.buttons import InputButtonsEvent
 
-from src.ppsspp.model.events.cpu.common import CpuSteppingEvent, CpuResumeEvent
+from ppsspp.model.events.cpu.common import CpuSteppingEvent, CpuResumeEvent
 
 
 

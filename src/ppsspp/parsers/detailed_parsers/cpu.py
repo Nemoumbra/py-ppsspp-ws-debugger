@@ -1,13 +1,13 @@
 
-from src.ppsspp.parsers.base_event_parser import BaseEventParser
+from ppsspp.parsers.base_event_parser import BaseEventParser
 
-from src.ppsspp.model.events.breakpoints.cpu import (
+from ppsspp.model.events.breakpoints.cpu import (
     CpuBreakpointAddEvent, CpuBreakpointUpdateEvent, CpuBreakpointRemoveEvent, CpuBreakpointListEvent
 )
-from src.ppsspp.model.events.cpu.common import (
+from ppsspp.model.events.cpu.common import (
     CpuSteppingEvent, CpuResumeEvent, CpuStatusEvent, CpuEvaluateEvent
 )
-from src.ppsspp.model.events.cpu.registers import (
+from ppsspp.model.events.cpu.registers import (
     CpuGetRegEvent, CpuSetRegEvent, CpuGetAllRegsEvent
 )
 

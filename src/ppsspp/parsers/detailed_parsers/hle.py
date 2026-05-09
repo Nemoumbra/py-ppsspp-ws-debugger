@@ -1,14 +1,14 @@
 
-from src.ppsspp.parsers.base_event_parser import BaseEventParser
+from ppsspp.parsers.base_event_parser import BaseEventParser
 
-from src.ppsspp.model.events.hle.thread import (
+from ppsspp.model.events.hle.thread import (
     HleThreadListEvent, HleThreadStopEvent, HleThreadWakeEvent
 )
-from src.ppsspp.model.events.hle.func import (
+from ppsspp.model.events.hle.func import (
     HleFuncListEvent, HleFuncAddEvent, HleFuncRemoveEvent,
     HleFuncRemoveRangeEvent, HleFuncRenameEvent, HleFuncScanEvent
 )
-from src.ppsspp.model.events.hle.common import (
+from ppsspp.model.events.hle.common import (
     HleModuleListEvent, HleBacktraceEvent
 )
 

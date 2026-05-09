@@ -1,7 +1,7 @@
 
 from queue import SimpleQueue, Empty
-from src.ppsspp.model.events.base_event import BaseEvent
-from src.ppsspp.exceptions.queue_closed_error import QueueClosedError
+from ppsspp.model.events.base_event import BaseEvent
+from ppsspp.exceptions.queue_closed_error import QueueClosedError
 
 
 class EventQueue:

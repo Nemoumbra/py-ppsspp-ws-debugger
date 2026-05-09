@@ -1,10 +1,10 @@
 
-from src.ppsspp.parsers.base_event_parser import BaseEventParser
+from ppsspp.parsers.base_event_parser import BaseEventParser
 
-from src.ppsspp.model.events.input.buttons import (
+from ppsspp.model.events.input.buttons import (
     InputButtonsEvent, InputButtonsSendEvent, InputButtonsPressEvent
 )
-from src.ppsspp.model.events.input.analog import (
+from ppsspp.model.events.input.analog import (
     InputAnalogEvent, InputAnalogSendEvent
 )
 

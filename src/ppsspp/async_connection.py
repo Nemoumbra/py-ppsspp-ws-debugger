@@ -5,7 +5,7 @@ import websockets
 from websockets import ConnectionClosedOK, ConnectionClosedError
 from websockets.asyncio.client import ClientConnection
 
-from src.ppsspp.exceptions.connection_terminated import ConnectionTerminated
+from ppsspp.exceptions.connection_terminated import ConnectionTerminated
 
 # Returns whether the connection was reestablished
 AsyncOnDisconnectedHandler = Callable[['AsyncPpssppConnection'], Awaitable[bool]]

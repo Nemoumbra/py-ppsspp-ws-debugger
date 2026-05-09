@@ -1,8 +1,8 @@
 
 from dataclasses import dataclass
 
-from src.ppsspp.model.events.base_event import BaseEvent
-from src.ppsspp.model.ppsspp_objects.breakpoints.cpu_breakpoint import CpuBreakpoint
+from ppsspp.model.events.base_event import BaseEvent
+from ppsspp.model.ppsspp_objects.breakpoints.cpu_breakpoint import CpuBreakpoint
 
 
 @dataclass(kw_only=True)

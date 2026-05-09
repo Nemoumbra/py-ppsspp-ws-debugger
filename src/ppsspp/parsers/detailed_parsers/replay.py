@@ -1,10 +1,10 @@
 
-from src.ppsspp.parsers.base_event_parser import BaseEventParser
+from ppsspp.parsers.base_event_parser import BaseEventParser
 
-from src.ppsspp.model.events.replay.common import (
+from ppsspp.model.events.replay.common import (
     ReplayBeginEvent, ReplayAbortEvent, ReplayFlushEvent, ReplayExecuteEvent, ReplayStatusEvent
 )
-from src.ppsspp.model.events.replay.time import (
+from ppsspp.model.events.replay.time import (
     ReplayTimeGetEvent, ReplayTimeSetEvent
 )
 

@@ -1,6 +1,6 @@
 
-from src.ppsspp.model.events.error_event import ErrorEvent
-from src.ppsspp.ppsspp_request import PPSSPPRequest
+from ppsspp.model.events.error_event import ErrorEvent
+from ppsspp.ppsspp_request import PPSSPPRequest
 
 
 class RequestFailedError(Exception):

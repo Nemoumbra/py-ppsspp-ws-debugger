@@ -2,32 +2,32 @@
 import json
 from threading import Thread
 
-from src.ppsspp.connection import PpssppConnection
-from src.ppsspp.exceptions.connection_terminated import ConnectionTerminated
+from ppsspp.connection import PpssppConnection
+from ppsspp.exceptions.connection_terminated import ConnectionTerminated
 
-from src.ppsspp.parsers.detailed_parsers.broadcast_config import BroadcastConfigEventParser
-from src.ppsspp.parsers.detailed_parsers.cpu import CPUEventParser
-from src.ppsspp.parsers.detailed_parsers.game import GameEventParser
-from src.ppsspp.parsers.detailed_parsers.gpu import GPUEventParser
-from src.ppsspp.parsers.detailed_parsers.hle import HLEEventParser
-from src.ppsspp.parsers.detailed_parsers.input import InputEventParser
-from src.ppsspp.parsers.detailed_parsers.log import LogEventParser
-from src.ppsspp.parsers.detailed_parsers.memory import MemoryEventParser
-from src.ppsspp.parsers.detailed_parsers.replay import ReplayEventParser
-from src.ppsspp.parsers.detailed_parsers.version import VersionEventParser
+from ppsspp.parsers.detailed_parsers.broadcast_config import BroadcastConfigEventParser
+from ppsspp.parsers.detailed_parsers.cpu import CPUEventParser
+from ppsspp.parsers.detailed_parsers.game import GameEventParser
+from ppsspp.parsers.detailed_parsers.gpu import GPUEventParser
+from ppsspp.parsers.detailed_parsers.hle import HLEEventParser
+from ppsspp.parsers.detailed_parsers.input import InputEventParser
+from ppsspp.parsers.detailed_parsers.log import LogEventParser
+from ppsspp.parsers.detailed_parsers.memory import MemoryEventParser
+from ppsspp.parsers.detailed_parsers.replay import ReplayEventParser
+from ppsspp.parsers.detailed_parsers.version import VersionEventParser
 
-from src.ppsspp.ppsspp_request import PPSSPPRequest
-from src.ppsspp.requests.request_builders.input.input_request_builder import InputRequestBuilder
-from src.ppsspp.requests.request_builders.version.version_request_builder import VersionRequestBuilder
+from ppsspp.ppsspp_request import PPSSPPRequest
+from ppsspp.requests.request_builders.input.input_request_builder import InputRequestBuilder
+from ppsspp.requests.request_builders.version.version_request_builder import VersionRequestBuilder
 
-from src.ppsspp.ticket_manager import TicketManager
-from src.ppsspp.event_handler_manager import SyncEventHandlerManager, EventHandler
-from src.ppsspp.parsers.event_dispatcher import EventDispatcher
-from src.ppsspp.exceptions.event_parse_error import EventParseError
-from src.ppsspp.requests.request_dispatcher import RequestDispatcher
+from ppsspp.ticket_manager import TicketManager
+from ppsspp.event_handler_manager import SyncEventHandlerManager, EventHandler
+from ppsspp.parsers.event_dispatcher import EventDispatcher
+from ppsspp.exceptions.event_parse_error import EventParseError
+from ppsspp.requests.request_dispatcher import RequestDispatcher
 
-from src.ppsspp.event_queue import EventQueue, EventQueueReader
-from src.ppsspp.exceptions.queue_closed_error import QueueClosedError
+from ppsspp.event_queue import EventQueue, EventQueueReader
+from ppsspp.exceptions.queue_closed_error import QueueClosedError
 
 
 def populate_event_queue(queue: EventQueue, connection: PpssppConnection, dispatcher: EventDispatcher):

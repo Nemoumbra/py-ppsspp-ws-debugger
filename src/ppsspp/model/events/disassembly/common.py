@@ -1,9 +1,9 @@
 
 from dataclasses import dataclass
 
-from src.ppsspp.model.events.base_event import BaseEvent
-from src.ppsspp.model.ppsspp_objects.disassembly.branches import BranchGuide
-from src.ppsspp.model.ppsspp_objects.disassembly.disasm_line import DisasmLine
+from ppsspp.model.events.base_event import BaseEvent
+from ppsspp.model.ppsspp_objects.disassembly.branches import BranchGuide
+from ppsspp.model.ppsspp_objects.disassembly.disasm_line import DisasmLine
 
 
 @dataclass(kw_only=True)

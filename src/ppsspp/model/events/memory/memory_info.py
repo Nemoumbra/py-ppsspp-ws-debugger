@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
-from src.ppsspp.model.events.base_event import BaseEvent
-from src.ppsspp.model.ppsspp_objects.memory.memory_block_info import MemoryBlockInfo
-from src.ppsspp.model.ppsspp_objects.memory.memory_range import MemoryRangeInfo
+from ppsspp.model.events.base_event import BaseEvent
+from ppsspp.model.ppsspp_objects.memory.memory_block_info import MemoryBlockInfo
+from ppsspp.model.ppsspp_objects.memory.memory_range import MemoryRangeInfo
 
 
 @dataclass(kw_only=True)

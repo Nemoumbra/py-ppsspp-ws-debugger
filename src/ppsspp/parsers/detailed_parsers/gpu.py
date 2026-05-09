@@ -1,10 +1,10 @@
 
-from src.ppsspp.parsers.base_event_parser import BaseEventParser
+from ppsspp.parsers.base_event_parser import BaseEventParser
 
-from src.ppsspp.model.events.gpu.common import (
+from ppsspp.model.events.gpu.common import (
     GpuRecordDumpEvent, GpuStatsGetEvent
 )
-from src.ppsspp.model.events.gpu.buffer import (
+from ppsspp.model.events.gpu.buffer import (
     GpuBufferScreenshotUriEvent, GpuBufferScreenshotB64Event,
     GpuBufferRenderColorUriEvent, GpuBufferRenderColorB64Event,
     GpuBufferRenderDepthUriEvent, GpuBufferRenderDepthB64Event,
