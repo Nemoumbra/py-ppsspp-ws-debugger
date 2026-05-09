@@ -13,8 +13,8 @@ This package is using `setuptools` so make sure it's present and not too old.
 If your PyCharm is struggling with the package installed as editable, try reinstalling with this command instead: `pip install -e /path/to/cloned/repo --config-settings editable_mode=compat`.
 
 ## Usage
-The library present an asynchronous API (`asyncio` and [websockets](https://github.com/python-websockets/websockets)) 
-and also the incomplete synchronous API ([websocket-client](https://github.com/websocket-client/websocket-client)).
+The library presents an asynchronous API (`asyncio` and [websockets](https://github.com/python-websockets/websockets))
+and also an incomplete synchronous API ([websocket-client](https://github.com/websocket-client/websocket-client)).
 Let's focus on the async API.
 
 The classes you need are `AsyncSession` and `AsyncConnection`.

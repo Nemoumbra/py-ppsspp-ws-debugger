@@ -9,6 +9,8 @@ from adaptix import Retort
 class EventDispatcher:
     def __init__(self, event_lookup_table: dict[str, BaseEventParser]):
         self._event_lookup_table = event_lookup_table
+
+        # Could've used adaptix.load for perf, but not worth it
         self._retort = Retort()
 
     def parse_event(self, event: dict):
