@@ -95,7 +95,8 @@ AsyncEventHandler = Callable[[BaseEvent], Awaitable]
 The mid-level API is `await session.execute_unchecked(request)`. This returns the event sent in response to your request (maybe `ErrorEvent`).
 > [!WARNING]
 > PPSSPP may not respond to certain events at all! In this case, `execute_unchecked` will hang!
-So far there are only [2 such commands](https://github.com/hrydgard/ppsspp/blob/master/Core/Debugger/WebSocket/CPUCoreSubscriber.cpp): `cpu.resume` and `cpu.stepping`.
+>
+> So far there are only [2 such commands](https://github.com/hrydgard/ppsspp/blob/master/Core/Debugger/WebSocket/CPUCoreSubscriber.cpp): `cpu.resume` and `cpu.stepping`.
 So don't use `execute_unchecked` for them, use the low-level API.
 
 Lastly, there is `await session.execute(request)`. It raises `RequestFailedError` if the returned event happens to be `ErrorEvent`.
