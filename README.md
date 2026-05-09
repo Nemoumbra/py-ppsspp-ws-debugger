@@ -17,6 +17,11 @@ The only documentation available is located in comments in PPSSPP's source code.
 The description of the system is [here](https://github.com/hrydgard/ppsspp/blob/master/Core/Debugger/WebSocket.cpp). The detailed info on the available
 requests and expected responses is documented in the `.cpp` files inside [this directory](https://github.com/hrydgard/ppsspp/tree/master/Core/Debugger/WebSocket).
 This library doesn't force you to operate on JSONs, instead, serialization and deserialization is used.
+PPSSPP registers its websocket debugger on `report.ppsspp.org`. The endpoint `report.ppsspp.org/match/list` returns a JSON array of objects representing the PPSSPP instances.
+For instance, `[{"ip":"1.2.3.4","p":54321,"t":1771360769}]`. To access the debugger, you have to substitute the IP and the port into `ws://{0}:{1}/debugger`.
+
+You can also check out the Node.js [SDK](https://github.com/unknownbrackets/ppsspp-api-samples/tree/master/js) (written by Unknownbrackets)
+to learn further details about this system and how to enable the remote debugger in PPSSPP.
 
 ## Model
 The objects in the model are defined as dataclasses.
@@ -35,7 +40,7 @@ The classes you need are `AsyncSession` and `AsyncConnection`.
 ### AsyncConnection
 `AsyncConnection` encapsulates the connection from your device to PPSSPP. This library not provide any means of acquiring the correct URI for connecting to PPSSPP.
 It is entirely up to you: read it from your config file or let the user decide.
-Perhaps, contact `report.ppsspp.org/match/list` by using your favorite HTTP library? More on that later.
+Perhaps, contact `report.ppsspp.org/match/list` by using your favorite HTTP library.
 
 You can attempt to connect by awaiting a call to `connect(uri)`. You can also provide a callback `set_on_disconnected_handler`.
 ```py
@@ -70,6 +75,8 @@ drain the queue and invoke event handlers if necessary.
 Call `await session.stop()` to fully shut down the internals and the connection. Of course, it will trigger the `on_disconnected` handler. Reconnecting is meaningless at that point:
 the internal queue will be closed by then, so the session will shut down nonetheless. Just return `False`.
 
+---
+
 #### Issuing requests to PPSSPP:
 The low-level method of sending requests to PPSSPP involves calling `session.send_request` with an instance of class `PPSSPPRequest`. Check the source code for its creation API.
 ```py
@@ -87,10 +94,34 @@ AsyncEventHandler = Callable[[BaseEvent], Awaitable]
 ```
 The mid-level API is `await session.execute_unchecked(request)`. This returns the event sent in response to your request (maybe `ErrorEvent`).
 > [!WARNING]
-> PPSSPP may not respond to certain events at all! This may cause `execute_unchecked` to hang!
+> PPSSPP may not respond to certain events at all! In this case, `execute_unchecked` will hang!
 So far there are only [2 such commands](https://github.com/hrydgard/ppsspp/blob/master/Core/Debugger/WebSocket/CPUCoreSubscriber.cpp): `cpu.resume` and `cpu.stepping`.
 So don't use `execute_unchecked` for them, use the low-level API.
 
 Lastly, there is `await session.execute(request)`. It raises `RequestFailedError` if the returned event happens to be `ErrorEvent`.
 This way is kind of more Pythonic than operating on error objects.
 You can inspect the fields `error` for the error event and `failed_request` to inspect the `PPSSPPRequest` that failed.
+
+---
+
+#### Reacting to PPSSPP events
+The ticket system, which powers the `execute_unchecked` and `execute` methods (and also `send_request` if you manually supply a handler),
+covers almost a half of use-cases. Then there are unexpected broadcast events... They are divided into 4 groups.
+1) Logging events: `LogEvent`. Sent for each PPSSPP's log.
+2) Game events: `GameStartEvent`, `GamePauseEvent`, `GameQuitEvent`, `GameResumeEvent`. Sent when the emulator's game status is changed.
+3) Input events: `InputAnalogEvent`, `InputButtonsEvent`. Sent in response to user's interaction with the PSP controls.
+4) Stepping info events: `CpuSteppingEvent`, `CpuResumeEvent`. Sent once PPSSPP detects that the CPU status has changed.
+
+You can subscribe to these groups by using the session's decorators.
+```py
+@session.log_handler()
+async def log_broadcast(event: BaseEvent):
+    event = cast(LogEvent, event)
+    print(f"{event.timestamp}: {event.message}")
+```
+
+TODO: another API for subscribing to exact events and a possibility to unsubscribe.
+Because there's also a GPU feed mode in PPSSPP which we don't support yet.
+
+## Contributing
+PRs and Issues are always welcome!
