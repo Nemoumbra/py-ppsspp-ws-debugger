@@ -183,6 +183,21 @@ class AsyncSession:
 
         return decorator
 
+    def listen_for(self, target: type[BaseEvent] | None):
+        """
+        Installs a listener for all incoming events or a particular event
+        :param target: pass the type of the event or ``None`` to listen for all events
+        :return: the original function
+        """
+        def decorator(handler_func: AsyncEventHandler):
+            if target is None:
+                self._event_handler_man.install_promiscuous_listener(handler_func)
+            else:
+                self._event_handler_man.install_listener(target, handler_func)
+            return handler_func
+
+        return decorator
+
     async def send_request(self, request: PPSSPPRequest, handler: AsyncEventHandler | None = None):
         """
         The low-level API for sending requests to PPSSPP.
