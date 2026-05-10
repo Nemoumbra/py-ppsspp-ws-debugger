@@ -38,4 +38,3 @@ class HleFuncRenameEvent(BaseEvent):
 @dataclass(kw_only=True)
 class HleFuncScanEvent(BaseEvent):
     pass
-

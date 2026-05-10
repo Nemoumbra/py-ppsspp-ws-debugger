@@ -14,13 +14,16 @@ class MemoryMappingEvent(BaseEvent):
 class MemoryInfoConfigEvent(BaseEvent):
     detailed: bool
 
+
 @dataclass(kw_only=True)
 class MemoryInfoSetEvent(BaseEvent):
     pass
 
+
 @dataclass(kw_only=True)
 class MemoryInfoListEvent(BaseEvent):
     extents: list[MemoryBlockInfo]
+
 
 @dataclass(kw_only=True)
 class MemoryInfoSearchEvent(BaseEvent):

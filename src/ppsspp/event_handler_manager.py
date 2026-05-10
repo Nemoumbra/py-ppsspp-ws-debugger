@@ -13,6 +13,7 @@ from ppsspp.ticket_manager import TicketManager
 EventHandler = Callable[[BaseEvent], None]
 AsyncEventHandler = Callable[[BaseEvent], Awaitable]
 
+
 class SyncEventHandlerManager:
     def __init__(self, ticket_manager: TicketManager):
         self.ticket_manager = ticket_manager
@@ -94,6 +95,7 @@ class SyncEventHandlerManager:
         self._input_handlers.clear()
         self._game_handlers.clear()
         self._subscribers.clear()
+
 
 class AsyncEventHandlerManager:
     def __init__(self, ticket_manager: TicketManager):

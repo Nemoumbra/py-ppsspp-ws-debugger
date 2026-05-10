@@ -8,6 +8,7 @@ from ppsspp.model.events.input.analog import (
     InputAnalogEvent, InputAnalogSendEvent
 )
 
+
 class InputEventParser(BaseEventParser):
     def __init__(self):
         lookup_table = {

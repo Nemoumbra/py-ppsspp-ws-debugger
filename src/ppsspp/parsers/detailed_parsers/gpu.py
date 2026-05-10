@@ -13,6 +13,7 @@ from ppsspp.model.events.gpu.buffer import (
     GpuBufferClutUriEvent, GpuBufferClutB64Event
 )
 
+
 class GPUEventParser(BaseEventParser):
     def __init__(self):
         lookup_table = {

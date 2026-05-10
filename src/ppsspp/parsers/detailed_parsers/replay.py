@@ -8,6 +8,7 @@ from ppsspp.model.events.replay.time import (
     ReplayTimeGetEvent, ReplayTimeSetEvent
 )
 
+
 class ReplayEventParser(BaseEventParser):
     def __init__(self):
         lookup_table = {

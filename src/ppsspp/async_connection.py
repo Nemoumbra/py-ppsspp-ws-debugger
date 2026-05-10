@@ -10,8 +10,10 @@ from ppsspp.exceptions.connection_terminated import ConnectionTerminated
 # Returns whether the connection was reestablished
 AsyncOnDisconnectedHandler = Callable[['AsyncPpssppConnection'], Awaitable[bool]]
 
+
 async def _default_on_disconnect_handler(connection: 'AsyncPpssppConnection'):
     return False
+
 
 class AsyncPpssppConnection:
     def __init__(self):

@@ -20,6 +20,7 @@ from ppsspp.model.events.memory.memory_info import (
     MemoryInfoConfigEvent, MemoryInfoSetEvent, MemoryInfoListEvent, MemoryInfoSearchEvent
 )
 
+
 class MemoryEventParser(BaseEventParser):
     def __init__(self):
         lookup_table = {

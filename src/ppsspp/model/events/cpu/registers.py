@@ -1,4 +1,3 @@
-
 from dataclasses import dataclass
 
 from ppsspp.model.events.base_event import BaseEvent
@@ -12,12 +11,14 @@ class CpuGetRegEvent(BaseEvent):
     uint_value: int
     float_value: str
 
+
 @dataclass(kw_only=True)
 class CpuSetRegEvent(BaseEvent):
     category: int
     register: int
     uint_value: int
     float_value: str
+
 
 @dataclass(kw_only=True)
 class CpuGetAllRegsEvent(BaseEvent):

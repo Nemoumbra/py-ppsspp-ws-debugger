@@ -1,4 +1,3 @@
-
 from dataclasses import dataclass
 
 from ppsspp.model.events.base_event import BaseEvent
@@ -10,6 +9,7 @@ class GpuBufferScreenshotUriEvent(BaseEvent):
     height: int
     is_framebuffer: bool | None = None
     uri: str
+
 
 @dataclass(kw_only=True)
 class GpuBufferScreenshotB64Event(BaseEvent):
@@ -28,6 +28,7 @@ class GpuBufferRenderColorUriEvent(BaseEvent):
     is_framebuffer: bool | None = None
     uri: str
 
+
 @dataclass(kw_only=True)
 class GpuBufferRenderColorB64Event(BaseEvent):
     width: int
@@ -44,6 +45,7 @@ class GpuBufferRenderDepthUriEvent(BaseEvent):
     height: int
     is_framebuffer: bool | None = None
     uri: str
+
 
 @dataclass(kw_only=True)
 class GpuBufferRenderDepthB64Event(BaseEvent):
@@ -62,6 +64,7 @@ class GpuBufferRenderStencilUriEvent(BaseEvent):
     is_framebuffer: bool | None = None
     uri: str
 
+
 @dataclass(kw_only=True)
 class GpuBufferRenderStencilB64Event(BaseEvent):
     width: int
@@ -79,6 +82,7 @@ class GpuBufferTextureUriEvent(BaseEvent):
     is_framebuffer: bool | None = None
     uri: str
 
+
 @dataclass(kw_only=True)
 class GpuBufferTextureB64Event(BaseEvent):
     width: int
@@ -95,6 +99,7 @@ class GpuBufferClutUriEvent(BaseEvent):
     height: int
     is_framebuffer: bool | None = None
     uri: str
+
 
 @dataclass(kw_only=True)
 class GpuBufferClutB64Event(BaseEvent):

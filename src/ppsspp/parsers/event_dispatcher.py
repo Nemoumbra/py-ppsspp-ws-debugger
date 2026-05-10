@@ -6,6 +6,7 @@ from ppsspp.model.events.error_event import ErrorEvent, kErrorEvent
 
 from adaptix import Retort
 
+
 class EventDispatcher:
     def __init__(self, event_lookup_table: dict[str, BaseEventParser]):
         self._event_lookup_table = event_lookup_table

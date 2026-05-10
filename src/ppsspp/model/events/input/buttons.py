@@ -9,9 +9,11 @@ class InputButtonsEvent(BaseEvent):
     buttons: dict[str, bool]
     changed: dict[str, bool]
 
+
 @dataclass(kw_only=True)
 class InputButtonsSendEvent(BaseEvent):
     pass
+
 
 @dataclass(kw_only=True)
 class InputButtonsPressEvent(BaseEvent):

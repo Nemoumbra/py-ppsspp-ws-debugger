@@ -2,6 +2,7 @@
 from dataclasses import dataclass
 from .branches import BranchInfo
 
+
 @dataclass
 class DataSymbol:
     start: int

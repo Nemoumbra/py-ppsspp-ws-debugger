@@ -1,4 +1,3 @@
-
 import json
 
 import asyncio
@@ -60,6 +59,7 @@ async def populate_event_queue(queue: AsyncEventQueue, connection: AsyncPpssppCo
         #     print(data)
     pass
 
+
 async def process_events(queue: AsyncEventQueue, event_handler_man: AsyncEventHandlerManager):
     async with asyncio.TaskGroup() as tg:
         while True:
@@ -73,6 +73,7 @@ async def process_events(queue: AsyncEventQueue, event_handler_man: AsyncEventHa
                 print("Process events error:", e)
                 continue
     pass
+
 
 class AsyncSession:
     @staticmethod
@@ -158,24 +159,28 @@ class AsyncSession:
         def decorator(handler_func: AsyncEventHandler):
             self._event_handler_man.subscribe_log(handler_func)
             return handler_func
+
         return decorator
 
     def stepping_handler(self):
         def decorator(handler_func: AsyncEventHandler):
             self._event_handler_man.subscribe_stepping(handler_func)
             return handler_func
+
         return decorator
 
     def game_handler(self):
         def decorator(handler_func: AsyncEventHandler):
             self._event_handler_man.subscribe_game(handler_func)
             return handler_func
+
         return decorator
 
     def input_handler(self):
         def decorator(handler_func: AsyncEventHandler):
             self._event_handler_man.subscribe_input(handler_func)
             return handler_func
+
         return decorator
 
     async def send_request(self, request: PPSSPPRequest, handler: AsyncEventHandler | None = None):
@@ -214,6 +219,7 @@ class AsyncSession:
         """
         ppsspp_responded = asyncio.Event()
         result: BaseEvent
+
         async def handler(event: BaseEvent):
             nonlocal result, ppsspp_responded
             result = event

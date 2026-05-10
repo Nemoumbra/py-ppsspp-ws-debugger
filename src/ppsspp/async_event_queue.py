@@ -3,6 +3,7 @@ from asyncio.queues import Queue, QueueEmpty
 from ppsspp.model.events.base_event import BaseEvent
 from ppsspp.exceptions.queue_closed_error import QueueClosedError
 
+
 class AsyncEventQueue:
     """
     Multi-producer, single-consumer unbounded async queue for PPSSPP events.

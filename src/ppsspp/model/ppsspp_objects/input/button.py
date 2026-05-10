@@ -27,4 +27,3 @@ class Button(Enum):
     forward = auto()
     back = auto()
     playpause = auto()
-

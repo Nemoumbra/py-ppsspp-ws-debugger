@@ -4,6 +4,7 @@ from ppsspp.model.events.other.broadcast_config import (
     BroadcastConfigGetEvent, BroadcastConfigSetEvent
 )
 
+
 class BroadcastConfigEventParser(BaseEventParser):
     def __init__(self):
         lookup_table = {

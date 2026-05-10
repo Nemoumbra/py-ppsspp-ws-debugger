@@ -54,6 +54,7 @@ def populate_event_queue(queue: EventQueue, connection: PpssppConnection, dispat
         #     print(data)
     pass
 
+
 def process_events(queue: EventQueue, event_handler_man: SyncEventHandlerManager):
     while True:
         try:
@@ -66,6 +67,7 @@ def process_events(queue: EventQueue, event_handler_man: SyncEventHandlerManager
             print("Process events error:", e)
             continue
     pass
+
 
 class Session:
     @staticmethod

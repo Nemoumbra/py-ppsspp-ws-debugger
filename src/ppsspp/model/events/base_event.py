@@ -6,4 +6,3 @@ from dataclasses import dataclass
 class BaseEvent:
     event: str
     ticket: str | None = None
-
