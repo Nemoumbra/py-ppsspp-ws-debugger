@@ -12,7 +12,9 @@ from ppsspp.ticket_manager import TicketManager
 
 
 EventHandler = Callable[[BaseEvent], None]
-AsyncEventHandler = Callable[[BaseEvent], Awaitable]
+
+# Return True from the handler to remove it from the list of handlers
+AsyncEventHandler = Callable[[BaseEvent], Awaitable[bool | None]]
 
 
 class SyncEventHandlerManager:

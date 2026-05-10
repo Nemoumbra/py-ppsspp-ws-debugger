@@ -95,7 +95,7 @@ There is also a second argument, defaulting to `None`, which is a response handl
 If a handler is provided and request contains a ticket, schedules the handler once PPSSPP echoes the same ticket in one of the events.
 If a handler is provided with no ticket, the session generates a ticket automatically.
 ```py
-AsyncEventHandler = Callable[[BaseEvent], Awaitable]
+AsyncEventHandler = Callable[[BaseEvent], Awaitable[bool | None]]
 ```
 The mid-level API is `await session.execute_unchecked(request)`. This returns the event sent in response to your request (maybe `ErrorEvent`).
 > [!WARNING]
@@ -126,8 +126,18 @@ async def log_broadcast(event: BaseEvent):
     print(f"{event.timestamp}: {event.message}")
 ```
 
-TODO: another API for subscribing to exact events and a possibility to unsubscribe.
-Because there's also a GPU feed mode in PPSSPP which we don't support yet.
-
+Lastly, there are events which are broadcast by PPSSPP as a feed response to a request. So far the only instance of this
+behavior is the `gpu.stats.feed` request. To support this and also give you more control over how to handle
+events in general, there is one last decorator: `session.listen_for(target)`
+```py
+@session.listen_for(GpuStatsGetEvent)
+async def listener(event: BaseEvent):
+    assert isinstance(event, GpuStatsGetEvent)
+    report_stats(event)
+```
+Pass `None` for the target to install a so-called promiscuous listener that will be shown ALL events coming from PPSSPP.
+> [!TIP]
+> Return `True` from any handler to remove it from the list of handlers.
+> This is not necessary for the ticket subscribers as they get removed automatically once PPSSPP answers.
 ## Contributing
 PRs and Issues are always welcome!
