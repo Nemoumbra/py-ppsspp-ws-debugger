@@ -4,13 +4,18 @@ This library provides low- and middle-level primitives for interacting with PPSS
 *Note: the project is in its alpha stage.*
 
 ## Installation
-Right now there's no distribution available at pypi.org, so you'll have to install it from here.
-Either `pip install git+https://github.com/Nemoumbra/py-ppsspp-ws-debugger.git@master`
-(pip is smart enough to install from GitHub) or clone the repository and do a local installation.
+Right now there's no distribution available at pypi.org, so you'll have to install it from here:
+```
+pip install git+https://github.com/Nemoumbra/py-ppsspp-ws-debugger.git@master
+```
+Pip is smart enough to install from GitHub. Alternatively, you can clone the repository and do a local installation.
 This package is using `setuptools` so make sure it's present and not too old.
 
 ---
-If your PyCharm is struggling with the package installed as editable, try reinstalling with this command instead: `pip install -e /path/to/cloned/repo --config-settings editable_mode=compat`.
+If your PyCharm is struggling with the package installed as editable, try reinstalling with this command instead:
+```
+pip install -e /path/to/cloned/repo --config-settings editable_mode=compat
+```
 
 ## PPSSPP API
 The only documentation available is located in comments in PPSSPP's source code.
