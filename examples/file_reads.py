@@ -5,17 +5,17 @@ from typing import cast, Awaitable, Coroutine
 from logging import getLogger
 import asyncio
 
-from src.ppsspp.async_connection import AsyncPpssppConnection
-from src.ppsspp.async_session import AsyncSession
-from src.ppsspp.exceptions.request_failed_error import RequestFailedError
-from src.ppsspp.model.events.base_event import BaseEvent
-from src.ppsspp.model.events.cpu.common import CpuSteppingEvent
-from src.ppsspp.model.events.cpu.registers import CpuGetRegEvent
-from src.ppsspp.model.events.error_event import ErrorEvent
-from src.ppsspp.model.events.hle.func import HleFuncListEvent
-from src.ppsspp.model.events.memory.common import MemoryReadStringUtf8Event, MemoryReadU32Event
-from src.ppsspp.model.ppsspp_objects.hle.function_symbol import FunctionSymbolInfo
-from src.ppsspp.ppsspp_request import PPSSPPRequest
+from ppsspp.async_connection import AsyncPpssppConnection
+from ppsspp.async_session import AsyncSession
+from ppsspp.exceptions.request_failed_error import RequestFailedError
+from ppsspp.model.events.base_event import BaseEvent
+from ppsspp.model.events.cpu.common import CpuSteppingEvent
+from ppsspp.model.events.cpu.registers import CpuGetRegEvent
+from ppsspp.model.events.error_event import ErrorEvent
+from ppsspp.model.events.hle.func import HleFuncListEvent
+from ppsspp.model.events.memory.common import MemoryReadStringUtf8Event, MemoryReadU32Event
+from ppsspp.model.ppsspp_objects.hle.function_symbol import FunctionSymbolInfo
+from ppsspp.ppsspp_request import PPSSPPRequest
 
 
 logger = getLogger("ppsspp.file_manager")
@@ -860,7 +860,8 @@ class Debugger:
 async def main():
     debugger = Debugger()
 
-    uri = "ws://192.168.1.134:55488/debugger"
+    # uri = "ws://192.168.1.134:55488/debugger"
+    uri = "ws://127.0.0.1:55488/debugger"
     await debugger.run(uri)
 
     print("The debugger is stopped!")
