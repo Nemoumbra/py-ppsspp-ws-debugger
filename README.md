@@ -69,7 +69,36 @@ async def on_disconnected(conn: AsyncPpssppConnection):
     except:
         return False
 ```
-The connection has some public fields which are used to get the detailed info on the disconnect reasons. TODO: finalize the API.
+The handler may be called multiple times: once for every `send` or `recv` operation currently scheduled.
+If you wish to make sure the handler's code is only executed by one task/coroutine at a time, use `asyncio.Lock`.
+Furthermore, if the connection is reestablished, the pending failed operations may still invoke the handler (because of asyncio).
+This problem of spurious disconnects can be solved by checking that `conn.close_info` is not `None` before doing anything.
+
+If `close_info` is not `None`, it contains the `ConnectionClosed` exception from `websockets`.
+Refer to their [documentation](https://websockets.readthedocs.io/en/stable/reference/exceptions.html#websockets.exceptions.ConnectionClosed) for details.
+The field `conn.closed_ok` reports whether the connection has ended normally or due to an error.
+```py
+uri = ...
+lock = asyncio.Lock()
+first_time = True
+
+@connection.on_disconnected
+async def on_disconnected(conn: AsyncPpssppConnection):
+    nonlocal lock, first_time
+    async with lock:
+        if conn.close_info is None:
+            # Must've been the wind
+            return True
+
+        print(f"We disconnected: {conn.closed_ok=}, {conn.close_info=}")
+
+        if first_time:
+            first_time = False
+            await conn.connect(uri)
+            print("Reconnected!")
+            return True
+        return False
+```
 
 ### AsyncSession
 This is the actual facade you have to use for communicating with PPSSPP. Create an instance, then await a call to `run(connection)`.
