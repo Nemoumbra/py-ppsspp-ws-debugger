@@ -205,6 +205,8 @@ class AsyncSession:
         the same ticket in its response. If handler is provided with no ticket, generates a ticket automatically.
 
         Never provide a ticket without the handler!
+
+        May raise ``ConnectionTerminated``.
         :param request: the request
         :param handler: optional handler to be called once PPSSPP responds to this request
         :return: None
@@ -229,6 +231,7 @@ class AsyncSession:
 
         Warning! PPSSPP may not respond to certain events at all! This may cause ``execute_unchecked`` to never return!
 
+        May raise ``ConnectionTerminated``.
         :param request: the request
         :return: the event returned by PPSSPP
         """
@@ -251,6 +254,7 @@ class AsyncSession:
 
         Warning! PPSSPP may not respond to certain events at all! This may cause ``execute`` to never return!
 
+        May raise ``ConnectionTerminated``.
         :param request: the request
         :return: the event returned by PPSSPP
         """

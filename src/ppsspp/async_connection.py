@@ -2,7 +2,7 @@ import json
 from typing import Callable, Awaitable
 
 import websockets
-from websockets import ConnectionClosedOK, ConnectionClosedError
+from websockets import ConnectionClosedOK, ConnectionClosedError, ConnectionClosed
 from websockets.asyncio.client import ClientConnection
 
 from ppsspp.exceptions.connection_terminated import ConnectionTerminated
@@ -19,8 +19,7 @@ class AsyncPpssppConnection:
     def __init__(self):
         self._ws: ClientConnection | None = None
         self.closed_ok = True
-        self.closed_code: int | None = None
-        self.closed_reason: str | None = None
+        self.close_info: ConnectionClosed | None = None
 
         self._on_disconnected: AsyncOnDisconnectedHandler = _default_on_disconnect_handler
 
@@ -31,6 +30,8 @@ class AsyncPpssppConnection:
         :return: None
         """
         self._ws = await websockets.connect(uri, max_size=None)
+        # I surely hope that no one can recv or send between these 2 lines.
+        self.close_info = None
 
     def set_disconnected_handler(self, handler: AsyncOnDisconnectedHandler):
         self._on_disconnected = handler
@@ -49,20 +50,13 @@ class AsyncPpssppConnection:
             try:
                 return await action()
 
-            # TODO: actually look into 'e.sent', 'e.rcvd' and 'e.rcvd_then_sent' instead of ws properties
-            # The latter seemingly corresponds to the reader's (client's) perspective, which may be misleading.
-            # Like if the app sends the close frame first, then the server sends EOF and the event loop
-            # registers this as "connection closed" and tells that to the websocket => you get ABNORMAL_CLOSURE.
-            except ConnectionClosedOK as e:
-                self.closed_ok = True
-                self.closed_code = self._ws.close_code
-                self.closed_reason = self._ws.close_reason
-                if not await self._on_disconnected(self):
-                    raise ConnectionTerminated from None
-            except ConnectionClosedError as e:
-                self.closed_ok = False
-                self.closed_code = self._ws.close_code
-                self.closed_reason = self._ws.close_reason
+            # Using the properties 'close_code' or 'close_reason' is bad practice: it corresponds to the reader's
+            # (client's) perspective, which may be misleading. Like if the app sends the close frame first,
+            # then the server sends EOF and the event loop registers this as "connection closed" and
+            # tells that to the websocket => you get ABNORMAL_CLOSURE.
+            except ConnectionClosed as e:
+                self.closed_ok = isinstance(e, ConnectionClosedOK)
+                self.close_info = e
                 if not await self._on_disconnected(self):
                     raise ConnectionTerminated from None
 
