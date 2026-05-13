@@ -3,39 +3,76 @@ import json
 from adaptix import Retort, name_mapping, NameStyle, dumper, Chain
 
 from ppsspp.model.requests.base_request import BaseRequest
-from ppsspp.model.requests.breakpoints.cpu import CpuBreakpointAddRequest, CpuBreakpointUpdateRequest, \
-    CpuBreakpointRemoveRequest, CpuBreakpointListRequest
-from ppsspp.model.requests.breakpoints.memory import MemoryBreakpointAddRequest, MemoryBreakpointUpdateRequest, \
-    MemoryBreakpointRemoveRequest, MemoryBreakpointListRequest
-from ppsspp.model.requests.cpu.common import CpuSteppingRequest, CpuResumeRequest, CpuStatusRequest, CpuEvaluateRequest
-from ppsspp.model.requests.cpu.debugging import CpuStepIntoRequest, CpuStepOverRequest, CpuStepOutRequest, \
-    CpuRunUntilRequest, CpuNextHleRequest
-from ppsspp.model.requests.cpu.registers import CpuGetAllRegsRequest, CpuGetRegRequest, CpuGetRegByNameRequest, \
-    CpuGetRegByIdxAndCategoryRequest, CpuSetRegRequest, CpuSetRegByNameRequest, CpuSetRegByIdxAndCategoryRequest
-from ppsspp.model.requests.disassembly.common import MemoryBaseRequest, MemoryDisasmRequest, MemoryDisasmByCountRequest, \
-    MemoryDisasmByEndAddrRequest, MemorySearchDisasmRequest, MemoryAssembleRequest
-from ppsspp.model.requests.game.common import GameResetRequest, GameStatusRequest
-from ppsspp.model.requests.gpu.buffer import GpuBufferScreenshotRequest, GpuBufferRenderColorRequest, \
-    GpuBufferRenderDepthRequest, GpuBufferRenderStencilRequest, GpuBufferTextureRequest, GpuBufferClutRequest
-from ppsspp.model.requests.gpu.common import GpuRecordDumpRequest, GpuStatsGetRequest, GpuStatsFeedRequest
-from ppsspp.model.requests.hle.common import HleModuleListRequest, HleBacktraceRequest
-from ppsspp.model.requests.hle.func import HleFuncListRequest, HleFuncAddRequest, HleFuncRemoveRequest, \
-    HleFuncRemoveRangeRequest, HleFuncRenameRequest, HleFuncScanRequest
-from ppsspp.model.requests.hle.thread import HleThreadListRequest, HleThreadWakeRequest, HleThreadStopRequest
-from ppsspp.model.requests.input.analog import InputAnalogSendRequest
-from ppsspp.model.requests.input.buttons import InputButtonsSendRequest, InputButtonsPressRequest
-from ppsspp.model.requests.memory.common import MemoryReadU8Request, MemoryReadU16Request, MemoryReadU32Request, \
-    MemoryReadRequest, MemoryReadStringRequest, MemoryWriteU8Request, MemoryWriteU16Request, MemoryWriteU32Request, \
-    MemoryWriteRequest
-from ppsspp.model.requests.memory.memory_info import MemoryMappingRequest, MemoryInfoConfigRequest, \
-    MemoryInfoSetRequest, MemoryInfoListRequest, MemoryInfoSearchRequest
-from ppsspp.model.requests.other.broadcast_config import BroadcastConfigSetRequest, BroadcastConfigGetRequest
-from ppsspp.model.requests.other.version import VersionRequest
-from ppsspp.model.requests.replay.common import ReplayBeginRequest, ReplayAbortRequest, ReplayFlushRequest, \
-    ReplayStatusRequest, ReplayExecuteRequest
-from ppsspp.model.requests.replay.time import ReplayTimeGetRequest, ReplayTimeSetRequest
 
-from ppsspp.requests.base_request_builder import BaseRequestBuilder
+from ppsspp.model.requests.breakpoints.cpu import (
+    CpuBreakpointAddRequest, CpuBreakpointUpdateRequest, CpuBreakpointRemoveRequest, CpuBreakpointListRequest
+)
+from ppsspp.model.requests.breakpoints.memory import (
+    MemoryBreakpointAddRequest, MemoryBreakpointUpdateRequest, MemoryBreakpointRemoveRequest,
+    MemoryBreakpointListRequest
+)
+from ppsspp.model.requests.cpu.common import (
+    CpuSteppingRequest, CpuResumeRequest, CpuStatusRequest, CpuEvaluateRequest
+)
+from ppsspp.model.requests.cpu.debugging import (
+    CpuStepIntoRequest, CpuStepOverRequest, CpuStepOutRequest, CpuRunUntilRequest, CpuNextHleRequest
+)
+from ppsspp.model.requests.cpu.registers import (
+    CpuGetAllRegsRequest, CpuGetRegRequest, CpuGetRegByNameRequest, CpuGetRegByIdxAndCategoryRequest,
+    CpuSetRegRequest, CpuSetRegByNameRequest, CpuSetRegByIdxAndCategoryRequest
+)
+from ppsspp.model.requests.disassembly.common import (
+    MemoryBaseRequest, MemoryDisasmRequest, MemoryDisasmByCountRequest, MemoryDisasmByEndAddrRequest,
+    MemorySearchDisasmRequest, MemoryAssembleRequest
+)
+from ppsspp.model.requests.game.common import (
+    GameResetRequest, GameStatusRequest
+)
+from ppsspp.model.requests.gpu.buffer import (
+    GpuBufferScreenshotRequest, GpuBufferRenderColorRequest, GpuBufferRenderDepthRequest,
+    GpuBufferRenderStencilRequest, GpuBufferTextureRequest, GpuBufferClutRequest
+)
+from ppsspp.model.requests.gpu.common import (
+    GpuRecordDumpRequest, GpuStatsGetRequest, GpuStatsFeedRequest
+)
+from ppsspp.model.requests.hle.common import (
+    HleModuleListRequest, HleBacktraceRequest
+)
+from ppsspp.model.requests.hle.func import (
+    HleFuncListRequest, HleFuncAddRequest, HleFuncRemoveRequest, HleFuncRemoveRangeRequest,
+    HleFuncRenameRequest, HleFuncScanRequest
+)
+from ppsspp.model.requests.hle.thread import (
+    HleThreadListRequest, HleThreadWakeRequest, HleThreadStopRequest
+)
+from ppsspp.model.requests.input.analog import (
+    InputAnalogSendRequest
+)
+from ppsspp.model.requests.input.buttons import (
+    InputButtonsSendRequest, InputButtonsPressRequest
+)
+from ppsspp.model.requests.memory.common import (
+    MemoryReadU8Request, MemoryReadU16Request, MemoryReadU32Request, MemoryReadRequest,
+    MemoryReadStringRequest, MemoryWriteU8Request, MemoryWriteU16Request, MemoryWriteU32Request,
+    MemoryWriteRequest
+)
+from ppsspp.model.requests.memory.memory_info import (
+    MemoryMappingRequest, MemoryInfoConfigRequest, MemoryInfoSetRequest,
+    MemoryInfoListRequest, MemoryInfoSearchRequest
+)
+from ppsspp.model.requests.other.broadcast_config import (
+    BroadcastConfigSetRequest, BroadcastConfigGetRequest
+)
+from ppsspp.model.requests.other.version import (
+    VersionRequest
+)
+from ppsspp.model.requests.replay.common import (
+    ReplayBeginRequest, ReplayAbortRequest, ReplayFlushRequest, ReplayStatusRequest, ReplayExecuteRequest
+)
+from ppsspp.model.requests.replay.time import (
+    ReplayTimeGetRequest, ReplayTimeSetRequest
+)
+
 from ppsspp.exceptions.request_build_error import RequestBuildError
 
 
@@ -146,6 +183,7 @@ def _make_retort():
 
     return retort
 
+
 class RequestDispatcher:
     def __init__(self):
         self._retort = _make_retort()
@@ -153,4 +191,3 @@ class RequestDispatcher:
     def make_request(self, request: BaseRequest) -> str:
         raw = self._retort.dump(request)
         return json.dumps(raw)
-

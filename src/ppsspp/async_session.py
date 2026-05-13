@@ -93,13 +93,6 @@ class AsyncSession:
             "version": VersionEventParser(),
         }
 
-    # @staticmethod
-    # def _init_builders():
-    #     return {
-    #         "version": VersionRequestBuilder(),
-    #         "input": InputRequestBuilder(),
-    #     }
-
     def __init__(self):
         self._event_queue: AsyncEventQueue = AsyncEventQueue()
         self._ticket_man: TicketManager = TicketManager(0x8)
@@ -108,8 +101,7 @@ class AsyncSession:
         event_lookup_table = self._init_parsers()
         self._event_dispatcher: EventDispatcher = EventDispatcher(event_lookup_table)
 
-        # request_lookup_table = self._init_builders()
-        # self._request_dispatcher: RequestDispatcher = RequestDispatcher(request_lookup_table)
+        self._request_dispatcher: RequestDispatcher = RequestDispatcher()
 
         self.producer_task: Task | None = None
         self.consumer_task: Task | None = None
