@@ -1,18 +1,20 @@
 from dataclasses import dataclass
 
+from ppsspp.model.requests.base_request import BaseRequest
+
 
 @dataclass(kw_only=True)
-class MemoryMappingRequest:
+class MemoryMappingRequest(BaseRequest):
     pass
 
 
 @dataclass(kw_only=True)
-class MemoryInfoConfigRequest:
+class MemoryInfoConfigRequest(BaseRequest):
     detailed: bool | None = None
 
 
 @dataclass(kw_only=True)
-class MemoryInfoSetRequest:
+class MemoryInfoSetRequest(BaseRequest):
     address: int
     size: int
     # How do we fix the values?
@@ -22,7 +24,7 @@ class MemoryInfoSetRequest:
 
 
 @dataclass(kw_only=True)
-class MemoryInfoListRequest:
+class MemoryInfoListRequest(BaseRequest):
     address: int
     size: int
     # How do we fix the values?
@@ -30,7 +32,7 @@ class MemoryInfoListRequest:
 
 
 @dataclass(kw_only=True)
-class MemoryInfoSearchRequest:
+class MemoryInfoSearchRequest(BaseRequest):
     address: int | None = None
     end: int | None = None
     match: str

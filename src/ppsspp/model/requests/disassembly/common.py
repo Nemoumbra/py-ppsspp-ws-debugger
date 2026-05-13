@@ -1,14 +1,16 @@
 from dataclasses import dataclass
 
+from ppsspp.model.requests.base_request import BaseRequest
+
 
 @dataclass(kw_only=True)
-class MemoryBaseRequest:
+class MemoryBaseRequest(BaseRequest):
     pass
 
 
 # The most generic form
 @dataclass(kw_only=True)
-class MemoryDisasmRequest:
+class MemoryDisasmRequest(BaseRequest):
     thread: int | None = None
     address: int
     count: int | None = None
@@ -17,7 +19,7 @@ class MemoryDisasmRequest:
 
 
 @dataclass(kw_only=True)
-class MemoryDisasmByCountRequest:
+class MemoryDisasmByCountRequest(BaseRequest):
     thread: int | None = None
     address: int
     count: int
@@ -25,7 +27,7 @@ class MemoryDisasmByCountRequest:
 
 
 @dataclass(kw_only=True)
-class MemoryDisasmByEndAddrRequest:
+class MemoryDisasmByEndAddrRequest(BaseRequest):
     thread: int | None = None
     address: int
     end: int
@@ -33,7 +35,7 @@ class MemoryDisasmByEndAddrRequest:
 
 
 @dataclass(kw_only=True)
-class MemorySearchDisasmRequest:
+class MemorySearchDisasmRequest(BaseRequest):
     thread: int | None = None
     address: int
     end: int | None = None
@@ -42,6 +44,6 @@ class MemorySearchDisasmRequest:
 
 
 @dataclass(kw_only=True)
-class MemoryAssembleRequest:
+class MemoryAssembleRequest(BaseRequest):
     address: int
     code: str

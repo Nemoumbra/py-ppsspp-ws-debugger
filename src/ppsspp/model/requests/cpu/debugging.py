@@ -1,26 +1,28 @@
 from dataclasses import dataclass
 
+from ppsspp.model.requests.base_request import BaseRequest
+
 
 @dataclass(kw_only=True)
-class CpuStepIntoRequest:
+class CpuStepIntoRequest(BaseRequest):
     thread: int | None = None
 
 
 @dataclass(kw_only=True)
-class CpuStepOverRequest:
+class CpuStepOverRequest(BaseRequest):
     thread: int | None = None
 
 
 @dataclass(kw_only=True)
-class CpuStepOutRequest:
+class CpuStepOutRequest(BaseRequest):
     thread: int | None = None
 
 
 @dataclass(kw_only=True)
-class CpuRunUntilRequest:
+class CpuRunUntilRequest(BaseRequest):
     address: int
 
 
 @dataclass(kw_only=True)
-class CpuNextHleRequest:
+class CpuNextHleRequest(BaseRequest):
     pass

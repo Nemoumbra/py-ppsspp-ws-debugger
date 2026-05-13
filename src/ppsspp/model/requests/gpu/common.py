@@ -1,16 +1,18 @@
 from dataclasses import dataclass
 
+from ppsspp.model.requests.base_request import BaseRequest
+
 
 @dataclass(kw_only=True)
-class GpuRecordDumpRequest:
+class GpuRecordDumpRequest(BaseRequest):
     pass
 
 
 @dataclass(kw_only=True)
-class GpuStatsGetRequest:
+class GpuStatsGetRequest(BaseRequest):
     pass
 
 
 @dataclass(kw_only=True)
-class GpuStatsFeedRequest:
+class GpuStatsFeedRequest(BaseRequest):
     enable: bool | None = None

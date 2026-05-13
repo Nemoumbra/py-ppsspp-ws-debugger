@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 
+from ppsspp.model.requests.base_request import BaseRequest
+
 
 @dataclass(kw_only=True)
-class CpuBreakpointAddRequest:
+class CpuBreakpointAddRequest(BaseRequest):
     address: int
     enabled: bool | None = None
     log: bool | None = None
@@ -11,7 +13,7 @@ class CpuBreakpointAddRequest:
 
 
 @dataclass(kw_only=True)
-class CpuBreakpointUpdateRequest:
+class CpuBreakpointUpdateRequest(BaseRequest):
     address: int
     enabled: bool | None = None
     log: bool | None = None
@@ -20,10 +22,10 @@ class CpuBreakpointUpdateRequest:
 
 
 @dataclass(kw_only=True)
-class CpuBreakpointRemoveRequest:
+class CpuBreakpointRemoveRequest(BaseRequest):
     address: int
 
 
 @dataclass(kw_only=True)
-class CpuBreakpointListRequest:
+class CpuBreakpointListRequest(BaseRequest):
     pass

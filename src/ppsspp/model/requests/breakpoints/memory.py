@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 
+from ppsspp.model.requests.base_request import BaseRequest
+
 
 @dataclass(kw_only=True)
-class MemoryBreakpointAddRequest:
+class MemoryBreakpointAddRequest(BaseRequest):
     address: int
     size: int
     enabled: bool | None = None
@@ -15,7 +17,7 @@ class MemoryBreakpointAddRequest:
 
 
 @dataclass(kw_only=True)
-class MemoryBreakpointUpdateRequest:
+class MemoryBreakpointUpdateRequest(BaseRequest):
     address: int
     size: int
     enabled: bool | None = None
@@ -28,11 +30,11 @@ class MemoryBreakpointUpdateRequest:
 
 
 @dataclass(kw_only=True)
-class MemoryBreakpointRemoveRequest:
+class MemoryBreakpointRemoveRequest(BaseRequest):
     address: int
     size: int
 
 
 @dataclass(kw_only=True)
-class MemoryBreakpointListRequest:
+class MemoryBreakpointListRequest(BaseRequest):
     pass

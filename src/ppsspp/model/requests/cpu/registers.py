@@ -1,14 +1,16 @@
 from dataclasses import dataclass
 
+from ppsspp.model.requests.base_request import BaseRequest
+
 
 @dataclass(kw_only=True)
-class CpuGetAllRegsRequest:
+class CpuGetAllRegsRequest(BaseRequest):
     thread: int | None = None
 
 
 # The most generic form
 @dataclass(kw_only=True)
-class CpuGetRegRequest:
+class CpuGetRegRequest(BaseRequest):
     thread: int | None = None
     name: str | None = None
     category: int | None = None
@@ -16,13 +18,13 @@ class CpuGetRegRequest:
 
 
 @dataclass(kw_only=True)
-class CpuGetRegByNameRequest:
+class CpuGetRegByNameRequest(BaseRequest):
     thread: int | None = None
     name: str
 
 
 @dataclass(kw_only=True)
-class CpuGetRegByIdxAndCategoryRequest:
+class CpuGetRegByIdxAndCategoryRequest(BaseRequest):
     thread: int | None = None
     category: int
     register: int
@@ -30,7 +32,7 @@ class CpuGetRegByIdxAndCategoryRequest:
 
 # The most generic form
 @dataclass(kw_only=True)
-class CpuSetRegRequest:
+class CpuSetRegRequest(BaseRequest):
     thread: int | None = None
     name: str | None = None
     category: int | None = None
@@ -39,14 +41,14 @@ class CpuSetRegRequest:
 
 
 @dataclass(kw_only=True)
-class CpuSetRegByNameRequest:
+class CpuSetRegByNameRequest(BaseRequest):
     thread: int | None = None
     name: str
     value: int | str
 
 
 @dataclass(kw_only=True)
-class CpuSetRegByIdxAndCategoryRequest:
+class CpuSetRegByIdxAndCategoryRequest(BaseRequest):
     thread: int | None = None
     category: int
     register: int

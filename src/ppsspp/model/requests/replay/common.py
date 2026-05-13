@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from ppsspp.model.requests.base_request import BaseRequest
+
 
 @dataclass(kw_only=True)
 class ReplayBeginRequest:
@@ -12,16 +14,16 @@ class ReplayAbortRequest:
 
 
 @dataclass(kw_only=True)
-class ReplayFlushRequest:
+class ReplayFlushRequest(BaseRequest):
     pass
 
 
 @dataclass(kw_only=True)
-class ReplayExecuteRequest:
+class ReplayExecuteRequest(BaseRequest):
     version: int
     base64: str
 
 
 @dataclass(kw_only=True)
-class ReplayStatusRequest:
+class ReplayStatusRequest(BaseRequest):
     pass
