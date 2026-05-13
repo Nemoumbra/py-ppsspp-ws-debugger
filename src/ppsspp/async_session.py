@@ -4,11 +4,16 @@ import asyncio
 from asyncio.tasks import Task
 from logging import getLogger
 
+# from adaptix import Omitted
+
 from ppsspp.async_connection import AsyncPpssppConnection
 from ppsspp.exceptions.connection_terminated import ConnectionTerminated
 from ppsspp.exceptions.request_failed_error import RequestFailedError
 from ppsspp.model.events.base_event import BaseEvent
 from ppsspp.model.events.error_event import ErrorEvent
+
+from ppsspp.model.requests.base_request import BaseRequest
+from ppsspp.ppsspp_request import PPSSPPRequest
 
 from ppsspp.parsers.detailed_parsers.broadcast_config import BroadcastConfigEventParser
 from ppsspp.parsers.detailed_parsers.cpu import CPUEventParser
@@ -20,8 +25,6 @@ from ppsspp.parsers.detailed_parsers.log import LogEventParser
 from ppsspp.parsers.detailed_parsers.memory import MemoryEventParser
 from ppsspp.parsers.detailed_parsers.replay import ReplayEventParser
 from ppsspp.parsers.detailed_parsers.version import VersionEventParser
-
-from ppsspp.ppsspp_request import PPSSPPRequest
 
 from ppsspp.ticket_manager import TicketManager
 from ppsspp.event_handler_manager import AsyncEventHandlerManager, AsyncEventHandler
@@ -255,6 +258,72 @@ class AsyncSession:
         :return: the event returned by PPSSPP
         """
         result = await self.execute_unchecked_raw(request)
+        if isinstance(result, ErrorEvent):
+            raise RequestFailedError(result, request)
+        return result
+
+    async def send_request(self, request: BaseRequest, handler: AsyncEventHandler | None = None):
+        """
+        The mid-level API for sending requests to PPSSPP.
+        If handler is provided and request contains a ticket, schedules the handler once PPSSPP echoes
+        the same ticket in its response. If handler is provided with no ticket, generates a ticket automatically.
+
+        Never provide a ticket without the handler!
+
+        May raise ``ConnectionTerminated``.
+        :param request: the request
+        :param handler: optional handler to be called once PPSSPP responds to this request
+        :return: None
+        """
+        if handler is None:
+            assert request.ticket is None
+        else:
+            ticket = request.ticket
+            if ticket is None:
+                ticket = self._ticket_man.get_ticket()
+                request.ticket = ticket
+            else:
+                self._ticket_man.add_custom_ticket(ticket)
+
+            self._event_handler_man.subscribe(ticket, handler)
+
+        raw = self._request_dispatcher.make_request(request)
+        await self._connection.send(raw)
+
+    async def execute_unchecked(self, request: BaseRequest) -> BaseEvent:
+        """
+        The high-level API for executing the remote PPSSPP requests and acquiring the result.
+
+        Warning! PPSSPP may not respond to certain events at all! This may cause ``execute_unchecked`` to never return!
+
+        May raise ``ConnectionTerminated``.
+        :param request: the request
+        :return: the event returned by PPSSPP
+        """
+        ppsspp_responded = asyncio.Event()
+        result: BaseEvent
+
+        async def handler(event: BaseEvent):
+            nonlocal result, ppsspp_responded
+            result = event
+            ppsspp_responded.set()
+
+        await self.send_request(request, handler)
+        await ppsspp_responded.wait()
+        return result
+
+    async def execute(self, request: BaseRequest) -> BaseEvent:
+        """
+        The high-level API for executing the remote PPSSPP requests and acquiring the result.
+        If PPSSPP responds with the ``ErrorEvent``, ``RequestFailedError`` is raised.
+
+        Warning! PPSSPP may not respond to certain events at all! This may cause ``execute`` to never return!
+
+        May raise ``ConnectionTerminated``.
+        :param request: the request
+        :return: the event returned by PPSSPP
+        """
+        result = await self.execute_unchecked(request)
         if isinstance(result, ErrorEvent):
             raise RequestFailedError(result, request)
         return result
