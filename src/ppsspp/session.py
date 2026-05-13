@@ -17,8 +17,6 @@ from ppsspp.parsers.detailed_parsers.replay import ReplayEventParser
 from ppsspp.parsers.detailed_parsers.version import VersionEventParser
 
 from ppsspp.ppsspp_request import PPSSPPRequest
-from ppsspp.requests.request_builders.input.input_request_builder import InputRequestBuilder
-from ppsspp.requests.request_builders.version.version_request_builder import VersionRequestBuilder
 
 from ppsspp.ticket_manager import TicketManager
 from ppsspp.event_handler_manager import SyncEventHandlerManager, EventHandler

@@ -2,12 +2,18 @@ import json
 
 import asyncio
 from asyncio.tasks import Task
+from logging import getLogger
+
+# from adaptix import Omitted
 
 from ppsspp.async_connection import AsyncPpssppConnection
 from ppsspp.exceptions.connection_terminated import ConnectionTerminated
 from ppsspp.exceptions.request_failed_error import RequestFailedError
 from ppsspp.model.events.base_event import BaseEvent
 from ppsspp.model.events.error_event import ErrorEvent
+
+from ppsspp.model.requests.base_request import BaseRequest
+from ppsspp.ppsspp_request import PPSSPPRequest
 
 from ppsspp.parsers.detailed_parsers.broadcast_config import BroadcastConfigEventParser
 from ppsspp.parsers.detailed_parsers.cpu import CPUEventParser
@@ -20,10 +26,6 @@ from ppsspp.parsers.detailed_parsers.memory import MemoryEventParser
 from ppsspp.parsers.detailed_parsers.replay import ReplayEventParser
 from ppsspp.parsers.detailed_parsers.version import VersionEventParser
 
-from ppsspp.ppsspp_request import PPSSPPRequest
-from ppsspp.requests.request_builders.input.input_request_builder import InputRequestBuilder
-from ppsspp.requests.request_builders.version.version_request_builder import VersionRequestBuilder
-
 from ppsspp.ticket_manager import TicketManager
 from ppsspp.event_handler_manager import AsyncEventHandlerManager, AsyncEventHandler
 from ppsspp.parsers.event_dispatcher import EventDispatcher
@@ -34,43 +36,46 @@ from ppsspp.async_event_queue import AsyncEventQueue
 from ppsspp.exceptions.queue_closed_error import QueueClosedError
 
 
+logger = getLogger("ppsspp.async_session")
+
+
 async def populate_event_queue(queue: AsyncEventQueue, connection: AsyncPpssppConnection, dispatcher: EventDispatcher):
     # TODO: error handling
+    logger.debug("'populate_event_queue' started!")
     while True:
         try:
             data = await connection.recv()
             if not isinstance(data, dict):
-                print(f"Something weird has happened: got '{data}' from async connection!")
+                logger.error(f"Something weird has happened: got '{data}' from async connection!")
                 continue
 
             event = dispatcher.parse_event(data)
             await queue.put(event)
         except json.JSONDecodeError as e:
-            print(e)
+            logger.error(e)
         except EventParseError as e:
-            print(e)
+            logger.error(e)
         except ConnectionTerminated:
-            # print("'populate_event_queue' returning...")
+            logger.debug("ConnectionTerminated, 'populate_event_queue' returning...")
             return
         except QueueClosedError:
-            # print("'populate_event_queue' returning...")
+            logger.debug("Queue closed, 'populate_event_queue' returning...")
             return
-        # except Exception as e:
-        #     print(data)
     pass
 
 
 async def process_events(queue: AsyncEventQueue, event_handler_man: AsyncEventHandlerManager):
+    logger.debug("'process_events' started!")
     async with asyncio.TaskGroup() as tg:
         while True:
             try:
                 event = await queue.get()
                 tg.create_task(event_handler_man.handle_event(event))
             except QueueClosedError:
-                # print("'process_events' returning...")
+                logger.debug("Queue closed, 'process_events' returning...")
                 return
             except Exception as e:
-                print("Process events error:", e)
+                logger.debug(f"Process events error: {e}")
                 continue
     pass
 
@@ -91,13 +96,6 @@ class AsyncSession:
             "version": VersionEventParser(),
         }
 
-    @staticmethod
-    def _init_builders():
-        return {
-            "version": VersionRequestBuilder(),
-            "input": InputRequestBuilder(),
-        }
-
     def __init__(self):
         self._event_queue: AsyncEventQueue = AsyncEventQueue()
         self._ticket_man: TicketManager = TicketManager(0x8)
@@ -106,8 +104,7 @@ class AsyncSession:
         event_lookup_table = self._init_parsers()
         self._event_dispatcher: EventDispatcher = EventDispatcher(event_lookup_table)
 
-        request_lookup_table = self._init_builders()
-        self._request_dispatcher: RequestDispatcher = RequestDispatcher(request_lookup_table)
+        self._request_dispatcher: RequestDispatcher = RequestDispatcher()
 
         self.producer_task: Task | None = None
         self.consumer_task: Task | None = None
@@ -146,10 +143,12 @@ class AsyncSession:
         await self._connection.close()
 
         # TODO
+        logger.debug("Waiting for producer to join...")
         await self.producer_task
-        # print("Producer joined!")
+        logger.debug("Producer joined!")
+        logger.debug("Waiting for consumer to join...")
         await self.consumer_task
-        # print("Consumer joined!")
+        logger.debug("Consumer joined!")
         self._event_handler_man.clear()
 
         self._connection = None
@@ -198,7 +197,7 @@ class AsyncSession:
 
         return decorator
 
-    async def send_request(self, request: PPSSPPRequest, handler: AsyncEventHandler | None = None):
+    async def send_request_raw(self, request: PPSSPPRequest, handler: AsyncEventHandler | None = None):
         """
         The low-level API for sending requests to PPSSPP.
         If handler is provided and request contains a ticket, schedules the handler once PPSSPP echoes
@@ -225,9 +224,75 @@ class AsyncSession:
 
         await self._connection.send(str(request))
 
-    async def execute_unchecked(self, request: PPSSPPRequest) -> BaseEvent:
+    async def execute_unchecked_raw(self, request: PPSSPPRequest) -> BaseEvent:
         """
         The mid-level API for executing the remote PPSSPP requests and acquiring the result.
+
+        Warning! PPSSPP may not respond to certain events at all! This may cause ``execute_unchecked_raw`` to never return!
+
+        May raise ``ConnectionTerminated``.
+        :param request: the request
+        :return: the event returned by PPSSPP
+        """
+        ppsspp_responded = asyncio.Event()
+        result: BaseEvent
+
+        async def handler(event: BaseEvent):
+            nonlocal result, ppsspp_responded
+            result = event
+            ppsspp_responded.set()
+
+        await self.send_request_raw(request, handler)
+        await ppsspp_responded.wait()
+        return result
+
+    async def execute_raw(self, request: PPSSPPRequest) -> BaseEvent:
+        """
+        The mid-level API for executing the remote PPSSPP requests and acquiring the result.
+        If PPSSPP responds with the ``ErrorEvent``, ``RequestFailedError`` is raised.
+
+        Warning! PPSSPP may not respond to certain events at all! This may cause ``execute_raw`` to never return!
+
+        May raise ``ConnectionTerminated``.
+        :param request: the request
+        :return: the event returned by PPSSPP
+        """
+        result = await self.execute_unchecked_raw(request)
+        if isinstance(result, ErrorEvent):
+            raise RequestFailedError(result, request)
+        return result
+
+    async def send_request(self, request: BaseRequest, handler: AsyncEventHandler | None = None):
+        """
+        The mid-level API for sending requests to PPSSPP.
+        If handler is provided and request contains a ticket, schedules the handler once PPSSPP echoes
+        the same ticket in its response. If handler is provided with no ticket, generates a ticket automatically.
+
+        Never provide a ticket without the handler!
+
+        May raise ``ConnectionTerminated``.
+        :param request: the request
+        :param handler: optional handler to be called once PPSSPP responds to this request
+        :return: None
+        """
+        if handler is None:
+            assert request.ticket is None
+        else:
+            ticket = request.ticket
+            if ticket is None:
+                ticket = self._ticket_man.get_ticket()
+                request.ticket = ticket
+            else:
+                self._ticket_man.add_custom_ticket(ticket)
+
+            self._event_handler_man.subscribe(ticket, handler)
+
+        raw = self._request_dispatcher.make_request(request)
+        await self._connection.send(raw)
+
+    async def execute_unchecked(self, request: BaseRequest) -> BaseEvent:
+        """
+        The high-level API for executing the remote PPSSPP requests and acquiring the result.
 
         Warning! PPSSPP may not respond to certain events at all! This may cause ``execute_unchecked`` to never return!
 
@@ -247,9 +312,9 @@ class AsyncSession:
         await ppsspp_responded.wait()
         return result
 
-    async def execute(self, request: PPSSPPRequest) -> BaseEvent:
+    async def execute(self, request: BaseRequest) -> BaseEvent:
         """
-        The mid-level API for executing the remote PPSSPP requests and acquiring the result.
+        The high-level API for executing the remote PPSSPP requests and acquiring the result.
         If PPSSPP responds with the ``ErrorEvent``, ``RequestFailedError`` is raised.
 
         Warning! PPSSPP may not respond to certain events at all! This may cause ``execute`` to never return!
