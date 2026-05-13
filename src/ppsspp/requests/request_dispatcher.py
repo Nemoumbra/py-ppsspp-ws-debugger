@@ -154,6 +154,7 @@ def _make_retort():
         dumper(MemoryReadU16Request, lambda x: x | {"event": "memory.read_u16"}, Chain.LAST),
         dumper(MemoryReadU32Request, lambda x: x | {"event": "memory.read_u32"}, Chain.LAST),
         dumper(MemoryReadRequest, lambda x: x | {"event": "memory.read"}, Chain.LAST),
+        # Maybe TODO
         dumper(MemoryReadStringRequest, lambda x: x | {"event": "memory.readString"}, Chain.LAST),
         dumper(MemoryWriteU8Request, lambda x: x | {"event": "memory.write_u8"}, Chain.LAST),
         dumper(MemoryWriteU16Request, lambda x: x | {"event": "memory.write_u16"}, Chain.LAST),

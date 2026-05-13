@@ -33,12 +33,12 @@ The objects in the model are defined as dataclasses.
 `ppsspp.model.ppsspp_objects` contains the building blocks for many PPSSPP events (often sent as responses to requests, but sometimes broadcast randomly).
 `ppsspp.model.events` contains the actual event bodies. There is a special event that PPSSPP sends if it's unable to process the request: `ErrorEvent`.
 All events inherit from the base class `BaseEvent`, which stores the string name of the event and the optional ticket.
-This library uses [adaptix](https://github.com/reagento/adaptix) as a data model conversion library.
+This library uses [adaptix](https://github.com/reagento/adaptix) for data model conversions.
 
 ## Usage
 The library presents an asynchronous API (`asyncio` and [websockets](https://github.com/python-websockets/websockets))
-and also an incomplete synchronous API ([websocket-client](https://github.com/websocket-client/websocket-client)).
-Let's focus on the async API.
+and also unfinished hard-to-use synchronous API ([websocket-client](https://github.com/websocket-client/websocket-client)).
+The following docs focus on the async API.
 
 The classes you need are `AsyncSession` and `AsyncConnection`.
 
@@ -61,8 +61,9 @@ uri = ...
 async def on_disconnected(conn: AsyncPpssppConnection):
     if conn.closed_ok:
         notify_user("connection closed")
-    else:
-        notify_user("connection closed with error")
+        return False
+
+    notify_user("connection closed with error")
     try:
         await conn.connect(uri)
         return True
@@ -112,31 +113,42 @@ the internal queue will be closed by then, so the session will shut down nonethe
 ---
 
 #### Issuing requests to PPSSPP:
-The low-level method of sending requests to PPSSPP involves calling `session.send_request_raw` with an instance of class `PPSSPPRequest`. Check the source code for its creation API.
+There are 2 groups of methods: one with the `_raw` suffix and one without. The methods without it accept request classes
+inherited from `RequestBase` and ending on `Request` (such as `CpuStepIntoRequest`). The "raw" methods accept
+an instance of `PPSSPPRequest`; they are more or less low-level, because `PPSSPPRequest` requires manually filling in
+the request parameters, including the exact request name. The request classes are dataclasses with predefined fields
+and auto-generated request name, so they should be safer to use. Other than that, these interfaces are identical.
+The following code snippet will show both ways.
+
+The most basic method is `session.send_request{_raw}`. It simply sends the request to PPSSPP.
 
 ```py
 async def install_breakpoint(session: AsyncSession, address: int):
+    # Check the source code for PPSSPPRequest creation API.
     request = PPSSPPRequest("cpu.breakpoint.add")
     request.add(address=address, enabled=True)
+    await session.send_request_raw(request)
 
-    await self.session.send_request_raw(request)
+    modern_request = CpuBreakPointAddRequest(address=address, enabled=False)
+    await session.send_request(modern_request)
 ```
-There is also a second argument, defaulting to `None`, which is a response handler.
+However, there is also a second argument, defaulting to `None`, which is a response handler.
 If a handler is provided and request contains a ticket, schedules the handler once PPSSPP echoes the same ticket in one of the events.
 If a handler is provided with no ticket, the session generates a ticket automatically.
 ```py
 AsyncEventHandler = Callable[[BaseEvent], Awaitable[bool | None]]
 ```
-The mid-level API is `await session.execute_unchecked_raw(request)`. This returns the event sent in response to your request (maybe `ErrorEvent`).
+The mid-level API is `session.execute_unchecked{_raw}(request)`. This returns the event sent in response to your request (maybe `ErrorEvent`).
 > [!WARNING]
 > PPSSPP may not respond to certain events at all! In this case, `execute_unchecked` will hang!
 >
 > So far there are only [2 such commands](https://github.com/hrydgard/ppsspp/blob/master/Core/Debugger/WebSocket/CPUCoreSubscriber.cpp): `cpu.resume` and `cpu.stepping`.
 So don't use `execute_unchecked` for them, use the low-level API.
 
-Lastly, there is `await session.execute_raw(request)`. It raises `RequestFailedError` if the returned event happens to be `ErrorEvent`.
+Lastly, there is `session.execute{_raw}(request)`. It raises `RequestFailedError` if the returned event happens to be `ErrorEvent`.
 This way is kind of more Pythonic than operating on error objects.
-You can inspect the fields `error` for the error event and `failed_request` to inspect the `PPSSPPRequest` that failed.
+You can inspect the fields `error` for the error event and `failed_request` for the request that failed
+(which is either `PPSSPPRequest` or a class derived from `BaseRequest`).
 
 ---
 
