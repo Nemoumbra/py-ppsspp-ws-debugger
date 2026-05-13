@@ -7,6 +7,7 @@ from ppsspp.model.requests.base_request import BaseRequest
 class BroadcastConfigGetRequest(BaseRequest):
     pass
 
+
 # TODO: maybe wrap the dicts into objects?
 
 @dataclass(kw_only=True)
