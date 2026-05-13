@@ -194,7 +194,7 @@ class AsyncSession:
 
         return decorator
 
-    async def send_request(self, request: PPSSPPRequest, handler: AsyncEventHandler | None = None):
+    async def send_request_raw(self, request: PPSSPPRequest, handler: AsyncEventHandler | None = None):
         """
         The low-level API for sending requests to PPSSPP.
         If handler is provided and request contains a ticket, schedules the handler once PPSSPP echoes
@@ -221,11 +221,11 @@ class AsyncSession:
 
         await self._connection.send(str(request))
 
-    async def execute_unchecked(self, request: PPSSPPRequest) -> BaseEvent:
+    async def execute_unchecked_raw(self, request: PPSSPPRequest) -> BaseEvent:
         """
         The mid-level API for executing the remote PPSSPP requests and acquiring the result.
 
-        Warning! PPSSPP may not respond to certain events at all! This may cause ``execute_unchecked`` to never return!
+        Warning! PPSSPP may not respond to certain events at all! This may cause ``execute_unchecked_raw`` to never return!
 
         May raise ``ConnectionTerminated``.
         :param request: the request
@@ -239,22 +239,22 @@ class AsyncSession:
             result = event
             ppsspp_responded.set()
 
-        await self.send_request(request, handler)
+        await self.send_request_raw(request, handler)
         await ppsspp_responded.wait()
         return result
 
-    async def execute(self, request: PPSSPPRequest) -> BaseEvent:
+    async def execute_raw(self, request: PPSSPPRequest) -> BaseEvent:
         """
         The mid-level API for executing the remote PPSSPP requests and acquiring the result.
         If PPSSPP responds with the ``ErrorEvent``, ``RequestFailedError`` is raised.
 
-        Warning! PPSSPP may not respond to certain events at all! This may cause ``execute`` to never return!
+        Warning! PPSSPP may not respond to certain events at all! This may cause ``execute_raw`` to never return!
 
         May raise ``ConnectionTerminated``.
         :param request: the request
         :return: the event returned by PPSSPP
         """
-        result = await self.execute_unchecked(request)
+        result = await self.execute_unchecked_raw(request)
         if isinstance(result, ErrorEvent):
             raise RequestFailedError(result, request)
         return result

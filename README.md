@@ -112,13 +112,14 @@ the internal queue will be closed by then, so the session will shut down nonethe
 ---
 
 #### Issuing requests to PPSSPP:
-The low-level method of sending requests to PPSSPP involves calling `session.send_request` with an instance of class `PPSSPPRequest`. Check the source code for its creation API.
+The low-level method of sending requests to PPSSPP involves calling `session.send_request_raw` with an instance of class `PPSSPPRequest`. Check the source code for its creation API.
+
 ```py
 async def install_breakpoint(session: AsyncSession, address: int):
     request = PPSSPPRequest("cpu.breakpoint.add")
     request.add(address=address, enabled=True)
 
-    await self.session.send_request(request)
+    await self.session.send_request_raw(request)
 ```
 There is also a second argument, defaulting to `None`, which is a response handler.
 If a handler is provided and request contains a ticket, schedules the handler once PPSSPP echoes the same ticket in one of the events.
@@ -126,14 +127,14 @@ If a handler is provided with no ticket, the session generates a ticket automati
 ```py
 AsyncEventHandler = Callable[[BaseEvent], Awaitable[bool | None]]
 ```
-The mid-level API is `await session.execute_unchecked(request)`. This returns the event sent in response to your request (maybe `ErrorEvent`).
+The mid-level API is `await session.execute_unchecked_raw(request)`. This returns the event sent in response to your request (maybe `ErrorEvent`).
 > [!WARNING]
 > PPSSPP may not respond to certain events at all! In this case, `execute_unchecked` will hang!
 >
 > So far there are only [2 such commands](https://github.com/hrydgard/ppsspp/blob/master/Core/Debugger/WebSocket/CPUCoreSubscriber.cpp): `cpu.resume` and `cpu.stepping`.
 So don't use `execute_unchecked` for them, use the low-level API.
 
-Lastly, there is `await session.execute(request)`. It raises `RequestFailedError` if the returned event happens to be `ErrorEvent`.
+Lastly, there is `await session.execute_raw(request)`. It raises `RequestFailedError` if the returned event happens to be `ErrorEvent`.
 This way is kind of more Pythonic than operating on error objects.
 You can inspect the fields `error` for the error event and `failed_request` to inspect the `PPSSPPRequest` that failed.
 

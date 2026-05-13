@@ -701,7 +701,7 @@ class Debugger:
         request = PPSSPPRequest("cpu.getReg")
         request.add(name=name)
 
-        response = await self.session.execute(request)
+        response = await self.session.execute_raw(request)
 
         return cast(CpuGetRegEvent, response).uint_value
 
@@ -714,7 +714,7 @@ class Debugger:
         request = PPSSPPRequest("memory.readString")
         request.add(address=address)
 
-        response = await self.session.execute(request)
+        response = await self.session.execute_raw(request)
 
         return cast(MemoryReadStringUtf8Event, response).value
 
@@ -722,7 +722,7 @@ class Debugger:
         request = PPSSPPRequest("memory.read_u32")
         request.add(address=address)
 
-        response = await self.session.execute(request)
+        response = await self.session.execute_raw(request)
 
         return cast(MemoryReadU32Event, response).value
 
@@ -735,17 +735,17 @@ class Debugger:
     async def step_out(self):
         request = PPSSPPRequest("cpu.stepOut")
 
-        await self.session.send_request(request)
+        await self.session.send_request_raw(request)
 
     async def resume(self):
         request = PPSSPPRequest("cpu.resume")
 
-        await self.session.send_request(request)
+        await self.session.send_request_raw(request)
 
     async def list_functions(self):
         request = PPSSPPRequest("hle.func.list")
 
-        response = await self.session.execute(request)
+        response = await self.session.execute_raw(request)
         return cast(HleFuncListEvent, response).functions
 
     def resolve_function_names(self, functions: list[FunctionSymbolInfo]):
@@ -771,19 +771,19 @@ class Debugger:
         request.add(address=address)
         # I don't care about the confirmation here
 
-        await self.session.send_request(request)
+        await self.session.send_request_raw(request)
 
     async def install_breakpoint(self, address: int):
         request = PPSSPPRequest("cpu.breakpoint.add")
         request.add(address=address, enabled=True)
 
-        await self.session.send_request(request)
+        await self.session.send_request_raw(request)
 
     async def disable_ppsspp_logs(self):
         request = PPSSPPRequest("broadcast.config.set")
         request.add(disallowed={"logger": True})
 
-        await self.session.execute(request)
+        await self.session.execute_raw(request)
 
     async def execute_script(self):
         # Register the handler
