@@ -2,6 +2,7 @@ import json
 
 import asyncio
 from asyncio.tasks import Task
+from logging import getLogger
 
 from ppsspp.async_connection import AsyncPpssppConnection
 from ppsspp.exceptions.connection_terminated import ConnectionTerminated
@@ -32,43 +33,46 @@ from ppsspp.async_event_queue import AsyncEventQueue
 from ppsspp.exceptions.queue_closed_error import QueueClosedError
 
 
+logger = getLogger("ppsspp.async_session")
+
+
 async def populate_event_queue(queue: AsyncEventQueue, connection: AsyncPpssppConnection, dispatcher: EventDispatcher):
     # TODO: error handling
+    logger.debug("'populate_event_queue' started!")
     while True:
         try:
             data = await connection.recv()
             if not isinstance(data, dict):
-                print(f"Something weird has happened: got '{data}' from async connection!")
+                logger.error(f"Something weird has happened: got '{data}' from async connection!")
                 continue
 
             event = dispatcher.parse_event(data)
             await queue.put(event)
         except json.JSONDecodeError as e:
-            print(e)
+            logger.error(e)
         except EventParseError as e:
-            print(e)
+            logger.error(e)
         except ConnectionTerminated:
-            # print("'populate_event_queue' returning...")
+            logger.debug("ConnectionTerminated, 'populate_event_queue' returning...")
             return
         except QueueClosedError:
-            # print("'populate_event_queue' returning...")
+            logger.debug("Queue closed, 'populate_event_queue' returning...")
             return
-        # except Exception as e:
-        #     print(data)
     pass
 
 
 async def process_events(queue: AsyncEventQueue, event_handler_man: AsyncEventHandlerManager):
+    logger.debug("'process_events' started!")
     async with asyncio.TaskGroup() as tg:
         while True:
             try:
                 event = await queue.get()
                 tg.create_task(event_handler_man.handle_event(event))
             except QueueClosedError:
-                # print("'process_events' returning...")
+                logger.debug("Queue closed, 'process_events' returning...")
                 return
             except Exception as e:
-                print("Process events error:", e)
+                logger.debug(f"Process events error: {e}")
                 continue
     pass
 
@@ -89,12 +93,12 @@ class AsyncSession:
             "version": VersionEventParser(),
         }
 
-    @staticmethod
-    def _init_builders():
-        return {
-            "version": VersionRequestBuilder(),
-            "input": InputRequestBuilder(),
-        }
+    # @staticmethod
+    # def _init_builders():
+    #     return {
+    #         "version": VersionRequestBuilder(),
+    #         "input": InputRequestBuilder(),
+    #     }
 
     def __init__(self):
         self._event_queue: AsyncEventQueue = AsyncEventQueue()
@@ -104,8 +108,8 @@ class AsyncSession:
         event_lookup_table = self._init_parsers()
         self._event_dispatcher: EventDispatcher = EventDispatcher(event_lookup_table)
 
-        request_lookup_table = self._init_builders()
-        self._request_dispatcher: RequestDispatcher = RequestDispatcher(request_lookup_table)
+        # request_lookup_table = self._init_builders()
+        # self._request_dispatcher: RequestDispatcher = RequestDispatcher(request_lookup_table)
 
         self.producer_task: Task | None = None
         self.consumer_task: Task | None = None
@@ -144,10 +148,12 @@ class AsyncSession:
         await self._connection.close()
 
         # TODO
+        logger.debug("Waiting for producer to join...")
         await self.producer_task
-        # print("Producer joined!")
+        logger.debug("Producer joined!")
+        logger.debug("Waiting for consumer to join...")
         await self.consumer_task
-        # print("Consumer joined!")
+        logger.debug("Consumer joined!")
         self._event_handler_man.clear()
 
         self._connection = None
