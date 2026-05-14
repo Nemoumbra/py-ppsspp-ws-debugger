@@ -4,6 +4,9 @@ from enum import Enum, auto
 from typing import cast, Awaitable, Coroutine
 from logging import getLogger
 import asyncio
+import urllib.request
+import json
+import ipaddress
 
 from ppsspp.async_connection import AsyncPpssppConnection
 from ppsspp.async_session import AsyncSession
@@ -857,11 +860,55 @@ class Debugger:
         await self.session.stop()
 
 
+
+
+
+
+
+
+
+
+
+def is_valid_ipv4(ip_str: str):
+    try:
+        ipaddress.IPv4Address(ip_str)
+        return True
+    except ValueError:
+        return False
+
+
+kPPSSPPConnectionBaseUri = "ws://{0}:{1}/debugger"
+
+def parse_server_response(data: dict):
+    for entry in data:
+        if "ip" in entry and is_valid_ipv4(entry["ip"]):
+            try:
+                return kPPSSPPConnectionBaseUri.format(entry["ip"], entry["p"])
+            except:
+                pass
+    return None
+
+
 async def main():
     debugger = Debugger()
 
+    # Cloudflare returns 'error code: 1010' for the 'Python-urllib/3.11' user-agent.
+    user_agent = "Python/3.8 aiohttp/3.8.4"
+    headers = {'User-Agent': user_agent}
+    url = "https://report.ppsspp.org/match/list"
+
+    req = urllib.request.Request(url, headers=headers)
+    with urllib.request.urlopen(req) as response:
+        data = response.read().decode('utf-8')
+        info = json.loads(data)
+        uri = parse_server_response(info)
+
+    if uri is None:
+        print("No PPSSPP instance found")
+        return
+
     # uri = "ws://192.168.1.134:55488/debugger"
-    uri = "ws://127.0.0.1:55488/debugger"
+    # uri = "ws://127.0.0.1:55488/debugger"
     await debugger.run(uri)
 
     print("The debugger is stopped!")
