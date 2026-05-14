@@ -30,9 +30,11 @@ to learn further details about this system and how to enable the remote debugger
 
 ## Model
 The objects in the model are defined as dataclasses.
-`ppsspp.model.ppsspp_objects` contains the building blocks for many PPSSPP events (often sent as responses to requests, but sometimes broadcast randomly).
-`ppsspp.model.events` contains the actual event bodies. There is a special event that PPSSPP sends if it's unable to process the request: `ErrorEvent`.
+* `ppsspp.model.requests` contains the request templates for the modern request sending API (more on that [later](#issuing-requests-to-PPSSPP)).
+* `ppsspp.model.ppsspp_objects` contains the building blocks for many PPSSPP events (often sent as responses to requests, but sometimes broadcast randomly).
+* `ppsspp.model.events` contains the actual event bodies. There is a special event that PPSSPP sends if it's unable to process the request: `ErrorEvent`.
 All events inherit from the base class `BaseEvent`, which stores the string name of the event and the optional ticket.
+
 This library uses [adaptix](https://github.com/reagento/adaptix) for data model conversions.
 
 ## Usage
