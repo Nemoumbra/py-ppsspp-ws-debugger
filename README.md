@@ -1,7 +1,7 @@
 
 # Python websocket debugger for PPSSPP
 This library provides low- and middle-level primitives for interacting with PPSSPP's remote websocket debugger API.
-*Note: the project is in its alpha stage.*
+*Note: the project is in its beta stage and needs help with testing.*
 
 ## Installation
 Right now there's no distribution available at pypi.org, so you'll have to install it from here:
@@ -184,4 +184,5 @@ Pass `None` for the target to install a so-called promiscuous listener that will
 > Return `True` from any handler to remove it from the list of handlers.
 > This is not necessary for the ticket subscribers as they get removed automatically once PPSSPP answers.
 ## Contributing
-PRs and Issues are always welcome!
+PRs and Issues are always welcome! It also would mean a lot to me if anyone simply gives this library a try and
+checks if it's convenient to use.
