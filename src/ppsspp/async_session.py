@@ -142,7 +142,6 @@ class AsyncSession:
         await self._event_queue.close()
         await self._connection.close()
 
-        # TODO
         logger.debug("Waiting for producer to join...")
         await self.producer_task
         logger.debug("Producer joined!")
