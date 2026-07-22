@@ -45,7 +45,7 @@ The following docs focus on the async API.
 The classes you need are `AsyncSession` and `AsyncConnection`.
 
 ### AsyncConnection
-`AsyncConnection` encapsulates the connection from your device to PPSSPP. This library not provide any means of acquiring the correct URI for connecting to PPSSPP.
+`AsyncConnection` encapsulates the connection from your device to PPSSPP. This library does not provide any means of acquiring the correct URI for connecting to PPSSPP.
 It is entirely up to you: read it from your config file or let the user decide.
 Perhaps, contact `report.ppsspp.org/match/list` by using your favorite HTTP library.
 
@@ -155,7 +155,7 @@ You can inspect the fields `error` for the error event and `failed_request` for 
 ---
 
 #### Reacting to PPSSPP events
-The ticket system, which powers the `execute_unchecked` and `execute` methods (and also `send_request` if you manually supply a handler),
+The ticket system, which powers the `execute_unchecked{_raw}` and `execute{_raw}` methods (and also `send_request{_raw}` if you manually supply a handler),
 covers almost a half of use-cases. Then there are unexpected broadcast events... They are divided into 4 groups.
 1) Logging events: `LogEvent`. Sent for each PPSSPP's log.
 2) Game events: `GameStartEvent`, `GamePauseEvent`, `GameQuitEvent`, `GameResumeEvent`. Sent when the emulator's game status is changed.
