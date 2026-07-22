@@ -1,3 +1,4 @@
+from adaptix import Retort
 
 from ppsspp.parsers.base_event_parser import BaseEventParser
 
@@ -21,3 +22,6 @@ class InputEventParser(BaseEventParser):
         }
 
         BaseEventParser.__init__(self, lookup_table)
+
+        # ButtonsState has snake_case names
+        self._retort = Retort()

@@ -1,29 +1,35 @@
-from enum import Enum, auto
+from enum import StrEnum
 
 
-class Button(Enum):
-    cross = auto()
-    circle = auto()
-    triangle = auto()
-    square = auto()
-    up = auto()
-    down = auto()
-    left = auto()
-    right = auto()
-    start = auto()
-    select = auto()
-    home = auto()
-    screen = auto()
-    note = auto()
-    ltrigger = auto()
-    rtrigger = auto()
-    hold = auto()
-    wlan = auto()
-    remote_hold = auto()
-    vol_up = auto()
-    vol_down = auto()
-    disc = auto()
-    memstick = auto()
-    forward = auto()
-    back = auto()
-    playpause = auto()
+class Button(StrEnum):
+    cross = "cross"
+    circle = "circle"
+    triangle = "triangle"
+    square = "square"
+    up = "up"
+    down = "down"
+    left = "left"
+    right = "right"
+    start = "start"
+    select = "select"
+    home = "home"
+    screen = "screen"
+    note = "note"
+    ltrigger = "ltrigger"
+    rtrigger = "rtrigger"
+    hold = "hold"
+    wlan = "wlan"
+    remote_hold = "remote_hold"
+    vol_up = "vol_up"
+    vol_down = "vol_down"
+    disc = "disc"
+    memstick = "memstick"
+    forward = "forward"
+    back = "back"
+    playpause = "playpause"
+
+    # Obscure unmapped keys according to PPSSPP (PPSSPP issue #17464)
+    l2 = "l2"
+    l3 = "l3"
+    r2 = "r2"
+    r3 = "r3"
