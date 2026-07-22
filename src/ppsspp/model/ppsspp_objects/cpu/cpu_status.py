@@ -1,3 +1,10 @@
+from dataclasses import dataclass
 
+
+# Fields like in CpuStatusEvent
+@dataclass
 class CPUStatus:
-    pass
+    stepping: bool
+    paused: bool
+    pc: int
+    ticks: float
