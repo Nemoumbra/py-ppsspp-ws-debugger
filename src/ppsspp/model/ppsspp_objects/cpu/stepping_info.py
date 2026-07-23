@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 # Fields like in CpuSteppingEvent
-@dataclass(kw_only=True)
+@dataclass
 class SteppingInfo:
     pc: int
     ticks: float
