@@ -16,7 +16,7 @@ class InputButtonsSendEvent(BaseEvent):
     pass
 
 
-# Sent once the buttons are released
+# Sent once the button is released
 @dataclass(kw_only=True)
 class InputButtonsPressEvent(BaseEvent):
     pass
