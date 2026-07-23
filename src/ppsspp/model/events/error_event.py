@@ -9,5 +9,4 @@ kErrorEvent = "error"
 @dataclass(kw_only=True)
 class ErrorEvent(BaseEvent):
     message: str
-    level: int
-    # TODO: implement LogLevel
+    level: LogLevel  # However, it can't really be anything other than LogLevel.ERROR as of now
