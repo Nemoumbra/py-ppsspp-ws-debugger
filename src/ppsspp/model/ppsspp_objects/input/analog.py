@@ -1,6 +1,6 @@
-from enum import Enum, auto
+from enum import StrEnum
 
 
-class Analog(Enum):
-    left = auto()
-    right = auto()
+class AnalogStick(StrEnum):
+    left = "left"
+    right = "right"

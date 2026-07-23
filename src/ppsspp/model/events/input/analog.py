@@ -1,12 +1,12 @@
 from dataclasses import dataclass
 
 from ppsspp.model.events.base_event import BaseEvent
+from ppsspp.model.ppsspp_objects.input.analog import AnalogStick
 
 
 @dataclass(kw_only=True)
 class InputAnalogEvent(BaseEvent):
-    # TODO: decide what to do with AnalogState and Analog
-    stick: str
+    stick: AnalogStick
     x: float
     y: float
 
