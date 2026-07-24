@@ -1,10 +1,12 @@
 
 from dataclasses import dataclass
 
+from ppsspp.model.ppsspp_objects.memory.memory_tag_type import MemoryTagType
+
 
 @dataclass
 class MemoryBlockInfo:
-    type: str
+    type: MemoryTagType
     address: int
     size: int
     ticks: float

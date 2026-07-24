@@ -17,7 +17,6 @@ class MemoryInfoConfigRequest(BaseRequest):
 class MemoryInfoSetRequest(BaseRequest):
     address: int
     size: int
-    # How do we fix the values?
     type: str
     tag: str | None = None
     pc: int | None = None
@@ -27,7 +26,6 @@ class MemoryInfoSetRequest(BaseRequest):
 class MemoryInfoListRequest(BaseRequest):
     address: int
     size: int
-    # How do we fix the values?
     type: str | None = None
 
 
