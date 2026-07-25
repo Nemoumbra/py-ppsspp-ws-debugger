@@ -20,11 +20,11 @@ from ppsspp.ppsspp_request import PPSSPPRequest
 
 from ppsspp.ticket_manager import TicketManager
 from ppsspp.event_handler_manager import SyncEventHandlerManager, EventHandler
-from ppsspp.parsers.event_dispatcher import EventDispatcher
+from ppsspp.dispatchers.event_dispatcher import EventDispatcher
 from ppsspp.exceptions.event_parse_error import EventParseError
-from ppsspp.requests.request_dispatcher import RequestDispatcher
+from ppsspp.dispatchers.request_dispatcher import RequestDispatcher
 
-from ppsspp.event_queue import EventQueue, EventQueueReader
+from ppsspp.event_queue import EventQueue
 from ppsspp.exceptions.queue_closed_error import QueueClosedError
 
 

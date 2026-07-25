@@ -28,9 +28,9 @@ from ppsspp.parsers.detailed_parsers.version import VersionEventParser
 
 from ppsspp.ticket_manager import TicketManager
 from ppsspp.event_handler_manager import AsyncEventHandlerManager, AsyncEventHandler
-from ppsspp.parsers.event_dispatcher import EventDispatcher
+from ppsspp.dispatchers.event_dispatcher import EventDispatcher
 from ppsspp.exceptions.event_parse_error import EventParseError
-from ppsspp.requests.request_dispatcher import RequestDispatcher
+from ppsspp.dispatchers.request_dispatcher import RequestDispatcher
 
 from ppsspp.async_event_queue import AsyncEventQueue
 from ppsspp.exceptions.queue_closed_error import QueueClosedError

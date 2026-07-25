@@ -77,8 +77,6 @@ from ppsspp.model.requests.replay.time import (
     ReplayTimeGetRequest, ReplayTimeSetRequest
 )
 
-from ppsspp.exceptions.request_build_error import RequestBuildError
-
 
 def _make_retort():
     retort = Retort(recipe=[
