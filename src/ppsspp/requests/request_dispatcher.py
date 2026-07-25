@@ -30,7 +30,11 @@ from ppsspp.model.requests.game.common import (
 )
 from ppsspp.model.requests.gpu.buffer import (
     GpuBufferScreenshotRequest, GpuBufferRenderColorRequest, GpuBufferRenderDepthRequest,
-    GpuBufferRenderStencilRequest, GpuBufferTextureRequest, GpuBufferClutRequest
+    GpuBufferRenderStencilRequest, GpuBufferTextureRequest, GpuBufferClutRequest, GpuBufferScreenshotUriRequest,
+    GpuBufferRenderColorUriRequest, GpuBufferRenderDepthUriRequest, GpuBufferRenderStencilUriRequest,
+    GpuBufferTextureUriRequest, GpuBufferClutUriRequest, GpuBufferScreenshotBase64Request,
+    GpuBufferRenderColorBase64Request, GpuBufferRenderDepthBase64Request, GpuBufferRenderStencilBase64Request,
+    GpuBufferTextureBase64Request, GpuBufferClutBase64Request
 )
 from ppsspp.model.requests.gpu.common import (
     GpuRecordDumpRequest, GpuStatsGetRequest, GpuStatsFeedRequest
@@ -120,7 +124,45 @@ def _make_retort():
         dumper(GameResetRequest, lambda x: x | {"event": "game.reset"}, Chain.LAST),
         dumper(GameStatusRequest, lambda x: x | {"event": "game.status"}, Chain.LAST),
 
-        # These are still kinda TODO-ish
+        # This looks intimidating...
+        dumper(GpuBufferScreenshotRequest, lambda x: x | {"event": "gpu.buffer.screenshot"}, Chain.LAST),
+        dumper(GpuBufferScreenshotUriRequest, lambda x: x | {"event": "gpu.buffer.screenshot"}, Chain.LAST),
+        dumper(
+            GpuBufferScreenshotBase64Request,
+            lambda x: x | {"event": "gpu.buffer.screenshot", "type": "base64"}, Chain.LAST
+        ),
+        dumper(GpuBufferRenderColorRequest, lambda x: x | {"event": "gpu.buffer.renderColor"}, Chain.LAST),
+        dumper(GpuBufferRenderColorUriRequest, lambda x: x | {"event": "gpu.buffer.renderColor"}, Chain.LAST),
+        dumper(
+            GpuBufferRenderColorBase64Request,
+            lambda x: x | {"event": "gpu.buffer.renderColor", "type": "base64"}, Chain.LAST
+        ),
+        dumper(GpuBufferRenderDepthRequest, lambda x: x | {"event": "gpu.buffer.renderDepth"}, Chain.LAST),
+        dumper(GpuBufferRenderDepthUriRequest, lambda x: x | {"event": "gpu.buffer.renderDepth"}, Chain.LAST),
+        dumper(
+            GpuBufferRenderDepthBase64Request,
+            lambda x: x | {"event": "gpu.buffer.renderDepth", "type": "base64"}, Chain.LAST
+        ),
+        dumper(GpuBufferRenderStencilRequest, lambda x: x | {"event": "gpu.buffer.renderStencil"}, Chain.LAST),
+        dumper(GpuBufferRenderStencilUriRequest, lambda x: x | {"event": "gpu.buffer.renderStencil"}, Chain.LAST),
+        dumper(
+            GpuBufferRenderStencilBase64Request,
+            lambda x: x | {"event": "gpu.buffer.renderStencil", "type": "base64"}, Chain.LAST
+        ),
+        dumper(GpuBufferTextureRequest, lambda x: x | {"event": "gpu.buffer.texture"}, Chain.LAST),
+        dumper(GpuBufferTextureUriRequest, lambda x: x | {"event": "gpu.buffer.texture"}, Chain.LAST),
+        dumper(
+            GpuBufferTextureBase64Request,
+            lambda x: x | {"event": "gpu.buffer.texture", "type": "base64"}, Chain.LAST
+        ),
+        dumper(GpuBufferClutRequest, lambda x: x | {"event": "gpu.buffer.clut"}, Chain.LAST),
+        dumper(GpuBufferClutUriRequest, lambda x: x | {"event": "gpu.buffer.clut"}, Chain.LAST),
+        dumper(
+            GpuBufferClutBase64Request,
+            lambda x: x | {"event": "gpu.buffer.clut", "type": "base64"}, Chain.LAST
+        ),
+
+
         dumper(GpuBufferScreenshotRequest, lambda x: x | {"event": "gpu.buffer.screenshot"}, Chain.LAST),
         dumper(GpuBufferRenderColorRequest, lambda x: x | {"event": "gpu.buffer.renderColor"}, Chain.LAST),
         dumper(GpuBufferRenderDepthRequest, lambda x: x | {"event": "gpu.buffer.renderDepth"}, Chain.LAST),
@@ -152,14 +194,12 @@ def _make_retort():
         dumper(MemoryReadU16Request, lambda x: x | {"event": "memory.read_u16"}, Chain.LAST),
         dumper(MemoryReadU32Request, lambda x: x | {"event": "memory.read_u32"}, Chain.LAST),
         dumper(MemoryReadRequest, lambda x: x | {"event": "memory.read"}, Chain.LAST),
-
         dumper(MemoryReadStringRequest, lambda x: x | {"event": "memory.readString"}, Chain.LAST),
         dumper(MemoryReadStringUtf8Request, lambda x: x | {"event": "memory.readString"}, Chain.LAST),
         dumper(
             MemoryReadStringBase64Request,
             lambda x: x | {"event": "memory.readString", "type": "base64"}, Chain.LAST
         ),
-
         dumper(MemoryWriteU8Request, lambda x: x | {"event": "memory.write_u8"}, Chain.LAST),
         dumper(MemoryWriteU16Request, lambda x: x | {"event": "memory.write_u16"}, Chain.LAST),
         dumper(MemoryWriteU32Request, lambda x: x | {"event": "memory.write_u32"}, Chain.LAST),
