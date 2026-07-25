@@ -1,3 +1,9 @@
 
+from dataclasses import dataclass
+
+
+# Fields like in ReplayStatusEvent
+@dataclass
 class ReplayStatus:
-    pass
+    executing: bool
+    saving: bool

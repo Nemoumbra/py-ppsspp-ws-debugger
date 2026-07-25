@@ -4,12 +4,12 @@ from ppsspp.model.requests.base_request import BaseRequest
 
 
 @dataclass(kw_only=True)
-class ReplayBeginRequest:
+class ReplayBeginRequest(BaseRequest):
     pass
 
 
 @dataclass(kw_only=True)
-class ReplayAbortRequest:
+class ReplayAbortRequest(BaseRequest):
     pass
 
 
