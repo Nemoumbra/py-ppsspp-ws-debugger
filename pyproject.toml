@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "py-ppsspp-ws-debugger"
-version = "1.0.0b1"
-requires-python = ">= 3.10"
+version = "1.0.0b2"
+requires-python = ">= 3.11"
 description = "Unofficial low-level and middle-level websocket debugger for PPSSPP"
 dependencies = [
     "adaptix==3.0.0b11",
