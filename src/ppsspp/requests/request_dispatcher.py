@@ -54,7 +54,7 @@ from ppsspp.model.requests.input.buttons import (
 from ppsspp.model.requests.memory.common import (
     MemoryReadU8Request, MemoryReadU16Request, MemoryReadU32Request, MemoryReadRequest,
     MemoryReadStringRequest, MemoryWriteU8Request, MemoryWriteU16Request, MemoryWriteU32Request,
-    MemoryWriteRequest
+    MemoryWriteRequest, MemoryReadStringUtf8Request, MemoryReadStringBase64Request
 )
 from ppsspp.model.requests.memory.memory_info import (
     MemoryMappingRequest, MemoryInfoConfigRequest, MemoryInfoSetRequest,
@@ -154,8 +154,14 @@ def _make_retort():
         dumper(MemoryReadU16Request, lambda x: x | {"event": "memory.read_u16"}, Chain.LAST),
         dumper(MemoryReadU32Request, lambda x: x | {"event": "memory.read_u32"}, Chain.LAST),
         dumper(MemoryReadRequest, lambda x: x | {"event": "memory.read"}, Chain.LAST),
-        # Maybe TODO
+
         dumper(MemoryReadStringRequest, lambda x: x | {"event": "memory.readString"}, Chain.LAST),
+        dumper(MemoryReadStringUtf8Request, lambda x: x | {"event": "memory.readString"}, Chain.LAST),
+        dumper(
+            MemoryReadStringBase64Request,
+            lambda x: x | {"event": "memory.readString", "type": "base64"}, Chain.LAST
+        ),
+
         dumper(MemoryWriteU8Request, lambda x: x | {"event": "memory.write_u8"}, Chain.LAST),
         dumper(MemoryWriteU16Request, lambda x: x | {"event": "memory.write_u16"}, Chain.LAST),
         dumper(MemoryWriteU32Request, lambda x: x | {"event": "memory.write_u32"}, Chain.LAST),

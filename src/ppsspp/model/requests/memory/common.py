@@ -28,8 +28,17 @@ class MemoryReadRequest(BaseRequest):
 @dataclass(kw_only=True)
 class MemoryReadStringRequest(BaseRequest):
     address: int
-    # TODO: 2 options here, maybe duplicate?
     type: str | None = None
+
+
+@dataclass(kw_only=True)
+class MemoryReadStringUtf8Request(BaseRequest):
+    address: int
+
+
+@dataclass(kw_only=True)
+class MemoryReadStringBase64Request(BaseRequest):
+    address: int
 
 
 @dataclass(kw_only=True)
