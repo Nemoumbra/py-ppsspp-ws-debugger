@@ -40,7 +40,6 @@ logger = getLogger("ppsspp.async_session")
 
 
 async def populate_event_queue(queue: AsyncEventQueue, connection: AsyncPpssppConnection, dispatcher: EventDispatcher):
-    # TODO: error handling
     logger.debug("'populate_event_queue' started!")
     while True:
         try:
@@ -126,6 +125,7 @@ class AsyncSession:
         self.consumer_task = asyncio.create_task(
             process_events(self._event_queue, self._event_handler_man), name="PpssppEventHandler"
         )
+        # TODO: think about monitoring the state of these tasks
         self._connection = connection
         self._running = True
 

@@ -37,7 +37,7 @@ class AsyncPpssppConnection:
         self._on_disconnected = handler
 
     def on_disconnected(self, handler: AsyncOnDisconnectedHandler):
-        # TODO: figure out why the wrong signature for the @ syntax doesn't trigger any warnings:
+        # For some reason the wrong signature for the @ syntax doesn't trigger any warnings:
         # @connection.on_disconnected
         # def wrong(arg: int, value: str):
         #     return [1.5, 2.5]

@@ -8,8 +8,6 @@ class BroadcastConfigGetRequest(BaseRequest):
     pass
 
 
-# TODO: maybe wrap the dicts into objects?
-
 @dataclass(kw_only=True)
 class BroadcastConfigSetRequest(BaseRequest):
     disallowed: dict[str, bool]
