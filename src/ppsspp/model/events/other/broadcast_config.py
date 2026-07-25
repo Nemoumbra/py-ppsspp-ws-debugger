@@ -3,8 +3,6 @@ from dataclasses import dataclass
 from ppsspp.model.events.base_event import BaseEvent
 
 
-# TODO: maybe wrap these into objects?
-
 @dataclass(kw_only=True)
 class BroadcastConfigGetEvent(BaseEvent):
     disallowed: dict

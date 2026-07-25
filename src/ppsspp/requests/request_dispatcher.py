@@ -102,7 +102,6 @@ def _make_retort():
         dumper(CpuRunUntilRequest, lambda x: x | {"event": "cpu.runUntil"}, Chain.LAST),
         dumper(CpuNextHleRequest, lambda x: x | {"event": "cpu.nextHLE"}, Chain.LAST),
 
-        # Some may be TODO
         dumper(CpuGetAllRegsRequest, lambda x: x | {"event": "cpu.getAllRegs"}, Chain.LAST),
         dumper(CpuGetRegRequest, lambda x: x | {"event": "cpu.getReg"}, Chain.LAST),
         dumper(CpuGetRegByNameRequest, lambda x: x | {"event": "cpu.getReg"}, Chain.LAST),
@@ -145,7 +144,6 @@ def _make_retort():
         dumper(HleThreadWakeRequest, lambda x: x | {"event": "hle.thread.wake"}, Chain.LAST),
         dumper(HleThreadStopRequest, lambda x: x | {"event": "hle.thread.stop"}, Chain.LAST),
 
-        # TODO: these have unfinished API
         dumper(InputAnalogSendRequest, lambda x: x | {"event": "input.analog.send"}, Chain.LAST),
         dumper(InputButtonsSendRequest, lambda x: x | {"event": "input.buttons.send"}, Chain.LAST),
         dumper(InputButtonsPressRequest, lambda x: x | {"event": "input.buttons.press"}, Chain.LAST),
@@ -173,7 +171,6 @@ def _make_retort():
         dumper(MemoryInfoListRequest, lambda x: x | {"event": "memory.info.list"}, Chain.LAST),
         dumper(MemoryInfoSearchRequest, lambda x: x | {"event": "memory.info.search"}, Chain.LAST),
 
-        # Maybe TODO
         dumper(BroadcastConfigGetRequest, lambda x: x | {"event": "broadcast.config.get"}, Chain.LAST),
         dumper(BroadcastConfigSetRequest, lambda x: x | {"event": "broadcast.config.set"}, Chain.LAST),
 
