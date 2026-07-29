@@ -84,13 +84,6 @@ class Session:
             "version": VersionEventParser(),
         }
 
-    @staticmethod
-    def init_builders():
-        return {
-            "version": VersionRequestBuilder(),
-            "input": InputRequestBuilder(),
-        }
-
     def __init__(self):
         self._event_queue = CloseableQueue[BaseEvent]()
         self._ticket_man = TicketManager(0x8)
@@ -99,8 +92,7 @@ class Session:
         event_lookup_table = self.init_parsers()
         self._event_dispatcher = EventDispatcher(event_lookup_table)
 
-        request_lookup_table = self.init_builders()
-        self._request_dispatcher = RequestDispatcher(request_lookup_table)
+        self._request_dispatcher = RequestDispatcher()
 
         self.producer_thread = Thread()
         self.consumer_thread = Thread()
@@ -108,7 +100,7 @@ class Session:
         self._connection: PpssppConnection | None = None
         self._running: bool = False
 
-    def Run(self, connection: PpssppConnection):
+    def run(self, connection: PpssppConnection):
         self.producer_thread = Thread(
             target=populate_event_queue, name="PpssppEventReader",
             args=(self._event_queue, connection, self._event_dispatcher)
@@ -122,7 +114,7 @@ class Session:
         self.consumer_thread.start()
         self._running = True
 
-    def Stop(self):
+    def stop(self):
         if not self._running:
             return False
 
