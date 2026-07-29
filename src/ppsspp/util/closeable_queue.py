@@ -3,34 +3,37 @@ from queue import SimpleQueue, Empty
 from ppsspp.model.events.base_event import BaseEvent
 from ppsspp.exceptions.queue_closed_error import QueueClosedError
 
+from typing import TypeVar, Generic
+T = TypeVar('T')
 
-class EventQueue:
+
+class CloseableQueue(Generic[T]):
     """
-    Multi-producer, single-consumer unbounded queue for PPSSPP events.
-    Essentially a closeable ``queue.SimpleQueue[BaseEvent]``.
+    Multi-producer, single-consumer unbounded sync queue.
+    Essentially a closeable ``queue.SimpleQueue[T]``.
     """
 
     # Note: Python doesn't support queue shutdown until Python 3.13.
-    # And they only added it to 'queue.Queue', which combines the APIs of Queue and WaitGroup =>
-    # => here we have a custom implementation
+    # And they only added it to 'queue.Queue', which combines the APIs
+    # of Queue and WaitGroup => here we have a custom implementation
     def __init__(self):
-        self._queue: SimpleQueue[BaseEvent | None] = SimpleQueue()
+        self._queue: SimpleQueue[T | None] = SimpleQueue()
         self._closed = False
         self._pill_inserted = False
 
-    def put(self, event: BaseEvent):
+    def put(self, item: T):
         """
-        Tries to put an event into the queue. If the queue is closed, raises QueueClosedError.
-        :param event: the item to be inserted
+        Tries to put an object into the queue. If the queue is closed, raises QueueClosedError.
+        :param item: the object to be inserted
         :return:
         """
         if self._closed:
             raise QueueClosedError
 
-        assert event is not None
-        self._queue.put(event)
+        assert item is not None
+        self._queue.put(item)
 
-    def _extract(self, timeout: float | None) -> BaseEvent | None:
+    def _extract(self, timeout: float | None) -> T | None:
         # If the poison pill wasn't inserted, then block
         if not self._pill_inserted:
             return self._queue.get(True, timeout)
@@ -41,13 +44,13 @@ class EventQueue:
             # Someone called 'get' after getting a poison pill, let's feed them with another pill
             return None
 
-    def get(self, timeout: float | None = None) -> BaseEvent:
+    def get(self, timeout: float | None = None) -> T:
         """
-        Tries to fetch an event from the queue. If queue is empty and closed, raises ``QueueClosedError``.
-        Otherwise, blocks until the event is available.
-        If a timeout is specified, raises ``Empty`` if unable to fetch an event in specified timeout.
+        Tries to fetch an item from the queue. If queue is empty and closed, raises ``QueueClosedError``.
+        Otherwise, blocks until a new item is inserted.
+        If a timeout is specified, raises ``Empty`` if unable to fetch an item in specified timeout.
         :param timeout: timeout in seconds or None (no timeout)
-        :return:
+        :return: the extracted item
         """
         item = self._extract(timeout)
         if item is None:
@@ -70,18 +73,18 @@ class EventQueue:
         self._pill_inserted = True
 
 
-class EventQueueReader:
+class QueueReader(Generic[T]):
     """
-    A proxy over the ``EventQueue`` that only exposes the extraction operations (``get``).
+    A proxy over the ``CloseableQueue`` that only exposes the extraction operations (``get``).
     """
-    def __init__(self, queue: EventQueue):
+    def __init__(self, queue: CloseableQueue[T]):
         self._queue = queue
 
-    def get(self, timeout: float | None = None):
+    def get(self, timeout: float | None = None) -> T:
         """
-        Tries to fetch an event from the queue. If queue is empty and closed, raises ``QueueClosedError``.
-        Otherwise, blocks until the event is available.
-        If a timeout is specified, raises ``Empty`` if unable to fetch an event in specified timeout.
+        Tries to fetch an item from the queue. If queue is empty and closed, raises ``QueueClosedError``.
+        Otherwise, blocks until the item is available.
+        If a timeout is specified, raises ``Empty`` if unable to fetch an item in specified timeout.
         :param timeout: timeout in seconds or None (no timeout)
         :return:
         """

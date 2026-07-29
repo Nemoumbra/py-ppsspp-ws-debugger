@@ -3,32 +3,35 @@ from asyncio.queues import Queue, QueueEmpty
 from ppsspp.model.events.base_event import BaseEvent
 from ppsspp.exceptions.queue_closed_error import QueueClosedError
 
+from typing import TypeVar, Generic
+T = TypeVar('T')
 
-class AsyncEventQueue:
+
+class AsyncCloseableQueue(Generic[T]):
     """
-    Multi-producer, single-consumer unbounded async queue for PPSSPP events.
-    Essentially a closeable ``asyncio.queues.Queue[BaseEvent]``.
+    Multi-producer, single-consumer unbounded async queue.
+    Essentially a closeable ``asyncio.queues.Queue[T]``.
     """
 
     # Note: Python doesn't support queue shutdown until Python 3.13.
     def __init__(self):
-        self._queue: Queue[BaseEvent | None] = Queue(maxsize=0)
+        self._queue: Queue[T | None] = Queue(maxsize=0)
         self._closed = False
         self._pill_inserted = False
 
-    async def put(self, event: BaseEvent):
+    async def put(self, item: T):
         """
-        Tries to put an event into the queue. If the queue is closed, raises QueueClosedError.
-        :param event: the item to be inserted
+        Tries to put an object into the queue. If the queue is closed, raises QueueClosedError.
+        :param item: the object to be inserted
         :return:
         """
         if self._closed:
             raise QueueClosedError
 
-        assert event is not None
-        await self._queue.put(event)
+        assert item is not None
+        await self._queue.put(item)
 
-    async def _extract(self) -> BaseEvent | None:
+    async def _extract(self) -> T | None:
         # If the poison pill wasn't inserted, then wait
         if not self._pill_inserted:
             return await self._queue.get()
@@ -41,9 +44,9 @@ class AsyncEventQueue:
 
     async def get(self) -> BaseEvent:
         """
-        Tries to fetch an event from the queue. If queue is empty and closed, raises ``QueueClosedError``.
-        Otherwise, awaits for the event to be inserted.
-        :return:
+        Tries to fetch an item from the queue. If queue is empty and closed, raises ``QueueClosedError``.
+        Otherwise, awaits for the item to be inserted.
+        :return: the extracted item
         """
         item = await self._extract()
         if item is None:

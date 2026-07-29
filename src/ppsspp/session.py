@@ -4,6 +4,7 @@ from threading import Thread
 
 from ppsspp.connection import PpssppConnection
 from ppsspp.exceptions.connection_terminated import ConnectionTerminated
+from ppsspp.model.events.base_event import BaseEvent
 
 from ppsspp.parsers.detailed_parsers.broadcast_config import BroadcastConfigEventParser
 from ppsspp.parsers.detailed_parsers.cpu import CPUEventParser
@@ -24,11 +25,11 @@ from ppsspp.dispatchers.event_dispatcher import EventDispatcher
 from ppsspp.exceptions.event_parse_error import EventParseError
 from ppsspp.dispatchers.request_dispatcher import RequestDispatcher
 
-from ppsspp.event_queue import EventQueue
+from ppsspp.util.closeable_queue import CloseableQueue
 from ppsspp.exceptions.queue_closed_error import QueueClosedError
 
 
-def populate_event_queue(queue: EventQueue, connection: PpssppConnection, dispatcher: EventDispatcher):
+def populate_event_queue(queue: CloseableQueue[BaseEvent], connection: PpssppConnection, dispatcher: EventDispatcher):
     # TODO: error handling
     while True:
         try:
@@ -53,7 +54,7 @@ def populate_event_queue(queue: EventQueue, connection: PpssppConnection, dispat
     pass
 
 
-def process_events(queue: EventQueue, event_handler_man: SyncEventHandlerManager):
+def process_events(queue: CloseableQueue[BaseEvent], event_handler_man: SyncEventHandlerManager):
     while True:
         try:
             event = queue.get()
@@ -91,7 +92,7 @@ class Session:
         }
 
     def __init__(self):
-        self._event_queue: EventQueue = EventQueue()
+        self._event_queue = CloseableQueue[BaseEvent]()
         self._ticket_man: TicketManager = TicketManager(0x8)
         self._event_handler_man: SyncEventHandlerManager = SyncEventHandlerManager(self._ticket_man)
 

@@ -32,14 +32,14 @@ from ppsspp.dispatchers.event_dispatcher import EventDispatcher
 from ppsspp.exceptions.event_parse_error import EventParseError
 from ppsspp.dispatchers.request_dispatcher import RequestDispatcher
 
-from ppsspp.async_event_queue import AsyncEventQueue
+from ppsspp.util.async_closeable_queue import AsyncCloseableQueue
 from ppsspp.exceptions.queue_closed_error import QueueClosedError
 
 
 logger = getLogger("ppsspp.async_session")
 
 
-async def populate_event_queue(queue: AsyncEventQueue, connection: AsyncPpssppConnection, dispatcher: EventDispatcher):
+async def populate_event_queue(queue: AsyncCloseableQueue[BaseEvent], connection: AsyncPpssppConnection, dispatcher: EventDispatcher):
     logger.debug("'populate_event_queue' started!")
     while True:
         try:
@@ -63,7 +63,7 @@ async def populate_event_queue(queue: AsyncEventQueue, connection: AsyncPpssppCo
     pass
 
 
-async def process_events(queue: AsyncEventQueue, event_handler_man: AsyncEventHandlerManager):
+async def process_events(queue: AsyncCloseableQueue[BaseEvent], event_handler_man: AsyncEventHandlerManager):
     logger.debug("'process_events' started!")
     async with asyncio.TaskGroup() as tg:
         while True:
@@ -96,7 +96,7 @@ class AsyncSession:
         }
 
     def __init__(self):
-        self._event_queue: AsyncEventQueue = AsyncEventQueue()
+        self._event_queue = AsyncCloseableQueue[BaseEvent]()
         self._ticket_man: TicketManager = TicketManager(0x8)
         self._event_handler_man: AsyncEventHandlerManager = AsyncEventHandlerManager(self._ticket_man)
 
