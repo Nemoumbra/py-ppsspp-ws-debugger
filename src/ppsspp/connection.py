@@ -15,7 +15,7 @@ OnDisconnectedHandler = Callable[['PpssppConnection'], bool]
 class PpssppConnection:
     def __init__(self):
         self._on_disconnected: OnDisconnectedHandler = lambda connection: False
-        self._ws: WebSocket = WebSocket()
+        self._ws = WebSocket()
 
         # TODO: reevaluate if this is user-friendly
         self.close_code: int | None = None

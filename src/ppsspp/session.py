@@ -93,17 +93,17 @@ class Session:
 
     def __init__(self):
         self._event_queue = CloseableQueue[BaseEvent]()
-        self._ticket_man: TicketManager = TicketManager(0x8)
-        self._event_handler_man: SyncEventHandlerManager = SyncEventHandlerManager(self._ticket_man)
+        self._ticket_man = TicketManager(0x8)
+        self._event_handler_man = SyncEventHandlerManager(self._ticket_man)
 
         event_lookup_table = self.init_parsers()
-        self._event_dispatcher: EventDispatcher = EventDispatcher(event_lookup_table)
+        self._event_dispatcher = EventDispatcher(event_lookup_table)
 
         request_lookup_table = self.init_builders()
-        self._request_dispatcher: RequestDispatcher = RequestDispatcher(request_lookup_table)
+        self._request_dispatcher = RequestDispatcher(request_lookup_table)
 
-        self.producer_thread: Thread = Thread()
-        self.consumer_thread: Thread = Thread()
+        self.producer_thread = Thread()
+        self.consumer_thread = Thread()
 
         self._connection: PpssppConnection | None = None
         self._running: bool = False

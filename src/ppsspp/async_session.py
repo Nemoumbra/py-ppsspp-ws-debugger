@@ -97,13 +97,13 @@ class AsyncSession:
 
     def __init__(self):
         self._event_queue = AsyncCloseableQueue[BaseEvent]()
-        self._ticket_man: TicketManager = TicketManager(0x8)
-        self._event_handler_man: AsyncEventHandlerManager = AsyncEventHandlerManager(self._ticket_man)
+        self._ticket_man = TicketManager(0x8)
+        self._event_handler_man = AsyncEventHandlerManager(self._ticket_man)
 
         event_lookup_table = self._init_parsers()
-        self._event_dispatcher: EventDispatcher = EventDispatcher(event_lookup_table)
+        self._event_dispatcher = EventDispatcher(event_lookup_table)
 
-        self._request_dispatcher: RequestDispatcher = RequestDispatcher()
+        self._request_dispatcher = RequestDispatcher()
 
         self.producer_task: Task | None = None
         self.consumer_task: Task | None = None

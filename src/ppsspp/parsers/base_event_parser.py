@@ -2,10 +2,11 @@
 from ppsspp.exceptions.event_parse_error import EventParseError
 
 from adaptix import Retort, name_mapping, NameStyle
+from typing import Type
 
 
 class BaseEventParser:
-    def __init__(self, table):
+    def __init__(self, table: dict[str, Type]):
         self._lookup_table = table
         self._retort = Retort(recipe=[
             name_mapping(name_style=NameStyle.CAMEL)
