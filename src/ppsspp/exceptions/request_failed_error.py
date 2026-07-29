@@ -8,4 +8,4 @@ class RequestFailedError(Exception):
     def __init__(self, error: ErrorEvent, failed_request: PPSSPPRequest | BaseRequest):
         self.error = error
         self.failed_request = failed_request
-        Exception.__init__(self, error, failed_request)
+        super().__init__(f"Request {failed_request} failed: '{error.message}'")

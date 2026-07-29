@@ -1,5 +1,4 @@
 
 class QueueClosedError(Exception):
-    def __init__(self, *args):
-        self._msgs = args
-        super().__init__(args)
+    def __init__(self):
+        super().__init__("Queue was closed")
