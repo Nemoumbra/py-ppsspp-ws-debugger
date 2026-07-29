@@ -51,7 +51,7 @@ class MemoryEventParser(BaseEventParser):
             "memory.info.search": MemoryInfoSearchEvent,
         }
 
-        BaseEventParser.__init__(self, lookup_table)
+        super().__init__(lookup_table)
         self._retort = Retort(recipe=[
             name_mapping(name_style=NameStyle.CAMEL),
             name_mapping(DisasmLine, map={"is_current_pc": "isCurrentPC"})

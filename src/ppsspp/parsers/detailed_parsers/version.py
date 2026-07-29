@@ -10,4 +10,4 @@ class VersionEventParser(BaseEventParser):
             "version": VersionEvent,
         }
 
-        BaseEventParser.__init__(self, lookup_table)
+        super().__init__(lookup_table)

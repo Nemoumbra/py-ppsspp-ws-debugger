@@ -12,4 +12,4 @@ class BroadcastConfigEventParser(BaseEventParser):
             "broadcast.config.set": BroadcastConfigSetEvent,
         }
 
-        BaseEventParser.__init__(self, lookup_table)
+        super().__init__(lookup_table)

@@ -17,4 +17,4 @@ class GameEventParser(BaseEventParser):
             "game.quit": GameQuitEvent,
         }
 
-        BaseEventParser.__init__(self, lookup_table)
+        super().__init__(lookup_table)

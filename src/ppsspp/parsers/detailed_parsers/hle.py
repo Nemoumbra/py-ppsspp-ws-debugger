@@ -31,4 +31,4 @@ class HLEEventParser(BaseEventParser):
             "hle.backtrace": HleBacktraceEvent,
         }
 
-        BaseEventParser.__init__(self, lookup_table)
+        super().__init__(lookup_table)

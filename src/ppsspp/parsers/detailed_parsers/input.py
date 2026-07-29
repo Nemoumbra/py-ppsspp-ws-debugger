@@ -21,7 +21,7 @@ class InputEventParser(BaseEventParser):
             "input.analog.send": InputAnalogSendEvent,
         }
 
-        BaseEventParser.__init__(self, lookup_table)
+        super().__init__(lookup_table)
 
         # ButtonsState has snake_case names
         self._retort = Retort()

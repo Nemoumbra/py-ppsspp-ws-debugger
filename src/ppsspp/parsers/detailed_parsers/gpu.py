@@ -28,4 +28,4 @@ class GPUEventParser(BaseEventParser):
             "gpu.buffer.clut": GpuBufferClutUriEvent | GpuBufferClutB64Event,
         }
 
-        BaseEventParser.__init__(self, lookup_table)
+        super().__init__(lookup_table)
