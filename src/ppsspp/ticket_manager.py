@@ -21,6 +21,8 @@ class TicketManager:
         return ticket
 
     def add_custom_ticket(self, ticket: str):
+        if ticket in self._unresolved_tickets:
+            raise ValueError(f"Ticket '{ticket}' already known!")
         self._unresolved_tickets.add(ticket)
 
     def finalize_ticket(self, ticket: str):
