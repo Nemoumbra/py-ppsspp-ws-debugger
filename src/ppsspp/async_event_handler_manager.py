@@ -14,6 +14,7 @@ from ppsspp.ticket_manager import TicketManager
 # Return True from the handler to remove it from the list of handlers
 AsyncEventHandler = Callable[[BaseEvent], Awaitable[bool | None]]
 
+
 async def run_handler(event: BaseEvent, handler: AsyncEventHandler, all_handlers: list[AsyncEventHandler]):
     result = await handler(event)
     if result:

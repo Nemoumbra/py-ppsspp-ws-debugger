@@ -25,7 +25,7 @@ def test_custom_tickets():
     kTicketLength = 8
     ticket_man = TicketManager(ticket_length=kTicketLength)
     custom_tickets = [
-        "", "123", "abc", "xyz0", "0"*100
+        "", "123", "abc", "xyz0", "0" * 100
     ]
     for ticket in custom_tickets:
         with pytest.raises(ValueError):
@@ -108,9 +108,8 @@ def test_low_keyspace():
     ticket_man = TicketManager(ticket_length=kTicketLength)
 
     # Letters
-    kIterations = 26*2
+    kIterations = 26 * 2
 
     tickets = [ticket_man.get_ticket() for _ in range(kIterations)]
     for ticket in tickets:
         ticket_man.finalize_ticket(ticket)
-
