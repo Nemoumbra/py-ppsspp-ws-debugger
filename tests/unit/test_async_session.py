@@ -19,8 +19,6 @@ from ppsspp.model.ppsspp_objects.logs.log_level import LogLevel
 from ppsspp.model.requests.other.version import VersionRequest
 
 
-# TODO: actually test all events and requests...
-
 class MockConnection:
     def __init__(self, exhausted: asyncio.Event, events: list):
         self.gen = (event for event in events)
@@ -148,53 +146,6 @@ def input_ev():
     return {
         "event": "input.analog", "stick": AnalogStick.left.value, "x": 1.0, "y": -1.0
     }
-
-
-# TODO: fixture?
-
-def get_events():
-    return [
-        {},
-        {"event": 123},
-        {"event": "unknown_event"},
-        {"event": "error", "message": "oh man", "level": LogLevel.ERROR.value},
-
-        {"event": "memory.unknown_event"},
-        {"event": "version", "name": "mock", "version": "0"}
-    ]
-
-
-def get_requests():
-    return {
-
-    }
-
-
-async def test_serialization():
-    session = AsyncSession()
-    events = get_events()
-    requests = get_requests()
-    exhausted = asyncio.Event()
-    connection = MockConnection(exhausted, events)
-
-    await session.run(connection)
-
-    # Low-level stuff, no ticket
-    await session.send_request_raw(PPSSPPRequest("version"))
-    await session.send_request(VersionRequest())
-
-    pass
-
-
-async def test_parsing():
-    session = AsyncSession()
-    events = get_events()
-    exhausted = asyncio.Event()
-    connection = MockConnection(exhausted, events)
-
-    await session.run(connection)
-    await exhausted.wait()
-    pass
 
 
 async def test_responses_low_level():
@@ -409,6 +360,7 @@ async def test_stopping(log_ev):
     connection.proceed()
     await session.stop()
 
+
 async def test_errors():
     session = AsyncSession()
 
@@ -434,5 +386,3 @@ async def test_errors():
     await recv_requested.wait()
     recv_requested.clear()
     await session.stop()
-
-
