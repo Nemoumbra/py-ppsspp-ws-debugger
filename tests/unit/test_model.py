@@ -35,12 +35,55 @@ class MockConnection:
 
 def get_events():
     return [
+        # Garbage data
         {},
         {"event": 123},
         {"event": "unknown_event"},
+        {"event": "memory.unknown_event"},
+
+        # The error event
         {"event": "error", "message": "oh man", "level": LogLevel.ERROR.value},
 
-        {"event": "memory.unknown_event"},
+        # Breakpoints
+        {"event": "cpu.breakpoint.add"},
+        {"event": "cpu.breakpoint.update"},
+        {"event": "cpu.breakpoint.remove"},
+        {"event": "cpu.breakpoint.list", "breakpoints": [
+            {'address': 0, 'enabled': False, 'log': True, 'code': "ooops", 'condition': None, 'logFormat': None,
+             'symbol': None}
+        ]},
+        {"event": "cpu.breakpoint.list", "breakpoints": [
+            {'address': 0, 'enabled': False, 'log': True, 'code': "ooops", 'condition': "true",
+             'logFormat': "format text", 'symbol': "zz_func"}
+        ]},
+        {"event": "memory.breakpoint.add"},
+        {"event": "memory.breakpoint.update"},
+        {"event": "memory.breakpoint.remove"},
+        {"event": "memory.breakpoint.list", "breakpoints": [
+            {'address': 0, 'size': 1, 'enabled': False, 'log': True, 'read': True, 'write': True, 'change': True,
+             'hits': -1, 'condition': None, 'logFormat': None, 'symbol': None}
+        ]},
+        {"event": "memory.breakpoint.list", "breakpoints": [
+            {'address': 0, 'size': 1, 'enabled': False, 'log': True, 'read': True, 'write': True, 'change': True,
+             'hits': -1, 'condition': "true", 'logFormat': "format text", 'symbol': "zz_func"}
+        ]},
+        # CPU
+
+        # Disassembly
+
+        # Game
+
+        # GPU
+
+        # HLE
+
+        # Input
+
+        # Memory
+
+        # Replay
+
+        # Other
         {"event": "version", "name": "mock", "version": "0"}
     ]
 
