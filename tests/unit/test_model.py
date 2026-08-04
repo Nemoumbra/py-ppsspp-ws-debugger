@@ -2,6 +2,10 @@ import asyncio
 
 from ppsspp import AsyncSession, PPSSPPRequest
 from ppsspp.exceptions.connection_terminated import ConnectionTerminated
+from ppsspp.model.ppsspp_objects.cpu.register import RegisterCategory
+from ppsspp.model.ppsspp_objects.disassembly.branches import BranchGuide, BranchInfo
+from ppsspp.model.ppsspp_objects.disassembly.disasm_line import DisasmLine, DataSymbol, DisasmLineBreakpoint, \
+    DisasmLineRelevantData, DisasmLineDataAccess
 from ppsspp.model.ppsspp_objects.logs.log_level import LogLevel
 from ppsspp.model.requests.other.version import VersionRequest
 
@@ -67,10 +71,70 @@ def get_events():
             {'address': 0, 'size': 1, 'enabled': False, 'log': True, 'read': True, 'write': True, 'change': True,
              'hits': -1, 'condition': "true", 'logFormat': "format text", 'symbol': "zz_func"}
         ]},
+
         # CPU
+        {"event": "cpu.stepping", "pc": 0, "ticks": 1, "reason": "nuh-uh", "relatedAddress": 11037},
+        {"event": "cpu.stepping", "pc": 0, "ticks": 1, "reason": None, "relatedAddress": None},
+        {"event": "cpu.resume"},
+        {"event": "cpu.status", "stepping": True, "paused": True, "pc": 0, "ticks": 1.5},
+        {"event": "cpu.evaluate", "uintValue": 1, "floatValue": "1.5"},
+
+        {"event": "cpu.getReg", "category": 1, "register": 0, "uintValue": 1, "floatValue": "1.5"},
+        {"event": "cpu.setReg", "category": 1, "register": 0, "uintValue": 1, "floatValue": "1.5"},
+        {"event": "cpu.getAllRegs", "categories": [
+            {'id': 0, 'name': "hi", 'registerNames': ["a0"], 'uintValues': [1], 'floatValues': ["1.5"]}
+        ]},
 
         # Disassembly
+        {"event": "memory.base", "addressHex": "0xdeadbeef"},
+        {"event": "memory.disasm", "range": {"start": 0, "end": 1},
+         "lines": [
+             {'type': "", 'address': 1, 'addressSize': 1, 'encoding': 0, 'macroEncoding': None,
+              'backgroundColor': "red", 'name': "what", 'params': "", 'symbol': None, 'function': None,
+              'dataSymbol': None, 'breakpoint': None, 'isCurrentPC': False, 'branch': None, 'relevantData': None,
+              'conditionMet': None, 'dataAccess': None}
+         ],
+         "branchGuides": [
+             {'top': 5, 'bottom': 1, 'direction': "down", 'lane': 1}
+         ]
+         },
 
+        {"event": "memory.disasm", "range": {"start": 0, "end": 1},
+         "lines": [
+             {'type': "", 'address': 1, 'addressSize': 1, 'encoding': 0, 'macroEncoding': [0],
+              'backgroundColor': "red", 'name': "what", 'params': "", 'symbol': "sym", 'function': "func",
+              'dataSymbol': {'start': 0, 'label': None},
+              'breakpoint': {'enabled': False, 'address': 1, 'condition': None}, 'isCurrentPC': False,
+              'branch': {'targetAddress': None, 'register': None, 'isLined': False, 'isLikely': False,
+                         'symbol': None},
+              'relevantData': {'address': 0, 'uintValue': None, 'stringValue': None},
+              'conditionMet': True,
+              'dataAccess': {'address': 0, 'size': 1, 'uintValue': None, 'symbol': None, 'valueSymbol': None}}
+         ],
+         "branchGuides": [
+             {'top': 5, 'bottom': 1, 'direction': "down", 'lane': 1}
+         ]
+         },
+        # and another layer of "none"s...
+        {"event": "memory.disasm", "range": {"start": 0, "end": 1},
+         "lines": [
+             {'type': "", 'address': 1, 'addressSize': 1, 'encoding': 0, 'macroEncoding': [0],
+              'backgroundColor': "red", 'name': "what", 'params': "", 'symbol': "sym", 'function': "func",
+              'dataSymbol': {'start': 0, 'label': "lable"},
+              'breakpoint': {'enabled': False, 'address': 1, 'condition': "true"}, 'isCurrentPC': False,
+              'branch': {'targetAddress': 1, 'register': 0, 'isLined': False, 'isLikely': False,
+                         'symbol': "sym"},
+              'relevantData': {'address': 0, 'uintValue': 1, 'stringValue': "value"},
+              'conditionMet': True,
+              'dataAccess': {'address': 0, 'size': 1, 'uintValue': 10, 'symbol': "sym", 'valueSymbol': "value_sym"}}
+         ],
+         "branchGuides": [
+             {'top': 5, 'bottom': 1, 'direction': "down", 'lane': 1}
+         ]
+         },
+        {"event": "memory.searchDisasm", "address": None},
+        {"event": "memory.searchDisasm", "address": 1},
+        {"event": "memory.assemble", "encoding": 0xcafe},
         # Game
 
         # GPU
