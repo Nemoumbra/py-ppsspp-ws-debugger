@@ -2,10 +2,6 @@ import asyncio
 
 from ppsspp import AsyncSession, PPSSPPRequest
 from ppsspp.exceptions.connection_terminated import ConnectionTerminated
-from ppsspp.model.ppsspp_objects.cpu.register import RegisterCategory
-from ppsspp.model.ppsspp_objects.disassembly.branches import BranchGuide, BranchInfo
-from ppsspp.model.ppsspp_objects.disassembly.disasm_line import DisasmLine, DataSymbol, DisasmLineBreakpoint, \
-    DisasmLineRelevantData, DisasmLineDataAccess
 from ppsspp.model.ppsspp_objects.logs.log_level import LogLevel
 from ppsspp.model.requests.other.version import VersionRequest
 
@@ -135,7 +131,19 @@ def get_events():
         {"event": "memory.searchDisasm", "address": None},
         {"event": "memory.searchDisasm", "address": 1},
         {"event": "memory.assemble", "encoding": 0xcafe},
+
         # Game
+        {"event": "game.reset"},
+        {"event": "game.status", "game": None, "paused": False},
+        {"event": "game.status", "game": {'id': "nmae", 'version': "0", 'title': "tilted"}, "paused": False},
+        {"event": "game.pause", "game": None},
+        {"event": "game.pause", "game": {'id': "nmae", 'version': "0", 'title': "tilted"}},
+        {"event": "game.resume", "game": None},
+        {"event": "game.resume", "game": {'id': "nmae", 'version': "0", 'title': "tilted"}},
+        {"event": "game.start", "game": None},
+        {"event": "game.start", "game": {'id': "nmae", 'version': "0", 'title': "tilted"}},
+        {"event": "game.quit", "game": None},
+        # {"event": "game.resume"},  # This also works! TODO: should it work?
 
         # GPU
 
