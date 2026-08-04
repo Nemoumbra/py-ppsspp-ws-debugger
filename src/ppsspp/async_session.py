@@ -60,7 +60,6 @@ async def populate_event_queue(queue: AsyncCloseableQueue[BaseEvent], connection
         except QueueClosedError:
             logger.debug("Queue closed, 'populate_event_queue' returning...")
             return
-    pass
 
 
 async def process_events(queue: AsyncCloseableQueue[BaseEvent], event_handler_man: AsyncEventHandlerManager):
@@ -74,9 +73,9 @@ async def process_events(queue: AsyncCloseableQueue[BaseEvent], event_handler_ma
                 logger.debug("Queue closed, 'process_events' returning...")
                 return
             except Exception as e:
+                # TODO: this is probably unreachable due to TaskGroup's exception semantics
                 logger.debug(f"Process events error: {e}")
                 continue
-    pass
 
 
 class AsyncSession:
@@ -142,6 +141,7 @@ class AsyncSession:
         await self._event_queue.close()
         await self._connection.close()
 
+        # TODO: maybe cancel them?
         logger.debug("Waiting for producer to join...")
         await self.producer_task
         logger.debug("Producer joined!")

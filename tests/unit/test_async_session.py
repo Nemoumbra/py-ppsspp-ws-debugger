@@ -1,6 +1,7 @@
 import asyncio
 import json
 from collections import deque
+from json import JSONDecodeError
 
 import pytest
 
@@ -21,7 +22,7 @@ from ppsspp.model.requests.other.version import VersionRequest
 # TODO: actually test all events and requests...
 
 class MockConnection:
-    def __init__(self, exhausted: asyncio.Event, events: list[dict]):
+    def __init__(self, exhausted: asyncio.Event, events: list):
         self.gen = (event for event in events)
         self.exhausted = exhausted
 
@@ -29,7 +30,7 @@ class MockConnection:
         item = next(self.gen)
         return item
 
-    async def recv(self) -> dict:
+    async def recv(self):
         try:
             return self._next()
         except StopIteration:
@@ -40,19 +41,27 @@ class MockConnection:
         # Do nothing
         pass
 
+    async def close(self):
+        pass
+
 
 class MockStepByStepConnection:
-    def __init__(self, events: list[dict], manual: bool):
+    def __init__(self, events: list, recv_requested: asyncio.Event | None = None, *, manual: bool):
         self.gen = (event for event in events)
         self.proceed_requested = asyncio.Event()
+        self.recv_requested = recv_requested
         self.manual = manual
 
     def _next(self):
         item = next(self.gen)
+        if isinstance(item, Exception):
+            raise item
         return item
 
-    async def recv(self) -> dict:
+    async def recv(self):
         try:
+            if self.recv_requested is not None:
+                self.recv_requested.set()
             await self.proceed_requested.wait()
             self.proceed_requested.clear()
             return self._next()
@@ -66,6 +75,9 @@ class MockStepByStepConnection:
         self.proceed()
 
     def proceed(self):
+        self.proceed_requested.set()
+
+    async def close(self):
         self.proceed_requested.set()
 
 
@@ -104,11 +116,14 @@ class MockTicketMonitorConnection:
     def proceed(self):
         self.proceed_requested.set()
 
+    async def close(self):
+        self.proceed_requested.set()
+
 
 @pytest.fixture()
 def log_ev():
     return {
-        "event": "log", "timestamp": "", "header" : "",
+        "event": "log", "timestamp": "", "header": "",
         "message": "message",
         "level": LogLevel.INFO.value, "channel": ""
     }
@@ -193,6 +208,7 @@ async def test_responses_low_level():
     ]
 
     notifier = asyncio.Event()
+
     async def handler(ev: BaseEvent):
         notifier.set()
 
@@ -323,6 +339,7 @@ async def test_subscriptions(log_ev, cpu_ev, game_ev, input_ev):
         notifier.clear()
 
     listen_notifier = asyncio.Event()
+
     @session.listen_for(CpuResumeEvent)
     async def listen(ev: BaseEvent):
         nonlocal count
@@ -331,6 +348,7 @@ async def test_subscriptions(log_ev, cpu_ev, game_ev, input_ev):
         listen_notifier.clear()
 
     prom_notifier = asyncio.Event()
+
     @session.listen_for(None)
     async def listen_all(ev: BaseEvent):
         nonlocal count_all
@@ -366,6 +384,55 @@ async def test_subscriptions(log_ev, cpu_ev, game_ev, input_ev):
     assert (log_count, cpu_count, game_count, input_count, count, count_all) == (2, 2, 2, 2, 2, 8)
 
 
-# TODO: check 'stop'
-# async def test_stopping():
-#     session = AsyncSession()
+async def test_stopping(log_ev):
+    session = AsyncSession()
+    await session.stop()
+
+    exhausted = asyncio.Event()
+
+    events = [
+
+    ]
+    connection = MockConnection(exhausted, events)
+
+    await session.run(connection)
+    await session.stop()
+
+    events = [
+        log_ev
+    ]
+    recv_requested = asyncio.Event()
+    connection = MockStepByStepConnection(events, recv_requested, manual=True)
+    await session.run(connection)
+    await recv_requested.wait()
+    recv_requested.clear()
+    connection.proceed()
+    await session.stop()
+
+async def test_errors():
+    session = AsyncSession()
+
+    broken_events = [
+        ["sup, I'm not a dict"],
+    ]
+
+    try:
+        json.loads("wtf")
+    except JSONDecodeError as e:
+        broken_events.append(e)
+
+    recv_requested = asyncio.Event()
+    connection = MockStepByStepConnection(broken_events, recv_requested, manual=True)
+    await session.run(connection)
+
+    await recv_requested.wait()
+    recv_requested.clear()
+    connection.proceed()
+    await recv_requested.wait()
+    recv_requested.clear()
+    connection.proceed()
+    await recv_requested.wait()
+    recv_requested.clear()
+    await session.stop()
+
+
