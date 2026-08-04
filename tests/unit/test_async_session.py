@@ -107,32 +107,32 @@ class MockTicketMonitorConnection:
 
 @pytest.fixture()
 def log_ev():
-    return LogEvent(
-        event="log", timestamp="", header="",
-        message="message",
-        level=LogLevel.INFO, channel=""
-    )
+    return {
+        "event": "log", "timestamp": "", "header" : "",
+        "message": "message",
+        "level": LogLevel.INFO.value, "channel": ""
+    }
 
 
 @pytest.fixture()
 def cpu_ev():
-    return CpuResumeEvent(
-        event="cpu.resume"
-    )
+    return {
+        "event": "cpu.resume"
+    }
 
 
 @pytest.fixture()
 def game_ev():
-    return GameQuitEvent(
-        event="game.quit", game=None
-    )
+    return {
+        "event": "game.quit", "game": None
+    }
 
 
 @pytest.fixture()
 def input_ev():
-    return InputAnalogEvent(
-        event="input.analog", stick=AnalogStick.left, x=1.0, y=-1.0
-    )
+    return {
+        "event": "input.analog", "stick": AnalogStick.left.value, "x": 1.0, "y": -1.0
+    }
 
 
 # TODO: fixture?
@@ -275,32 +275,97 @@ async def test_auto_tickets():
     await session.execute_unchecked_raw(request)
     await session.execute_unchecked(VersionRequest())
 
-#
-# async def test_subscriptions(log_ev, cpu_ev, game_ev, input_ev):
+
+async def test_subscriptions(log_ev, cpu_ev, game_ev, input_ev):
+    session = AsyncSession()
+    log_count = 0
+    cpu_count = 0
+    game_count = 0
+    input_count = 0
+    count = 0
+    count_all = 0
+
+    events = [
+        log_ev, cpu_ev, game_ev, input_ev, log_ev, cpu_ev, game_ev, input_ev
+    ]
+
+    connection = MockStepByStepConnection(events, manual=True)
+    notifier = asyncio.Event()
+
+    await session.run(connection)
+
+    @session.log_handler()
+    async def handle_log(ev: BaseEvent):
+        nonlocal log_count
+        log_count += 1
+        notifier.set()
+        notifier.clear()
+
+    @session.stepping_handler()
+    async def handle_cpu(ev: BaseEvent):
+        nonlocal cpu_count
+        cpu_count += 1
+        notifier.set()
+        notifier.clear()
+
+    @session.game_handler()
+    async def handle_game(ev: BaseEvent):
+        nonlocal game_count
+        game_count += 1
+        notifier.set()
+        notifier.clear()
+
+    @session.input_handler()
+    async def handle_input(ev: BaseEvent):
+        nonlocal input_count
+        input_count += 1
+        notifier.set()
+        notifier.clear()
+
+    listen_notifier = asyncio.Event()
+    @session.listen_for(CpuResumeEvent)
+    async def listen(ev: BaseEvent):
+        nonlocal count
+        count += 1
+        listen_notifier.set()
+        listen_notifier.clear()
+
+    prom_notifier = asyncio.Event()
+    @session.listen_for(None)
+    async def listen_all(ev: BaseEvent):
+        nonlocal count_all
+        count_all += 1
+        prom_notifier.set()
+        prom_notifier.clear()
+
+    assert (log_count, cpu_count, game_count, input_count, count, count_all) == (0, 0, 0, 0, 0, 0)
+
+    connection.proceed()
+    await asyncio.gather(notifier.wait(), prom_notifier.wait())
+    assert (log_count, cpu_count, game_count, input_count, count, count_all) == (1, 0, 0, 0, 0, 1)
+    connection.proceed()
+    await asyncio.gather(notifier.wait(), listen_notifier.wait(), prom_notifier.wait())
+    assert (log_count, cpu_count, game_count, input_count, count, count_all) == (1, 1, 0, 0, 1, 2)
+    connection.proceed()
+    await asyncio.gather(notifier.wait(), prom_notifier.wait())
+    assert (log_count, cpu_count, game_count, input_count, count, count_all) == (1, 1, 1, 0, 1, 3)
+    connection.proceed()
+    await asyncio.gather(notifier.wait(), prom_notifier.wait())
+    assert (log_count, cpu_count, game_count, input_count, count, count_all) == (1, 1, 1, 1, 1, 4)
+    connection.proceed()
+    await asyncio.gather(notifier.wait(), prom_notifier.wait())
+    assert (log_count, cpu_count, game_count, input_count, count, count_all) == (2, 1, 1, 1, 1, 5)
+    connection.proceed()
+    await asyncio.gather(notifier.wait(), listen_notifier.wait(), prom_notifier.wait())
+    assert (log_count, cpu_count, game_count, input_count, count, count_all) == (2, 2, 1, 1, 2, 6)
+    connection.proceed()
+    await asyncio.gather(notifier.wait(), prom_notifier.wait())
+    assert (log_count, cpu_count, game_count, input_count, count, count_all) == (2, 2, 2, 1, 2, 7)
+    connection.proceed()
+    await asyncio.gather(notifier.wait(), prom_notifier.wait())
+    assert (log_count, cpu_count, game_count, input_count, count, count_all) == (2, 2, 2, 2, 2, 8)
+
+
+# TODO: check 'stop'
+# async def test_stopping():
 #     session = AsyncSession()
-#     log_count = 0
-#     cpu_count = 0
-#     game_count = 0
-#     input_count = 0
-#
-#     @session.log_handler()
-#     async def handle_log(ev: BaseEvent):
-#         nonlocal log_count
-#         log_count += 1
-#
-#     @session.stepping_handler()
-#     async def handle_cpu(ev: BaseEvent):
-#         nonlocal cpu_count
-#         cpu_count += 1
-#
-#     @session.game_handler()
-#     async def handle_game(ev: BaseEvent):
-#         nonlocal game_count
-#         game_count += 1
-#
-#     @session.input_handler()
-#     async def handle_input(ev: BaseEvent):
-#         nonlocal input_count
-#         input_count += 1
-#
-#     pass
