@@ -2,6 +2,7 @@ import asyncio
 
 from ppsspp import AsyncSession, PPSSPPRequest
 from ppsspp.exceptions.connection_terminated import ConnectionTerminated
+from ppsspp.model.ppsspp_objects.gpu.gpu_stats import FpsInfo, VblankCyclesInfo, TimingInfo
 from ppsspp.model.ppsspp_objects.logs.log_level import LogLevel
 from ppsspp.model.requests.other.version import VersionRequest
 
@@ -127,7 +128,7 @@ def get_events():
          "branchGuides": [
              {'top': 5, 'bottom': 1, 'direction': "down", 'lane': 1}
          ]
-         },
+        },
         {"event": "memory.searchDisasm", "address": None},
         {"event": "memory.searchDisasm", "address": 1},
         {"event": "memory.assemble", "encoding": 0xcafe},
@@ -146,8 +147,68 @@ def get_events():
         # {"event": "game.resume"},  # This also works! TODO: should it work?
 
         # GPU
+        {"event": "gpu.buffer.screenshot", "width": 0, "height": 0, "isFramebuffer": None, "uri": "abc"},
+        {"event": "gpu.buffer.screenshot", "width": 0, "height": 0, "isFramebuffer": False, "uri": "abc"},
+        {"event": "gpu.buffer.screenshot", "width": 0, "height": 0, "isFramebuffer": None, "flipped": False,
+         "format": "png", "base64": "xyz"},
+        {"event": "gpu.buffer.screenshot", "width": 0, "height": 0, "isFramebuffer": False, "flipped": False,
+         "format": "png", "base64": "xyz"},
+        {"event": "gpu.buffer.renderColor", "width": 0, "height": 0, "isFramebuffer": None, "uri": "def"},
+        {"event": "gpu.buffer.renderColor", "width": 0, "height": 0, "isFramebuffer": None, "flipped": False,
+         "format": "jpeg", "base64": "uvw"},
+        {"event": "gpu.buffer.renderDepth", "width": 0, "height": 0, "isFramebuffer": None, "uri": "ghi"},
+        {"event": "gpu.buffer.renderDepth", "width": 0, "height": 0, "isFramebuffer": False, "uri": "ghi"},
+        {"event": "gpu.buffer.renderDepth", "width": 0, "height": 0, "isFramebuffer": None, "flipped": False,
+         "format": "png", "base64": "rst"},
+        {"event": "gpu.buffer.renderDepth", "width": 0, "height": 0, "isFramebuffer": False, "flipped": False,
+         "format": "png", "base64": "rst"},
+        {"event": "gpu.buffer.renderStencil", "width": 0, "height": 0, "isFramebuffer": None, "uri": "jkl"},
+        {"event": "gpu.buffer.renderStencil", "width": 0, "height": 0, "isFramebuffer": False, "uri": "jkl"},
+        {"event": "gpu.buffer.renderStencil", "width": 0, "height": 0, "isFramebuffer": None, "flipped": False,
+         "format": "bmp", "base64": "mno"},
+        {"event": "gpu.buffer.renderStencil", "width": 0, "height": 0, "isFramebuffer": False, "flipped": False,
+         "format": "bmp", "base64": "mno"},
+        {"event": "gpu.buffer.texture", "width": 0, "height": 0, "isFramebuffer": None, "uri": "pqr"},
+        {"event": "gpu.buffer.texture", "width": 0, "height": 0, "isFramebuffer": False, "uri": "pqr"},
+        {"event": "gpu.buffer.texture", "width": 0, "height": 0, "isFramebuffer": None, "flipped": False,
+         "format": "png", "base64": "stu"},
+        {"event": "gpu.buffer.texture", "width": 0, "height": 0, "isFramebuffer": False, "flipped": False,
+         "format": "png", "base64": "stu"},
+        {"event": "gpu.buffer.clut", "width": 0, "height": 0, "isFramebuffer": None, "uri": "vwx"},
+        {"event": "gpu.buffer.clut", "width": 0, "height": 0, "isFramebuffer": False, "uri": "vwx"},
+        {"event": "gpu.buffer.clut", "width": 0, "height": 0, "isFramebuffer": None, "flipped": False,
+         "format": "tiff", "base64": "yza"},
+        {"event": "gpu.buffer.clut", "width": 0, "height": 0, "isFramebuffer": False, "flipped": False,
+         "format": "tiff", "base64": "yza"},
+
+        {"event": "gpu.record.dump", "uri": "0"},
+        {"event": "gpu.stats.get", "fps": {'actual': 1.5, 'target': 0.5},
+         "vblanksPerSecond": {'actual': 1.5, 'target': 0.5},
+         "info": "0", "timing": {'frames': [1.0], 'sleep': [0.0], 'pos': 7}
+         },
 
         # HLE
+        {"event": "hle.module.list", "modules": [
+            {"name": "mod", "address": 0, "size": 0, "isActive": False}
+        ]},
+        {"event": "hle.backtrace", "frames": [
+            {"entry": 0, "pc": 0, "sp": 0, "stackSize": 0, "code": "abc"}
+        ]},
+        {"event": "hle.func.list", "functions": [
+            {"name": "func", "address": 0, "size": 0}
+        ]},
+        {"event": "hle.func.add", "address": 0, "size": 0, "name": "func"},
+        {"event": "hle.func.remove", "address": 0, "size": 0},
+        {"event": "hle.func.removeRange", "count": 0},
+        {"event": "hle.func.rename", "address": 0, "size": 0, "name": "newname"},
+        {"event": "hle.func.scan"},
+        {"event": "hle.thread.list", "threads": [
+            {"id": 0, "name": "thread", "status": 0, "statuses": ["running"], "pc": 0, "entry": 0,
+             "initialStackSize": 0, "currentStackSize": 0, "priority": 0, "waitType": 0, "isCurrent": False}
+        ]},
+        {"event": "hle.thread.wake", "thread": 0, "status": "wake"},
+        {"event": "hle.thread.stop", "thread": 0, "status": "stop"},
+
 
         # Input
 
