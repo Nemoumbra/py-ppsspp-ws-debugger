@@ -2,7 +2,6 @@ import asyncio
 import dataclasses
 
 from ppsspp import AsyncSession
-from ppsspp.exceptions.connection_terminated import ConnectionTerminated
 from ppsspp.model.events.base_event import BaseEvent
 from ppsspp.model.ppsspp_objects.logs.log_level import LogLevel
 from ppsspp.model.requests.base_request import BaseRequest
@@ -24,31 +23,7 @@ from ppsspp.model.requests.cpu.registers import (
     CpuSetRegRequest, CpuSetRegByNameRequest, CpuSetRegByIdxAndCategoryRequest
 )
 from ppsspp.model.requests.other.version import VersionRequest
-
-
-# TODO: find a better place for this class (it's duplicated)
-class MockConnection:
-    def __init__(self, exhausted: asyncio.Event, events: list):
-        self.gen = (event for event in events)
-        self.exhausted = exhausted
-
-    def _next(self):
-        item = next(self.gen)
-        return item
-
-    async def recv(self):
-        try:
-            return self._next()
-        except StopIteration:
-            self.exhausted.set()
-            raise ConnectionTerminated from None
-
-    async def send(self, _):
-        # Do nothing
-        pass
-
-    async def close(self):
-        pass
+from tests.unit.utils import MockConnection
 
 
 # TODO: fixture?
