@@ -167,6 +167,9 @@ async def test_responses_low_level():
     await session.run(connection)
 
     request = PPSSPPRequest("version")
+    # This one doesn't trigger a response.
+    await session.send_request_raw(request)
+    # But this one has to.
     request.set_ticket(kTicket)
     await session.send_request_raw(request, handler)
     # Simulate a response

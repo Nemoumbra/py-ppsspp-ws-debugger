@@ -285,7 +285,6 @@ async def test_serialization():
     await session.run(connection)
 
     # Low-level stuff, no ticket
-    await session.send_request_raw(PPSSPPRequest("version"))
     await session.send_request(VersionRequest())
 
     pass
