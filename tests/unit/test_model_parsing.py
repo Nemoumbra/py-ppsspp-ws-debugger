@@ -57,20 +57,17 @@ def get_events():
 
         # Disassembly
         {"event": "memory.base", "addressHex": "0xdeadbeef"},
-        {"event": "memory.disasm", "range": {"start": 0, "end": 1},
-         "lines": [
+        {"event": "memory.disasm", "range": {"start": 0, "end": 1}, "lines": [
              {'type': "", 'address': 1, 'addressSize': 1, 'encoding': 0, 'macroEncoding': None,
               'backgroundColor': "red", 'name': "what", 'params': "", 'symbol': None, 'function': None,
               'dataSymbol': None, 'breakpoint': None, 'isCurrentPC': False, 'branch': None, 'relevantData': None,
               'conditionMet': None, 'dataAccess': None}
-         ],
-         "branchGuides": [
+        ],
+        "branchGuides": [
              {'top': 5, 'bottom': 1, 'direction': "down", 'lane': 1}
-         ]
-         },
+        ]},
 
-        {"event": "memory.disasm", "range": {"start": 0, "end": 1},
-         "lines": [
+        {"event": "memory.disasm", "range": {"start": 0, "end": 1}, "lines": [
              {'type': "", 'address': 1, 'addressSize': 1, 'encoding': 0, 'macroEncoding': [0],
               'backgroundColor': "red", 'name': "what", 'params': "", 'symbol': "sym", 'function': "func",
               'dataSymbol': {'start': 0, 'label': None},
@@ -80,14 +77,12 @@ def get_events():
               'relevantData': {'address': 0, 'uintValue': None, 'stringValue': None},
               'conditionMet': True,
               'dataAccess': {'address': 0, 'size': 1, 'uintValue': None, 'symbol': None, 'valueSymbol': None}}
-         ],
-         "branchGuides": [
+        ],
+        "branchGuides": [
              {'top': 5, 'bottom': 1, 'direction': "down", 'lane': 1}
-         ]
-         },
+        ]},
         # and another layer of "none"s...
-        {"event": "memory.disasm", "range": {"start": 0, "end": 1},
-         "lines": [
+        {"event": "memory.disasm", "range": {"start": 0, "end": 1}, "lines": [
              {'type': "", 'address': 1, 'addressSize': 1, 'encoding': 0, 'macroEncoding': [0],
               'backgroundColor': "red", 'name': "what", 'params': "", 'symbol': "sym", 'function': "func",
               'dataSymbol': {'start': 0, 'label': "lable"},
@@ -97,11 +92,10 @@ def get_events():
               'relevantData': {'address': 0, 'uintValue': 1, 'stringValue': "value"},
               'conditionMet': True,
               'dataAccess': {'address': 0, 'size': 1, 'uintValue': 10, 'symbol': "sym", 'valueSymbol': "value_sym"}}
-         ],
-         "branchGuides": [
+        ],
+        "branchGuides": [
              {'top': 5, 'bottom': 1, 'direction': "down", 'lane': 1}
-         ]
-        },
+        ]},
         {"event": "memory.searchDisasm", "address": None},
         {"event": "memory.searchDisasm", "address": 1},
         {"event": "memory.assemble", "encoding": 0xcafe},
@@ -155,9 +149,9 @@ def get_events():
 
         {"event": "gpu.record.dump", "uri": "0"},
         {"event": "gpu.stats.get", "fps": {'actual': 1.5, 'target': 0.5},
-         "vblanksPerSecond": {'actual': 1.5, 'target': 0.5},
-         "info": "0", "timing": {'frames': [1.0], 'sleep': [0.0], 'pos': 7}
-         },
+        "vblanksPerSecond": {'actual': 1.5, 'target': 0.5},
+        "info": "0", "timing": {'frames': [1.0], 'sleep': [0.0], 'pos': 7}
+        },
 
         # HLE
         {"event": "hle.module.list", "modules": [
@@ -192,8 +186,8 @@ def get_events():
             "disc": False, "memstick": False, "forward": False, "back": False, "playpause": False,
             "l2": False, "l3": False, "r2": False, "r3": False,
         },
-         "changed": {"cross": False, "r3": False}
-         },
+        "changed": {"cross": False, "r3": False}
+        },
         {"event": "input.buttons.send"},
         {"event": "input.buttons.press"},
 
@@ -219,8 +213,7 @@ def get_events():
         {"event": "memory.info.search", "extent": None},
         {"event": "memory.info.search", "extent": {
             'type': "subfree", 'address': 0, 'size': 1, 'ticks': 1.5, 'pc': 0, 'tag': "", 'allocated': False
-        }
-        },
+        }},
 
         # Replay
         {"event": "replay.begin"},

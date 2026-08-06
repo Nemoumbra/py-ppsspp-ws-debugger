@@ -3,7 +3,6 @@ import dataclasses
 
 from ppsspp import AsyncSession
 from ppsspp.model.events.base_event import BaseEvent
-from ppsspp.model.ppsspp_objects.logs.log_level import LogLevel
 from ppsspp.model.requests.base_request import BaseRequest
 from ppsspp.model.requests.breakpoints.cpu import (
     CpuBreakpointAddRequest, CpuBreakpointUpdateRequest, CpuBreakpointRemoveRequest, CpuBreakpointListRequest
@@ -241,13 +240,12 @@ def get_requests() -> list[BaseRequest]:
         BroadcastConfigSetRequest(disallowed={"key": False}),
     ]
 
-# TODO: actually test all requests...
-
 
 def with_ticket(request: BaseRequest, ticket: str):
     return dataclasses.replace(request, ticket=ticket)
 
 
+# TODO (optionally): use a different connection mock to check that `json.loads` returns the correct dict
 async def test_serialization():
     # Sending requests
 
