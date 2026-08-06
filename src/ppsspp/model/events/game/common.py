@@ -12,23 +12,23 @@ class GameResetEvent(BaseEvent):
 
 @dataclass(kw_only=True)
 class GameStatusEvent(BaseEvent):
-    game: GameInfo | None = None
+    game: GameInfo | None
     paused: bool
 
 
 @dataclass(kw_only=True)
 class GamePauseEvent(BaseEvent):
-    game: GameInfo | None = None
+    game: GameInfo | None
 
 
 @dataclass(kw_only=True)
 class GameResumeEvent(BaseEvent):
-    game: GameInfo | None = None
+    game: GameInfo | None
 
 
 @dataclass(kw_only=True)
 class GameStartEvent(BaseEvent):
-    game: GameInfo | None = None
+    game: GameInfo | None
 
 
 @dataclass(kw_only=True)

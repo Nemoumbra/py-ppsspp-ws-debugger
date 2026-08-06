@@ -26,7 +26,7 @@ class MemoryDisasmEvent(BaseEvent):
 
 @dataclass(kw_only=True)
 class MemorySearchDisasmEvent(BaseEvent):
-    address: int | None = None
+    address: int | None
 
 
 @dataclass(kw_only=True)
