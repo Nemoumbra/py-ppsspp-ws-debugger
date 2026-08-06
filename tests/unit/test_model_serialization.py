@@ -23,7 +23,7 @@ from ppsspp.model.requests.cpu.registers import (
     CpuSetRegRequest, CpuSetRegByNameRequest, CpuSetRegByIdxAndCategoryRequest
 )
 from ppsspp.model.requests.other.version import VersionRequest
-from tests.unit.utils import MockConnection
+from tests.unit.utils import MockStepByStepConnection
 
 
 # TODO: fixture?
@@ -34,13 +34,19 @@ def get_requests() -> list[BaseRequest]:
 
         # Breakpoints
         CpuBreakpointAddRequest(address=0, enabled=None, log=None, condition=None, log_format=None),
+        CpuBreakpointAddRequest(address=0, enabled=False, log=False, condition="true", log_format="0"),
         CpuBreakpointUpdateRequest(address=0, enabled=None, log=None, condition=None, log_format=None),
+        CpuBreakpointUpdateRequest(address=0, enabled=False, log=False, condition="true", log_format="0"),
         CpuBreakpointRemoveRequest(address=0),
         CpuBreakpointListRequest(),
         MemoryBreakpointAddRequest(address=0, size=0, enabled=None, log=None, read=None, write=None, change=None,
                                    condition=None, log_format=None),
+        MemoryBreakpointAddRequest(address=0, size=0, enabled=False, log=False, read=False, write=False, change=False,
+                                   condition="true", log_format="0"),
         MemoryBreakpointUpdateRequest(address=0, size=0, enabled=None, log=None, read=None, write=None, change=None,
                                       condition=None, log_format=None),
+        MemoryBreakpointUpdateRequest(address=0, size=0, enabled=False, log=False, read=False, write=False, change=False,
+                                   condition="true", log_format="0"),
         MemoryBreakpointRemoveRequest(address=0, size=0),
         MemoryBreakpointListRequest(),
 
@@ -49,18 +55,30 @@ def get_requests() -> list[BaseRequest]:
         CpuResumeRequest(),
         CpuStatusRequest(),
         CpuEvaluateRequest(thread=None, expression="expr"),
+        CpuEvaluateRequest(thread=0, expression="expr"),
         CpuStepIntoRequest(thread=None),
+        CpuStepIntoRequest(thread=0),
         CpuStepOverRequest(thread=None),
+        CpuStepOverRequest(thread=0),
         CpuStepOutRequest(thread=None),
+        CpuStepOutRequest(thread=0),
         CpuRunUntilRequest(address=0),
         CpuNextHleRequest(),
+
         CpuGetAllRegsRequest(thread=None),
+        CpuGetAllRegsRequest(thread=0),
         CpuGetRegRequest(thread=None, name=None, category=None, register=None),
+        CpuGetRegRequest(thread=0, name="name", category=0, register=0),
         CpuGetRegByNameRequest(thread=None, name="eax"),
+        CpuGetRegByNameRequest(thread=0, name="eax"),
         CpuGetRegByIdxAndCategoryRequest(thread=None, category=0, register=0),
+        CpuGetRegByIdxAndCategoryRequest(thread=0, category=0, register=0),
         CpuSetRegRequest(thread=None, name=None, category=None, register=None, value=0),
+        CpuSetRegRequest(thread=0, name="name", category=0, register=0, value=0),
         CpuSetRegByNameRequest(thread=None, name="eax", value=0),
+        CpuSetRegByNameRequest(thread=0, name="eax", value=0),
         CpuSetRegByIdxAndCategoryRequest(thread=None, category=0, register=0, value=0),
+        CpuSetRegByIdxAndCategoryRequest(thread=0, category=0, register=0, value=0),
 
         # Disassembly
 
@@ -94,7 +112,7 @@ async def test_serialization():
 
     session = AsyncSession()
     # No need for input
-    connection = MockConnection(asyncio.Event(), [])
+    connection = MockStepByStepConnection([], manual=True)
     await session.run(connection)
 
     requests = get_requests()
@@ -109,4 +127,5 @@ async def test_serialization():
     for request in ticket_requests:
         await session.send_request(request, dummy_handler)
 
+    await connection.close()
     pass
