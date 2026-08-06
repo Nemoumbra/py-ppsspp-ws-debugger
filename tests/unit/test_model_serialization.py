@@ -38,8 +38,21 @@ from ppsspp.model.requests.gpu.buffer import (
 from ppsspp.model.requests.gpu.common import (
     GpuRecordDumpRequest, GpuStatsGetRequest, GpuStatsFeedRequest
 )
+from ppsspp.model.requests.hle.common import HleModuleListRequest, HleBacktraceRequest
+from ppsspp.model.requests.hle.func import (
+    HleFuncListRequest, HleFuncAddRequest, HleFuncRemoveRequest, HleFuncRemoveRangeRequest,
+    HleFuncRenameRequest, HleFuncScanRequest
+)
+from ppsspp.model.requests.hle.thread import HleThreadListRequest, HleThreadWakeRequest, HleThreadStopRequest
+from ppsspp.model.requests.input.analog import InputAnalogSendRequest
+from ppsspp.model.requests.input.buttons import InputButtonsSendRequest, InputButtonsPressRequest
 
 from ppsspp.model.requests.other.version import VersionRequest
+from ppsspp.model.requests.replay.common import (
+    ReplayBeginRequest, ReplayAbortRequest, ReplayFlushRequest, ReplayExecuteRequest, ReplayStatusRequest
+)
+from ppsspp.model.requests.replay.time import ReplayTimeGetRequest, ReplayTimeSetRequest
+
 from tests.unit.utils import MockStepByStepConnection
 
 
@@ -156,12 +169,38 @@ def get_requests() -> list[BaseRequest]:
         GpuStatsFeedRequest(enable=False),
 
         # HLE
+        HleModuleListRequest(),
+        HleBacktraceRequest(thread=None),
+        HleBacktraceRequest(thread=0),
+        HleFuncListRequest(),
+        HleFuncAddRequest(address=0, size=None, name=None),
+        HleFuncAddRequest(address=0, size=0, name="zz_func"),
+        HleFuncRemoveRequest(address=0),
+        HleFuncRemoveRangeRequest(address=0, size=0),
+        HleFuncRenameRequest(address=0, name="new"),
+        HleFuncScanRequest(address=0, size=0, remove=None),
+        HleFuncScanRequest(address=0, size=0, remove=False),
+        HleThreadListRequest(),
+        HleThreadWakeRequest(thread=0),
+        HleThreadStopRequest(thread=0),
 
         # Input
+        InputAnalogSendRequest(x=0.0, y=0.0, stick=None),
+        InputAnalogSendRequest(x=0.0, y=0.0, stick="left"),
+        InputButtonsSendRequest(buttons={"A": False}),
+        InputButtonsPressRequest(button="A", duration=None),
+        InputButtonsPressRequest(button="A", duration=0),
+
         # Memory
 
         # Replay
-
+        ReplayBeginRequest(),
+        ReplayAbortRequest(),
+        ReplayFlushRequest(),
+        ReplayExecuteRequest(version=0, base64="abc"),
+        ReplayStatusRequest(),
+        ReplayTimeGetRequest(),
+        ReplayTimeSetRequest(value=0),
 
         # Other
         VersionRequest(name=None, version=None),
