@@ -22,6 +22,23 @@ from ppsspp.model.requests.cpu.registers import (
     CpuGetAllRegsRequest, CpuGetRegRequest, CpuGetRegByNameRequest, CpuGetRegByIdxAndCategoryRequest,
     CpuSetRegRequest, CpuSetRegByNameRequest, CpuSetRegByIdxAndCategoryRequest
 )
+from ppsspp.model.requests.disassembly.common import (
+    MemoryDisasmRequest, MemoryDisasmByCountRequest, MemoryDisasmByEndAddrRequest,
+    MemorySearchDisasmRequest, MemoryAssembleRequest
+)
+from ppsspp.model.requests.game.common import GameResetRequest, GameStatusRequest
+from ppsspp.model.requests.gpu.buffer import (
+    GpuBufferScreenshotUriRequest, GpuBufferScreenshotBase64Request, GpuBufferScreenshotRequest,
+    GpuBufferRenderColorRequest, GpuBufferRenderColorUriRequest, GpuBufferRenderColorBase64Request,
+    GpuBufferRenderDepthRequest, GpuBufferRenderDepthUriRequest, GpuBufferRenderDepthBase64Request,
+    GpuBufferRenderStencilRequest, GpuBufferRenderStencilUriRequest, GpuBufferRenderStencilBase64Request,
+    GpuBufferTextureRequest, GpuBufferTextureUriRequest, GpuBufferTextureBase64Request, GpuBufferClutRequest,
+    GpuBufferClutUriRequest, GpuBufferClutBase64Request
+)
+from ppsspp.model.requests.gpu.common import (
+    GpuRecordDumpRequest, GpuStatsGetRequest, GpuStatsFeedRequest
+)
+
 from ppsspp.model.requests.other.version import VersionRequest
 from tests.unit.utils import MockStepByStepConnection
 
@@ -81,10 +98,62 @@ def get_requests() -> list[BaseRequest]:
         CpuSetRegByIdxAndCategoryRequest(thread=0, category=0, register=0, value=0),
 
         # Disassembly
+        MemoryDisasmRequest(thread=None, address=0, count=None, end=None, display_symbols=None),
+        MemoryDisasmRequest(thread=0, address=0, count=0, end=0, display_symbols=False),
+        MemoryDisasmByCountRequest(thread=None, address=0, count=0, display_symbols=None),
+        MemoryDisasmByCountRequest(thread=0, address=0, count=0, display_symbols=False),
+        MemoryDisasmByEndAddrRequest(thread=None, address=0, end=0, display_symbols=None),
+        MemoryDisasmByEndAddrRequest(thread=0, address=0, end=0, display_symbols=False),
+        MemorySearchDisasmRequest(thread=None, address=0, end=None, match="test", display_symbols=None),
+        MemorySearchDisasmRequest(thread=0, address=0, end=0, match="test", display_symbols=False),
+        MemoryAssembleRequest(address=0, code="nop"),
 
         # Game
+        GameResetRequest(break_=None),
+        GameResetRequest(break_=False),
+        GameStatusRequest(),
 
         # GPU
+        GpuBufferScreenshotRequest(type=None, alpha=None, stack_width=None),
+        GpuBufferScreenshotRequest(type="uri", alpha=False, stack_width=0),
+        GpuBufferScreenshotUriRequest(alpha=None, stack_width=None),
+        GpuBufferScreenshotUriRequest(alpha=False, stack_width=0),
+        GpuBufferScreenshotBase64Request(alpha=None, stack_width=None),
+        GpuBufferScreenshotBase64Request(alpha=False, stack_width=0),
+        GpuBufferRenderColorRequest(type=None, alpha=None, stack_width=None),
+        GpuBufferRenderColorRequest(type="type", alpha=False, stack_width=0),
+        GpuBufferRenderColorUriRequest(alpha=None, stack_width=None),
+        GpuBufferRenderColorUriRequest(alpha=False, stack_width=0),
+        GpuBufferRenderColorBase64Request(alpha=None, stack_width=None),
+        GpuBufferRenderColorBase64Request(alpha=False, stack_width=0),
+        GpuBufferRenderDepthRequest(type=None, alpha=None, stack_width=None),
+        GpuBufferRenderDepthRequest(type="uri", alpha=False, stack_width=False),
+        GpuBufferRenderDepthUriRequest(alpha=None, stack_width=None),
+        GpuBufferRenderDepthUriRequest(alpha=False, stack_width=0),
+        GpuBufferRenderDepthBase64Request(alpha=None, stack_width=None),
+        GpuBufferRenderDepthBase64Request(alpha=False, stack_width=0),
+        GpuBufferRenderStencilRequest(type=None, alpha=None, stack_width=None),
+        GpuBufferRenderStencilRequest(type="uri", alpha=False, stack_width=0),
+        GpuBufferRenderStencilUriRequest(alpha=None, stack_width=None),
+        GpuBufferRenderStencilUriRequest(alpha=False, stack_width=0),
+        GpuBufferRenderStencilBase64Request(alpha=None, stack_width=None),
+        GpuBufferRenderStencilBase64Request(alpha=False, stack_width=0),
+        GpuBufferTextureRequest(type=None, alpha=None, level=None, stack_width=None),
+        GpuBufferTextureRequest(type="uri", alpha=False, level=0, stack_width=0),
+        GpuBufferTextureUriRequest(alpha=None, level=None, stack_width=None),
+        GpuBufferTextureUriRequest(alpha=False, level=0, stack_width=0),
+        GpuBufferTextureBase64Request(alpha=None, level=None, stack_width=None),
+        GpuBufferTextureBase64Request(alpha=False, level=0, stack_width=0),
+        GpuBufferClutRequest(type=None, alpha=None, stack_width=None),
+        GpuBufferClutRequest(type="uri", alpha=False, stack_width=0),
+        GpuBufferClutUriRequest(alpha=None, stack_width=None),
+        GpuBufferClutUriRequest(alpha=False, stack_width=0),
+        GpuBufferClutBase64Request(alpha=None, stack_width=None),
+        GpuBufferClutBase64Request(alpha=False, stack_width=0),
+        GpuRecordDumpRequest(),
+        GpuStatsGetRequest(),
+        GpuStatsFeedRequest(enable=None),
+        GpuStatsFeedRequest(enable=False),
 
         # HLE
 
