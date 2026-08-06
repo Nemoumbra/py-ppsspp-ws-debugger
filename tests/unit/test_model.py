@@ -3,7 +3,6 @@ import asyncio
 from ppsspp import AsyncSession, PPSSPPRequest
 from ppsspp.exceptions.connection_terminated import ConnectionTerminated
 from ppsspp.model.ppsspp_objects.logs.log_level import LogLevel
-from ppsspp.model.ppsspp_objects.memory.memory_block_info import MemoryBlockInfo
 from ppsspp.model.requests.other.version import VersionRequest
 
 
@@ -70,8 +69,8 @@ def get_events():
         ]},
 
         # CPU
-        {"event": "cpu.stepping", "pc": 0, "ticks": 1, "reason": "nuh-uh", "relatedAddress": 11037},
         {"event": "cpu.stepping", "pc": 0, "ticks": 1, "reason": None, "relatedAddress": None},
+        {"event": "cpu.stepping", "pc": 0, "ticks": 1, "reason": "nuh-uh", "relatedAddress": 11037},
         {"event": "cpu.resume"},
         {"event": "cpu.status", "stepping": True, "paused": True, "pc": 0, "ticks": 1.5},
         {"event": "cpu.evaluate", "uintValue": 1, "floatValue": "1.5"},
@@ -261,7 +260,9 @@ def get_events():
 
         # Other
         {"event": "version", "name": "mock", "version": "0"},
-
+        {"event": "log", "timestamp": "", "header": "", "message": "msg", "level": LogLevel.INFO.value, "channel": ""},
+        {"event": "broadcast.config.get", "disallowed": {"what": False}},
+        {"event": "broadcast.config.get", "disallowed": {"sup": False}},
     ]
 
 
