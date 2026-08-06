@@ -46,6 +46,16 @@ from ppsspp.model.requests.hle.func import (
 from ppsspp.model.requests.hle.thread import HleThreadListRequest, HleThreadWakeRequest, HleThreadStopRequest
 from ppsspp.model.requests.input.analog import InputAnalogSendRequest
 from ppsspp.model.requests.input.buttons import InputButtonsSendRequest, InputButtonsPressRequest
+from ppsspp.model.requests.memory.common import (
+    MemoryReadU8Request, MemoryReadU16Request, MemoryReadU32Request, MemoryReadRequest,
+    MemoryReadStringRequest, MemoryReadStringUtf8Request, MemoryReadStringBase64Request,
+    MemoryWriteU8Request, MemoryWriteU16Request, MemoryWriteU32Request, MemoryWriteRequest
+)
+from ppsspp.model.requests.memory.memory_info import (
+    MemoryMappingRequest, MemoryInfoConfigRequest, MemoryInfoSetRequest,
+    MemoryInfoListRequest, MemoryInfoSearchRequest
+)
+from ppsspp.model.requests.other.broadcast_config import BroadcastConfigGetRequest, BroadcastConfigSetRequest
 
 from ppsspp.model.requests.other.version import VersionRequest
 from ppsspp.model.requests.replay.common import (
@@ -192,6 +202,28 @@ def get_requests() -> list[BaseRequest]:
         InputButtonsPressRequest(button="A", duration=0),
 
         # Memory
+        MemoryReadU8Request(address=0),
+        MemoryReadU16Request(address=0),
+        MemoryReadU32Request(address=0),
+        MemoryReadRequest(address=0, size=0, replacements=None),
+        MemoryReadRequest(address=0, size=0, replacements=False),
+        MemoryReadStringRequest(address=0, type=None),
+        MemoryReadStringRequest(address=0, type="utf8"),
+        MemoryReadStringUtf8Request(address=0),
+        MemoryReadStringBase64Request(address=0),
+        MemoryWriteU8Request(address=0, value=0),
+        MemoryWriteU16Request(address=0, value=0),
+        MemoryWriteU32Request(address=0, value=0),
+        MemoryWriteRequest(address=0, base64="abc"),
+        MemoryMappingRequest(),
+        MemoryInfoConfigRequest(detailed=None),
+        MemoryInfoConfigRequest(detailed=False),
+        MemoryInfoSetRequest(address=0, size=0, type="region", tag=None, pc=None),
+        MemoryInfoSetRequest(address=0, size=0, type="region", tag="tag", pc=0),
+        MemoryInfoListRequest(address=0, size=0, type=None),
+        MemoryInfoListRequest(address=0, size=0, type="suballoc"),
+        MemoryInfoSearchRequest(address=None, end=None, match="search", type=None),
+        MemoryInfoSearchRequest(address=0, end=1, match="search", type="suballoc"),
 
         # Replay
         ReplayBeginRequest(),
@@ -205,7 +237,8 @@ def get_requests() -> list[BaseRequest]:
         # Other
         VersionRequest(name=None, version=None),
         VersionRequest(name="me", version="first"),
-
+        BroadcastConfigGetRequest(),
+        BroadcastConfigSetRequest(disallowed={"key": False}),
     ]
 
 # TODO: actually test all requests...
