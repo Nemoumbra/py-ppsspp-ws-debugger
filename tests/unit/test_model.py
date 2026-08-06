@@ -6,6 +6,15 @@ from ppsspp.exceptions.connection_terminated import ConnectionTerminated
 from ppsspp.model.events.base_event import BaseEvent
 from ppsspp.model.ppsspp_objects.logs.log_level import LogLevel
 from ppsspp.model.requests.base_request import BaseRequest
+from ppsspp.model.requests.breakpoints.cpu import CpuBreakpointAddRequest, CpuBreakpointUpdateRequest, \
+    CpuBreakpointRemoveRequest, CpuBreakpointListRequest
+from ppsspp.model.requests.breakpoints.memory import MemoryBreakpointAddRequest, MemoryBreakpointUpdateRequest, \
+    MemoryBreakpointRemoveRequest, MemoryBreakpointListRequest
+from ppsspp.model.requests.cpu.common import CpuSteppingRequest, CpuResumeRequest, CpuStatusRequest, CpuEvaluateRequest
+from ppsspp.model.requests.cpu.debugging import CpuStepIntoRequest, CpuStepOverRequest, CpuStepOutRequest, \
+    CpuRunUntilRequest, CpuNextHleRequest
+from ppsspp.model.requests.cpu.registers import CpuGetAllRegsRequest, CpuGetRegRequest, CpuGetRegByNameRequest, \
+    CpuGetRegByIdxAndCategoryRequest, CpuSetRegRequest, CpuSetRegByNameRequest, CpuSetRegByIdxAndCategoryRequest
 from ppsspp.model.requests.other.version import VersionRequest
 
 
@@ -270,8 +279,56 @@ def get_events():
 
 def get_requests() -> list[BaseRequest]:
     return [
+        # Garbage data
+
+        # Breakpoints
+        CpuBreakpointAddRequest(address=0, enabled=None, log=None, condition=None, log_format=None),
+        CpuBreakpointUpdateRequest(address=0, enabled=None, log=None, condition=None, log_format=None),
+        CpuBreakpointRemoveRequest(address=0),
+        CpuBreakpointListRequest(),
+        MemoryBreakpointAddRequest(address=0, size=0, enabled=None, log=None, read=None, write=None, change=None,
+                                   condition=None, log_format=None),
+        MemoryBreakpointUpdateRequest(address=0, size=0, enabled=None, log=None, read=None, write=None, change=None,
+                                      condition=None, log_format=None),
+        MemoryBreakpointRemoveRequest(address=0, size=0),
+        MemoryBreakpointListRequest(),
+
+        # CPU
+        CpuSteppingRequest(),
+        CpuResumeRequest(),
+        CpuStatusRequest(),
+        CpuEvaluateRequest(thread=None, expression="expr"),
+        CpuStepIntoRequest(thread=None),
+        CpuStepOverRequest(thread=None),
+        CpuStepOutRequest(thread=None),
+        CpuRunUntilRequest(address=0),
+        CpuNextHleRequest(),
+        CpuGetAllRegsRequest(thread=None),
+        CpuGetRegRequest(thread=None, name=None, category=None, register=None),
+        CpuGetRegByNameRequest(thread=None, name="eax"),
+        CpuGetRegByIdxAndCategoryRequest(thread=None, category=0, register=0),
+        CpuSetRegRequest(thread=None, name=None, category=None, register=None, value=0),
+        CpuSetRegByNameRequest(thread=None, name="eax", value=0),
+        CpuSetRegByIdxAndCategoryRequest(thread=None, category=0, register=0, value=0),
+
+        # Disassembly
+
+        # Game
+
+        # GPU
+
+        # HLE
+
+        # Input
+        # Memory
+
+        # Replay
+
+
+        # Other
         VersionRequest(name=None, version=None),
         VersionRequest(name="me", version="first"),
+
     ]
 
 # TODO: actually test all requests...
