@@ -143,7 +143,6 @@ def get_events():
         {"event": "game.start", "game": None},
         {"event": "game.start", "game": {'id': "nmae", 'version': "0", 'title': "tilted"}},
         {"event": "game.quit", "game": None},
-        # {"event": "game.resume"},  # This also works! TODO: should it work?
 
         # GPU
         {"event": "gpu.buffer.screenshot", "width": 0, "height": 0, "isFramebuffer": None, "uri": "abc"},
@@ -271,7 +270,7 @@ def get_requests():
 
     }
 
-# TODO: actually test all events and requests...
+# TODO: actually test all requests...
 
 
 async def test_serialization():
