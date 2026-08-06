@@ -296,6 +296,9 @@ async def test_parsing():
     # Parsing events
     session = AsyncSession()
     events = get_events()
+    # Inject tickets
+    events.extend([event | {"ticket": "000"} for event in events])
+
     exhausted = asyncio.Event()
     connection = MockConnection(exhausted, events)
 
