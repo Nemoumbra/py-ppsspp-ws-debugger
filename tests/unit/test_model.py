@@ -2,8 +2,8 @@ import asyncio
 
 from ppsspp import AsyncSession, PPSSPPRequest
 from ppsspp.exceptions.connection_terminated import ConnectionTerminated
-from ppsspp.model.ppsspp_objects.gpu.gpu_stats import FpsInfo, VblankCyclesInfo, TimingInfo
 from ppsspp.model.ppsspp_objects.logs.log_level import LogLevel
+from ppsspp.model.ppsspp_objects.memory.memory_block_info import MemoryBlockInfo
 from ppsspp.model.requests.other.version import VersionRequest
 
 
@@ -209,15 +209,59 @@ def get_events():
         {"event": "hle.thread.wake", "thread": 0, "status": "wake"},
         {"event": "hle.thread.stop", "thread": 0, "status": "stop"},
 
-
         # Input
+        {"event": "input.analog", "stick": "left", "x": 1.0, "y": -1.0 },
+        {"event": "input.analog.send"},
+        {"event": "input.buttons", "buttons": {
+            "cross": False,  "circle": False, "triangle": False,"square": False, "up": False,
+            "down": False, "left": False, "right": False, "start": False, "select": False,
+            "home": False, "screen": False, "note": False, "ltrigger": False, "rtrigger": False,
+            "hold": False, "wlan": False, "remote_hold": False, "vol_up": False, "vol_down": False,
+            "disc": False, "memstick": False, "forward": False, "back": False, "playpause": False,
+            "l2": False, "l3": False, "r2": False, "r3": False,
+        },
+         "changed": {"cross": False, "r3": False}
+         },
+        {"event": "input.buttons.send"},
+        {"event": "input.buttons.press"},
 
         # Memory
+        {"event": "memory.read.u8", "value": 0},
+        {"event": "memory.read.u16", "value": 0},
+        {"event": "memory.read.u32", "value": 0},
+        {"event": "memory.read", "base64": "abc"},
+        {"event": "memory.readString", "value": "hello"},
+        {"event": "memory.readString", "base64": "xyz"},
+        {"event": "memory.write.u8", "value": 0},
+        {"event": "memory.write.u16", "value": 0},
+        {"event": "memory.write.u32", "value": 0},
+        {"event": "memory.write"},
+        {"event": "memory.mapping", "ranges": [
+            {"type": "", "subtype": "", "name": "sup", "address": 0, "size": 1}
+        ]},
+        {"event": "memory.info.config", "detailed": False},
+        {"event": "memory.info.set"},
+        {"event": "memory.info.list", "extents": [
+            {'type': "subfree", 'address': 0, 'size': 1, 'ticks': 1.5, 'pc': 0, 'tag': "", 'allocated': False}
+        ]},
+        {"event": "memory.info.search", "extent": None},
+        {"event": "memory.info.search", "extent": {
+            'type': "subfree", 'address': 0, 'size': 1, 'ticks': 1.5, 'pc': 0, 'tag': "", 'allocated': False
+        }
+        },
 
         # Replay
+        {"event": "replay.begin"},
+        {"event": "replay.abort"},
+        {"event": "replay.flush", "version": 0, "base64": "huh"},
+        {"event": "replay.execute"},
+        {"event": "replay.status", "executing": False, "saving": False},
+        {"event": "replay.time.get", "value": 0},
+        {"event": "replay.time.set"},
 
         # Other
-        {"event": "version", "name": "mock", "version": "0"}
+        {"event": "version", "name": "mock", "version": "0"},
+
     ]
 
 
