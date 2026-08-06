@@ -1,8 +1,11 @@
 import asyncio
+import dataclasses
 
 from ppsspp import AsyncSession, PPSSPPRequest
 from ppsspp.exceptions.connection_terminated import ConnectionTerminated
+from ppsspp.model.events.base_event import BaseEvent
 from ppsspp.model.ppsspp_objects.logs.log_level import LogLevel
+from ppsspp.model.requests.base_request import BaseRequest
 from ppsspp.model.requests.other.version import VersionRequest
 
 
@@ -265,27 +268,38 @@ def get_events():
     ]
 
 
-def get_requests():
-    return {
-
-    }
+def get_requests() -> list[BaseRequest]:
+    return [
+        VersionRequest(name=None, version=None),
+        VersionRequest(name="me", version="first"),
+    ]
 
 # TODO: actually test all requests...
+
+
+def with_ticket(request: BaseRequest, ticket: str):
+    return dataclasses.replace(request, ticket=ticket)
 
 
 async def test_serialization():
     # Sending requests
 
     session = AsyncSession()
-    events = get_events()
-    requests = get_requests()
-    exhausted = asyncio.Event()
-    connection = MockConnection(exhausted, events)
-
+    # No need for input
+    connection = MockConnection(asyncio.Event(), get_events())
     await session.run(connection)
 
-    # Low-level stuff, no ticket
-    await session.send_request(VersionRequest())
+    requests = get_requests()
+    ticket_requests = [with_ticket(req, f"TICKET{i}") for i, req in enumerate(requests)]
+
+    for request in requests:
+        await session.send_request(request)
+
+    async def dummy_handler(ev: BaseEvent):
+        pass
+
+    for request in ticket_requests:
+        await session.send_request(request, dummy_handler)
 
     pass
 
@@ -301,5 +315,7 @@ async def test_parsing():
     connection = MockConnection(exhausted, events)
 
     await session.run(connection)
+
+    # TODO (optionally): use a promiscuous handler to check if the events deserialize into correct classes
     await exhausted.wait()
     pass
