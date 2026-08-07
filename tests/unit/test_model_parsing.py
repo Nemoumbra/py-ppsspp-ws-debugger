@@ -872,7 +872,7 @@ async def test_parsing():
     # Inject tickets
     ticket_events = []
     for i, ev in enumerate(expected):
-        if type(expected) in kBroadcastEvents:
+        if type(ev) in kBroadcastEvents:
             continue
         ticket_events.append(with_ticket(ev, f"TICKET{i}"))
         raw_events.append(raw_events[i] | {"ticket": f"TICKET{i}"})
