@@ -909,5 +909,5 @@ async def test_parsing():
     # Implicitly asserted by the await above, but whatever
     assert len(parsed) == len(expected)
 
-    for parsed_event, expected_event in zip(parsed, expected):
-        assert parsed_event == expected_event
+    for parsed_event, expected_event, original in zip(parsed, expected, raw_events):
+        assert parsed_event == expected_event, original

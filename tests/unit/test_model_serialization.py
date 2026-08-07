@@ -75,7 +75,6 @@ class RequestTest:
 def get_request_tests():
     return [
         # Garbage data?
-        # TODO: make sure the requests can be constructed without explicitly passing None for optional args
 
         # Breakpoints
         RequestTest(
@@ -87,12 +86,20 @@ def get_request_tests():
             expected={"event": "cpu.breakpoint.add", "address": 0, "enabled": False, "log": False, "condition": "true", "logFormat": "0"}
         ),
         RequestTest(
+            value=CpuBreakpointAddRequest(address=0),
+            expected={"event": "cpu.breakpoint.add", "address": 0}
+        ),
+        RequestTest(
             value=CpuBreakpointUpdateRequest(address=0, enabled=None, log=None, condition=None, log_format=None),
             expected={"event": "cpu.breakpoint.update", "address": 0}
         ),
         RequestTest(
             value=CpuBreakpointUpdateRequest(address=0, enabled=False, log=False, condition="true", log_format="0"),
             expected={"event": "cpu.breakpoint.update", "address": 0, "enabled": False, "log": False, "condition": "true", "logFormat": "0"}
+        ),
+        RequestTest(
+            value=CpuBreakpointUpdateRequest(address=0),
+            expected={"event": "cpu.breakpoint.update", "address": 0}
         ),
         RequestTest(
             value=CpuBreakpointRemoveRequest(address=0),
@@ -111,12 +118,20 @@ def get_request_tests():
             expected={"event": "memory.breakpoint.add", "address": 0, "size": 0, "enabled": False, "log": False, "read": False, "write": False, "change": False, "condition": "true", "logFormat": "0"}
         ),
         RequestTest(
+            value=MemoryBreakpointAddRequest(address=0, size=0),
+            expected={"event": "memory.breakpoint.add", "address": 0, "size": 0}
+        ),
+        RequestTest(
             value=MemoryBreakpointUpdateRequest(address=0, size=0, enabled=None, log=None, read=None, write=None, change=None, condition=None, log_format=None),
             expected={"event": "memory.breakpoint.update", "address": 0, "size": 0}
         ),
         RequestTest(
             value=MemoryBreakpointUpdateRequest(address=0, size=0, enabled=False, log=False, read=False, write=False, change=False, condition="true", log_format="0"),
             expected={"event": "memory.breakpoint.update", "address": 0, "size": 0, "enabled": False, "log": False, "read": False, "write": False, "change": False, "condition": "true", "logFormat": "0"}
+        ),
+        RequestTest(
+            value=MemoryBreakpointUpdateRequest(address=0, size=0),
+            expected={"event": "memory.breakpoint.update", "address": 0, "size": 0}
         ),
         RequestTest(
             value=MemoryBreakpointRemoveRequest(address=0, size=0),
@@ -149,12 +164,20 @@ def get_request_tests():
             expected={"event": "cpu.evaluate", "thread": 0, "expression": "expr"}
         ),
         RequestTest(
+            value=CpuEvaluateRequest(expression="expr"),
+            expected={"event": "cpu.evaluate", "expression": "expr"}
+        ),
+        RequestTest(
             value=CpuStepIntoRequest(thread=None),
             expected={"event": "cpu.stepInto"}
         ),
         RequestTest(
             value=CpuStepIntoRequest(thread=0),
             expected={"event": "cpu.stepInto", "thread": 0}
+        ),
+        RequestTest(
+            value=CpuStepIntoRequest(),
+            expected={"event": "cpu.stepInto"}
         ),
         RequestTest(
             value=CpuStepOverRequest(thread=None),
@@ -165,12 +188,20 @@ def get_request_tests():
             expected={"event": "cpu.stepOver", "thread": 0}
         ),
         RequestTest(
+            value=CpuStepOverRequest(),
+            expected={"event": "cpu.stepOver"}
+        ),
+        RequestTest(
             value=CpuStepOutRequest(thread=None),
             expected={"event": "cpu.stepOut"}
         ),
         RequestTest(
             value=CpuStepOutRequest(thread=0),
             expected={"event": "cpu.stepOut", "thread": 0}
+        ),
+        RequestTest(
+            value=CpuStepOutRequest(),
+            expected={"event": "cpu.stepOut"}
         ),
         RequestTest(
             value=CpuRunUntilRequest(address=0),
@@ -190,12 +221,23 @@ def get_request_tests():
             expected={"event": "cpu.getAllRegs", "thread": 0}
         ),
         RequestTest(
+            value=CpuGetAllRegsRequest(),
+            expected={"event": "cpu.getAllRegs"}
+        ),
+        # Obviously passing None for either 'category' or 'register' after passing None for 'name'
+        # won't be accepted by PPSSPP, but it's still a part of the model...
+        # TODO: maybe remove this generic request completely?
+        RequestTest(
             value=CpuGetRegRequest(thread=None, name=None, category=None, register=None),
             expected={"event": "cpu.getReg"}
         ),
         RequestTest(
             value=CpuGetRegRequest(thread=0, name="name", category=0, register=0),
             expected={"event": "cpu.getReg", "thread": 0, "name": "name", "category": 0, "register": 0}
+        ),
+        RequestTest(
+            value=CpuGetRegRequest(),
+            expected={"event": "cpu.getReg"}
         ),
         RequestTest(
             value=CpuGetRegByNameRequest(thread=None, name="eax"),
@@ -206,6 +248,10 @@ def get_request_tests():
             expected={"event": "cpu.getReg", "thread": 0, "name": "eax"}
         ),
         RequestTest(
+            value=CpuGetRegByNameRequest(name="eax"),
+            expected={"event": "cpu.getReg", "name": "eax"}
+        ),
+        RequestTest(
             value=CpuGetRegByIdxAndCategoryRequest(thread=None, category=0, register=0),
             expected={"event": "cpu.getReg", "category": 0, "register": 0}
         ),
@@ -214,12 +260,23 @@ def get_request_tests():
             expected={"event": "cpu.getReg", "thread": 0, "category": 0, "register": 0}
         ),
         RequestTest(
+            value=CpuGetRegByIdxAndCategoryRequest(category=0, register=0),
+            expected={"event": "cpu.getReg", "category": 0, "register": 0}
+        ),
+        # Obviously passing None for either 'category' or 'register' after passing None for 'name'
+        # won't be accepted by PPSSPP, but it's still a part of the model...
+        # TODO: maybe remove this generic request completely?
+        RequestTest(
             value=CpuSetRegRequest(thread=None, name=None, category=None, register=None, value=0),
             expected={"event": "cpu.setReg", "value": 0}
         ),
         RequestTest(
             value=CpuSetRegRequest(thread=0, name="name", category=0, register=0, value=0),
             expected={"event": "cpu.setReg", "thread": 0, "name": "name", "category": 0, "register": 0, "value": 0}
+        ),
+        RequestTest(
+            value=CpuSetRegRequest(value=0),
+            expected={"event": "cpu.setReg", "value": 0}
         ),
         RequestTest(
             value=CpuSetRegByNameRequest(thread=None, name="eax", value=0),
@@ -230,6 +287,10 @@ def get_request_tests():
             expected={"event": "cpu.setReg", "thread": 0, "name": "eax", "value": 0}
         ),
         RequestTest(
+            value=CpuSetRegByNameRequest(name="eax", value=0),
+            expected={"event": "cpu.setReg", "name": "eax", "value": 0}
+        ),
+        RequestTest(
             value=CpuSetRegByIdxAndCategoryRequest(thread=None, category=0, register=0, value=0),
             expected={"event": "cpu.setReg", "category": 0, "register": 0, "value": 0}
         ),
@@ -237,8 +298,16 @@ def get_request_tests():
             value=CpuSetRegByIdxAndCategoryRequest(thread=0, category=0, register=0, value=0),
             expected={"event": "cpu.setReg", "thread": 0, "category": 0, "register": 0, "value": 0}
         ),
+        RequestTest(
+            value=CpuSetRegByIdxAndCategoryRequest(category=0, register=0, value=0),
+            expected={"event": "cpu.setReg", "category": 0, "register": 0, "value": 0}
+        ),
 
         # Disassembly
+
+        # Obviously passing None for 'end' after passing None for 'count' won't be accepted by PPSSPP,
+        # but it's still a part of the model...
+        # TODO: maybe remove this generic request completely?
         RequestTest(
             value=MemoryDisasmRequest(thread=None, address=0, count=None, end=None, display_symbols=None),
             expected={"event": "memory.disasm", "address": 0}
@@ -246,6 +315,10 @@ def get_request_tests():
         RequestTest(
             value=MemoryDisasmRequest(thread=0, address=0, count=0, end=0, display_symbols=False),
             expected={"event": "memory.disasm", "thread": 0, "address": 0, "count": 0, "end": 0, "displaySymbols": False}
+        ),
+        RequestTest(
+            value=MemoryDisasmRequest(address=0),
+            expected={"event": "memory.disasm", "address": 0}
         ),
         RequestTest(
             value=MemoryDisasmByCountRequest(thread=None, address=0, count=0, display_symbols=None),
@@ -256,6 +329,10 @@ def get_request_tests():
             expected={"event": "memory.disasm", "thread": 0, "address": 0, "count": 0, "displaySymbols": False}
         ),
         RequestTest(
+            value=MemoryDisasmByCountRequest(address=0, count=0),
+            expected={"event": "memory.disasm", "address": 0, "count": 0}
+        ),
+        RequestTest(
             value=MemoryDisasmByEndAddrRequest(thread=None, address=0, end=0, display_symbols=None),
             expected={"event": "memory.disasm", "address": 0, "end": 0}
         ),
@@ -264,12 +341,20 @@ def get_request_tests():
             expected={"event": "memory.disasm", "thread": 0, "address": 0, "end": 0, "displaySymbols": False}
         ),
         RequestTest(
+            value=MemoryDisasmByEndAddrRequest(address=0, end=0),
+            expected={"event": "memory.disasm", "address": 0, "end": 0}
+        ),
+        RequestTest(
             value=MemorySearchDisasmRequest(thread=None, address=0, end=None, match="test", display_symbols=None),
             expected={"event": "memory.searchDisasm", "address": 0, "match": "test"}
         ),
         RequestTest(
             value=MemorySearchDisasmRequest(thread=0, address=0, end=0, match="test", display_symbols=False),
             expected={"event": "memory.searchDisasm", "thread": 0, "address": 0, "end": 0, "match": "test", "displaySymbols": False}
+        ),
+        RequestTest(
+            value=MemorySearchDisasmRequest(address=0, match="test"),
+            expected={"event": "memory.searchDisasm", "address": 0, "match": "test"}
         ),
         RequestTest(
             value=MemoryAssembleRequest(address=0, code="nop"),
@@ -286,6 +371,10 @@ def get_request_tests():
             expected={"event": "game.reset", "break": False}
         ),
         RequestTest(
+            value=GameResetRequest(),
+            expected={"event": "game.reset"}
+        ),
+        RequestTest(
             value=GameStatusRequest(),
             expected={"event": "game.status"}
         ),
@@ -300,12 +389,20 @@ def get_request_tests():
             expected={"event": "gpu.buffer.screenshot", "type": "uri", "alpha": False, "stackWidth": 0}
         ),
         RequestTest(
+            value=GpuBufferScreenshotRequest(),
+            expected={"event": "gpu.buffer.screenshot"}
+        ),
+        RequestTest(
             value=GpuBufferScreenshotUriRequest(alpha=None, stack_width=None),
             expected={"event": "gpu.buffer.screenshot"}
         ),
         RequestTest(
             value=GpuBufferScreenshotUriRequest(alpha=False, stack_width=0),
             expected={"event": "gpu.buffer.screenshot", "alpha": False, "stackWidth": 0}
+        ),
+        RequestTest(
+            value=GpuBufferScreenshotUriRequest(),
+            expected={"event": "gpu.buffer.screenshot"}
         ),
         RequestTest(
             value=GpuBufferScreenshotBase64Request(alpha=None, stack_width=None),
@@ -316,12 +413,20 @@ def get_request_tests():
             expected={"event": "gpu.buffer.screenshot", "alpha": False, "stackWidth": 0, "type": "base64"}
         ),
         RequestTest(
+            value=GpuBufferScreenshotBase64Request(),
+            expected={"event": "gpu.buffer.screenshot", "type": "base64"}
+        ),
+        RequestTest(
             value=GpuBufferRenderColorRequest(type=None, alpha=None, stack_width=None),
             expected={"event": "gpu.buffer.renderColor"}
         ),
         RequestTest(
             value=GpuBufferRenderColorRequest(type="uri", alpha=False, stack_width=0),
             expected={"event": "gpu.buffer.renderColor", "type": "uri", "alpha": False, "stackWidth": 0}
+        ),
+        RequestTest(
+            value=GpuBufferRenderColorRequest(),
+            expected={"event": "gpu.buffer.renderColor"}
         ),
         RequestTest(
             value=GpuBufferRenderColorUriRequest(alpha=None, stack_width=None),
@@ -332,12 +437,20 @@ def get_request_tests():
             expected={"event": "gpu.buffer.renderColor", "alpha": False, "stackWidth": 0}
         ),
         RequestTest(
+            value=GpuBufferRenderColorUriRequest(),
+            expected={"event": "gpu.buffer.renderColor"}
+        ),
+        RequestTest(
             value=GpuBufferRenderColorBase64Request(alpha=None, stack_width=None),
             expected={"event": "gpu.buffer.renderColor", "type": "base64"}
         ),
         RequestTest(
             value=GpuBufferRenderColorBase64Request(alpha=False, stack_width=0),
             expected={"event": "gpu.buffer.renderColor", "alpha": False, "stackWidth": 0, "type": "base64"}
+        ),
+        RequestTest(
+            value=GpuBufferRenderColorBase64Request(),
+            expected={"event": "gpu.buffer.renderColor", "type": "base64"}
         ),
         RequestTest(
             value=GpuBufferRenderDepthRequest(type=None, alpha=None, stack_width=None),
@@ -348,12 +461,20 @@ def get_request_tests():
             expected={"event": "gpu.buffer.renderDepth", "type": "uri", "alpha": False, "stackWidth": False}
         ),
         RequestTest(
+            value=GpuBufferRenderDepthRequest(),
+            expected={"event": "gpu.buffer.renderDepth"}
+        ),
+        RequestTest(
             value=GpuBufferRenderDepthUriRequest(alpha=None, stack_width=None),
             expected={"event": "gpu.buffer.renderDepth"}
         ),
         RequestTest(
             value=GpuBufferRenderDepthUriRequest(alpha=False, stack_width=0),
             expected={"event": "gpu.buffer.renderDepth", "alpha": False, "stackWidth": 0}
+        ),
+        RequestTest(
+            value=GpuBufferRenderDepthUriRequest(),
+            expected={"event": "gpu.buffer.renderDepth"}
         ),
         RequestTest(
             value=GpuBufferRenderDepthBase64Request(alpha=None, stack_width=None),
@@ -364,12 +485,20 @@ def get_request_tests():
             expected={"event": "gpu.buffer.renderDepth", "alpha": False, "stackWidth": 0, "type": "base64"}
         ),
         RequestTest(
+            value=GpuBufferRenderDepthBase64Request(),
+            expected={"event": "gpu.buffer.renderDepth", "type": "base64"}
+        ),
+        RequestTest(
             value=GpuBufferRenderStencilRequest(type=None, alpha=None, stack_width=None),
             expected={"event": "gpu.buffer.renderStencil"}
         ),
         RequestTest(
             value=GpuBufferRenderStencilRequest(type="uri", alpha=False, stack_width=0),
             expected={"event": "gpu.buffer.renderStencil", "type": "uri", "alpha": False, "stackWidth": 0}
+        ),
+        RequestTest(
+            value=GpuBufferRenderStencilRequest(),
+            expected={"event": "gpu.buffer.renderStencil"}
         ),
         RequestTest(
             value=GpuBufferRenderStencilUriRequest(alpha=None, stack_width=None),
@@ -380,12 +509,20 @@ def get_request_tests():
             expected={"event": "gpu.buffer.renderStencil", "alpha": False, "stackWidth": 0}
         ),
         RequestTest(
+            value=GpuBufferRenderStencilUriRequest(),
+            expected={"event": "gpu.buffer.renderStencil"}
+        ),
+        RequestTest(
             value=GpuBufferRenderStencilBase64Request(alpha=None, stack_width=None),
             expected={"event": "gpu.buffer.renderStencil", "type": "base64"}
         ),
         RequestTest(
             value=GpuBufferRenderStencilBase64Request(alpha=False, stack_width=0),
             expected={"event": "gpu.buffer.renderStencil", "alpha": False, "stackWidth": 0, "type": "base64"}
+        ),
+        RequestTest(
+            value=GpuBufferRenderStencilBase64Request(),
+            expected={"event": "gpu.buffer.renderStencil", "type": "base64"}
         ),
         RequestTest(
             value=GpuBufferTextureRequest(type=None, alpha=None, level=None, stack_width=None),
@@ -396,12 +533,20 @@ def get_request_tests():
             expected={"event": "gpu.buffer.texture", "type": "uri", "alpha": False, "level": 0, "stackWidth": 0}
         ),
         RequestTest(
+            value=GpuBufferTextureRequest(),
+            expected={"event": "gpu.buffer.texture"}
+        ),
+        RequestTest(
             value=GpuBufferTextureUriRequest(alpha=None, level=None, stack_width=None),
             expected={"event": "gpu.buffer.texture"}
         ),
         RequestTest(
             value=GpuBufferTextureUriRequest(alpha=False, level=0, stack_width=0),
             expected={"event": "gpu.buffer.texture", "alpha": False, "level": 0, "stackWidth": 0}
+        ),
+        RequestTest(
+            value=GpuBufferTextureUriRequest(),
+            expected={"event": "gpu.buffer.texture"}
         ),
         RequestTest(
             value=GpuBufferTextureBase64Request(alpha=None, level=None, stack_width=None),
@@ -412,12 +557,20 @@ def get_request_tests():
             expected={"event": "gpu.buffer.texture", "alpha": False, "level": 0, "stackWidth": 0, "type": "base64"}
         ),
         RequestTest(
+            value=GpuBufferTextureBase64Request(),
+            expected={"event": "gpu.buffer.texture", "type": "base64"}
+        ),
+        RequestTest(
             value=GpuBufferClutRequest(type=None, alpha=None, stack_width=None),
             expected={"event": "gpu.buffer.clut"}
         ),
         RequestTest(
             value=GpuBufferClutRequest(type="uri", alpha=False, stack_width=0),
             expected={"event": "gpu.buffer.clut", "type": "uri", "alpha": False, "stackWidth": 0}
+        ),
+        RequestTest(
+            value=GpuBufferClutRequest(),
+            expected={"event": "gpu.buffer.clut"}
         ),
         RequestTest(
             value=GpuBufferClutUriRequest(alpha=None, stack_width=None),
@@ -428,6 +581,10 @@ def get_request_tests():
             expected={"event": "gpu.buffer.clut", "alpha": False, "stackWidth": 0}
         ),
         RequestTest(
+            value=GpuBufferClutUriRequest(),
+            expected={"event": "gpu.buffer.clut"}
+        ),
+        RequestTest(
             value=GpuBufferClutBase64Request(alpha=None, stack_width=None),
             expected={"event": "gpu.buffer.clut", "type": "base64"}
         ),
@@ -436,9 +593,14 @@ def get_request_tests():
             expected={"event": "gpu.buffer.clut", "alpha": False, "stackWidth": 0, "type": "base64"}
         ),
         RequestTest(
+            value=GpuBufferClutBase64Request(),
+            expected={"event": "gpu.buffer.clut", "type": "base64"}
+        ),
+        RequestTest(
             value=GpuRecordDumpRequest(),
             expected={"event": "gpu.record.dump"}
         ),
+        # Note: real PPSSPP doesn't respond to the ticketless version of this request
         RequestTest(
             value=GpuStatsGetRequest(),
             expected={"event": "gpu.stats.get"}
@@ -450,6 +612,10 @@ def get_request_tests():
         RequestTest(
             value=GpuStatsFeedRequest(enable=False),
             expected={"event": "gpu.stats.feed", "enable": False}
+        ),
+        RequestTest(
+            value=GpuStatsFeedRequest(),
+            expected={"event": "gpu.stats.feed"}
         ),
 
         # HLE
@@ -466,6 +632,10 @@ def get_request_tests():
             expected={"event": "hle.backtrace", "thread": 0}
         ),
         RequestTest(
+            value=HleBacktraceRequest(),
+            expected={"event": "hle.backtrace"}
+        ),
+        RequestTest(
             value=HleFuncListRequest(),
             expected={"event": "hle.func.list"}
         ),
@@ -476,6 +646,10 @@ def get_request_tests():
         RequestTest(
             value=HleFuncAddRequest(address=0, size=0, name="zz_func"),
             expected={"event": "hle.func.add", "address": 0, "size": 0, "name": "zz_func"}
+        ),
+        RequestTest(
+            value=HleFuncAddRequest(address=0),
+            expected={"event": "hle.func.add", "address": 0}
         ),
         RequestTest(
             value=HleFuncRemoveRequest(address=0),
@@ -496,6 +670,10 @@ def get_request_tests():
         RequestTest(
             value=HleFuncScanRequest(address=0, size=0, remove=False),
             expected={"event": "hle.func.scan", "address": 0, "size": 0, "remove": False}
+        ),
+        RequestTest(
+            value=HleFuncScanRequest(address=0, size=0),
+            expected={"event": "hle.func.scan", "address": 0, "size": 0}
         ),
         RequestTest(
             value=HleThreadListRequest(),
@@ -520,6 +698,10 @@ def get_request_tests():
             expected={"event": "input.analog.send", "x": 0.0, "y": 0.0, "stick": "left"}
         ),
         RequestTest(
+            value=InputAnalogSendRequest(x=0.0, y=0.0),
+            expected={"event": "input.analog.send", "x": 0.0, "y": 0.0}
+        ),
+        RequestTest(
             value=InputButtonsSendRequest(buttons={"A": False}),
             expected={"event": "input.buttons.send", "buttons": {"A": False}}
         ),
@@ -530,6 +712,10 @@ def get_request_tests():
         RequestTest(
             value=InputButtonsPressRequest(button="A", duration=0),
             expected={"event": "input.buttons.press", "button": "A", "duration": 0}
+        ),
+        RequestTest(
+            value=InputButtonsPressRequest(button="A"),
+            expected={"event": "input.buttons.press", "button": "A"}
         ),
 
         # Memory
@@ -554,12 +740,20 @@ def get_request_tests():
             expected={"event": "memory.read", "address": 0, "size": 0, "replacements": False}
         ),
         RequestTest(
+            value=MemoryReadRequest(address=0, size=0),
+            expected={"event": "memory.read", "address": 0, "size": 0}
+        ),
+        RequestTest(
             value=MemoryReadStringRequest(address=0, type=None),
             expected={"event": "memory.readString", "address": 0}
         ),
         RequestTest(
             value=MemoryReadStringRequest(address=0, type="utf8"),
             expected={"event": "memory.readString", "address": 0, "type": "utf8"}
+        ),
+        RequestTest(
+            value=MemoryReadStringRequest(address=0),
+            expected={"event": "memory.readString", "address": 0}
         ),
         RequestTest(
             value=MemoryReadStringUtf8Request(address=0),
@@ -598,12 +792,22 @@ def get_request_tests():
             expected={"event": "memory.info.config", "detailed": False}
         ),
         RequestTest(
+            value=MemoryInfoConfigRequest(),
+            expected={"event": "memory.info.config"}
+        ),
+        # TODO (or maybe just a note): the tag is only optional if the 'type' is 'free' or 'subfree'...
+        # I CAN'T REPRESENT THIS IN THE MODEL!!!
+        RequestTest(
             value=MemoryInfoSetRequest(address=0, size=0, type="region", tag=None, pc=None),
             expected={"event": "memory.info.set", "address": 0, "size": 0, "type": "region"}
         ),
         RequestTest(
             value=MemoryInfoSetRequest(address=0, size=0, type="region", tag="tag", pc=0),
             expected={"event": "memory.info.set", "address": 0, "size": 0, "type": "region", "tag": "tag", "pc": 0}
+        ),
+        RequestTest(
+            value=MemoryInfoSetRequest(address=0, size=0, type="region"),
+            expected={"event": "memory.info.set", "address": 0, "size": 0, "type": "region"}
         ),
         RequestTest(
             value=MemoryInfoListRequest(address=0, size=0, type=None),
@@ -614,12 +818,20 @@ def get_request_tests():
             expected={"event": "memory.info.list", "address": 0, "size": 0, "type": "suballoc"}
         ),
         RequestTest(
+            value=MemoryInfoListRequest(address=0, size=0),
+            expected={"event": "memory.info.list", "address": 0, "size": 0}
+        ),
+        RequestTest(
             value=MemoryInfoSearchRequest(address=None, end=None, match="search", type=None),
             expected={"event": "memory.info.search", "match": "search"}
         ),
         RequestTest(
             value=MemoryInfoSearchRequest(address=0, end=1, match="search", type="suballoc"),
             expected={"event": "memory.info.search", "address": 0, "end": 1, "match": "search", "type": "suballoc"}
+        ),
+        RequestTest(
+            value=MemoryInfoSearchRequest(match="search"),
+            expected={"event": "memory.info.search", "match": "search"}
         ),
 
         # Replay
@@ -660,6 +872,10 @@ def get_request_tests():
         RequestTest(
             value=VersionRequest(name="me", version="first"),
             expected={"event": "version", "name": "me", "version": "first"}
+        ),
+        RequestTest(
+            value=VersionRequest(),
+            expected={"event": "version"}
         ),
         RequestTest(
             value=BroadcastConfigGetRequest(),
