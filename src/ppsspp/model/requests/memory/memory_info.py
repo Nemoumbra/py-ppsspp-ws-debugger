@@ -13,6 +13,8 @@ class MemoryInfoConfigRequest(BaseRequest):
     detailed: bool | None = None
 
 
+# TODO (or maybe a note...): the tag is only optional if the 'type' is 'free' or 'subfree'...
+# I CAN'T REPRESENT THIS IN THE MODEL!!!
 @dataclass(kw_only=True)
 class MemoryInfoSetRequest(BaseRequest):
     address: int
@@ -22,6 +24,7 @@ class MemoryInfoSetRequest(BaseRequest):
     pc: int | None = None
 
 
+# Note: can't search for 'free' or 'subfree' ranges
 @dataclass(kw_only=True)
 class MemoryInfoListRequest(BaseRequest):
     address: int

@@ -8,7 +8,9 @@ class MemoryBaseRequest(BaseRequest):
     pass
 
 
-# The most generic form
+# Obviously passing None for 'end' after passing None for 'count' won't be accepted by PPSSPP,
+# but it's still a part of the model...
+# TODO: maybe remove this generic request completely?
 @dataclass(kw_only=True)
 class MemoryDisasmRequest(BaseRequest):
     thread: int | None = None

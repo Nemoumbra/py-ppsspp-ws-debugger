@@ -8,7 +8,9 @@ class CpuGetAllRegsRequest(BaseRequest):
     thread: int | None = None
 
 
-# The most generic form
+# Obviously passing None for either 'category' or 'register' after passing None for 'name'
+# won't be accepted by PPSSPP, but it's still a part of the model...
+# TODO: maybe remove this generic request completely?
 @dataclass(kw_only=True)
 class CpuGetRegRequest(BaseRequest):
     thread: int | None = None
@@ -30,7 +32,9 @@ class CpuGetRegByIdxAndCategoryRequest(BaseRequest):
     register: int
 
 
-# The most generic form
+# Obviously passing None for either 'category' or 'register' after passing None for 'name'
+# won't be accepted by PPSSPP, but it's still a part of the model...
+# TODO: maybe remove this generic request completely?
 @dataclass(kw_only=True)
 class CpuSetRegRequest(BaseRequest):
     thread: int | None = None
