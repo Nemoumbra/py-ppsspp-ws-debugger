@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from ppsspp import AsyncSession, PPSSPPRequest
 from ppsspp.model.events.base_event import BaseEvent
 from ppsspp.model.events.error_event import ErrorEvent
+from ppsspp.model.events.event_groups import kBroadcastEvents
 from ppsspp.model.ppsspp_objects.breakpoints.cpu_breakpoint import CpuBreakpoint
 from ppsspp.model.ppsspp_objects.breakpoints.memory_breakpoint import MemoryBreakpoint
 from ppsspp.model.ppsspp_objects.cpu.register import RegisterCategory
@@ -869,9 +870,13 @@ async def test_parsing():
     event_tests = get_event_tests()
     raw_events, expected = split_event_tests(event_tests)
     # Inject tickets
-    # TODO: actually, let's not do that for broadcasts
-    raw_events.extend([event | {"ticket": f"TICKET{i}"} for i, event in enumerate(raw_events)])
-    ticket_events = [with_ticket(ev, f"TICKET{i}") for i, ev in enumerate(expected)]
+    ticket_events = []
+    for i, ev in enumerate(expected):
+        if type(expected) in kBroadcastEvents:
+            continue
+        ticket_events.append(with_ticket(ev, f"TICKET{i}"))
+        raw_events.append(raw_events[i] | {"ticket": f"TICKET{i}"})
+
     expected.extend(ticket_events)
 
     connection = MockConnection(asyncio.Event(), raw_events)
