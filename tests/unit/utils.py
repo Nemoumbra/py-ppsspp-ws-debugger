@@ -102,3 +102,38 @@ class MockTicketMonitorConnection:
 
     async def close(self):
         self.proceed_requested.set()
+
+
+class MockRequestValidatorConnection:
+    def __init__(self, events: list[dict]):
+        self.gen = (event for event in events)
+        self.proceed_requested = asyncio.Event()
+        self.dict_requests = []
+
+    def _next(self):
+        item = next(self.gen)
+        return item
+
+    async def recv(self) -> dict:
+        try:
+            await self.proceed_requested.wait()
+            self.proceed_requested.clear()
+            event = self._next()
+            return event
+        except StopIteration:
+            raise ConnectionTerminated from None
+
+    async def send(self, data: str):
+        request = json.loads(data)
+        assert isinstance(request, dict), "What are you doing with your tests?"
+        self.dict_requests.append(request)
+        self.proceed()
+
+    def proceed(self):
+        self.proceed_requested.set()
+
+    async def close(self):
+        self.proceed_requested.set()
+
+    def get_requests(self):
+        return self.dict_requests
