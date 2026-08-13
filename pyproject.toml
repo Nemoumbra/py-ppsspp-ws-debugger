@@ -4,13 +4,20 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "py-ppsspp-ws-debugger"
-version = "1.0.0b2"
+version = "1.0.0b3"
 requires-python = ">= 3.11"
 description = "Unofficial low-level and middle-level websocket debugger for PPSSPP"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 dependencies = [
     "adaptix==3.0.0b11",
     "websockets==16.0",
-    "websocket-client==1.8.0",
+]
+[project.optional-dependencies]
+tests = [
+    "pytest",
+    "pytest-cov",
+    "pytest-asyncio"
 ]
 
 [project.urls]

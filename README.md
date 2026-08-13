@@ -194,6 +194,10 @@ This is mostly because of the problems which arise from using `threading` in Pyt
 `queue_reader.get()` (with optional timeout) returns the next item from the queue, `session.send_request{_raw}` methods
 mimic the methods from `AsyncSession`, except they don't accept handlers.
 
+## Tests
+The unit tests can be run with `pytest`. I personally run them as `pytest . --asyncio-mode=auto`.
+And when I want coverage, I do `pytest . --asyncio-mode=auto --cov --cov-report=html`.
+
 ## Contributing
 PRs and Issues are always welcome! It also would mean a lot to me if anyone simply gives this library a try and
 checks if it's convenient to use.
