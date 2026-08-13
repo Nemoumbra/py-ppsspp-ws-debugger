@@ -1,7 +1,5 @@
-from websocket import (
-    WebSocket, WebSocketConnectionClosedException, WebSocketException,
-    ABNF, STATUS_STATUS_NOT_AVAILABLE
-)
+import websockets.sync.client as websockets_sync
+import websockets
 from typing import Callable
 
 import json
@@ -15,11 +13,10 @@ OnDisconnectedHandler = Callable[['PpssppConnection'], bool]
 class PpssppConnection:
     def __init__(self):
         self._on_disconnected: OnDisconnectedHandler = lambda connection: False
-        self._ws = WebSocket()
+        self._ws: websockets_sync.ClientConnection | None = None
 
-        # TODO: reevaluate if this is user-friendly
-        self.close_code: int | None = None
-        self.reason: str | None = None
+        self.closed_ok = True
+        self.close_info: websockets.ConnectionClosed | None = None
 
     def set_disconnected_handler(self, handler: OnDisconnectedHandler):
         self._on_disconnected = handler
@@ -34,72 +31,27 @@ class PpssppConnection:
         return handler
 
     def connect(self, uri: str):
-        # TODO: what if this raises?
-        self._ws.connect(uri)
+        self._ws = websockets_sync.connect(uri)
+        # I surely hope that no one can recv or send between these 2 lines.
+        self.close_info = None
 
-    def recv(self):
-        # Can't use the high-level _ws.recv(), because it returns "" for close frames
+    def _execute_action(self, action: Callable):
         while True:
             try:
-                received: bytes
-                opcode, received = self._ws.recv_data()
-                if opcode == ABNF.OPCODE_TEXT:
-                    # Text has to be decoded
-                    data = received.decode("utf-8", errors="replace")
-                    break
-                elif opcode == ABNF.OPCODE_CLOSE:
-                    # It's a close frame. Let's parse it:
-                    if len(received) >= 2:
-                        self.close_code = int.from_bytes(received[0:2])
-                        self.reason = received[2:]
-                    elif len(received) == 0:
-                        # IDK if it's the correct behavior, but that's what some libs do
-                        self.close_code = STATUS_STATUS_NOT_AVAILABLE
-                        self.reason = None
-                    else:
-                        # len == 1, that's just malformed
-                        self.close_code = None
-                        self.reason = None
+                return action()
+            except websockets.ConnectionClosed as e:
+                self.closed_ok = isinstance(e, websockets.ConnectionClosedOK)
+                self.close_info = e
+                if not self._on_disconnected(self):
+                    raise ConnectionTerminated from None
 
-                    go_on = self._on_disconnected(self)
-                    # Reset the fields
-                    self.close_code = self.reason = None
-                    if not go_on:
-                        raise ConnectionTerminated
-
-                    # Okay, let's try it one more time
-                    continue
-                elif opcode == ABNF.OPCODE_BINARY:
-                    # This really shouldn't happen with PPSSPP
-                    raise RuntimeError("Unexpected binary data from the server!")
-
-            except (OSError, ConnectionResetError, WebSocketConnectionClosedException):
-                # I don't know why yet, but I got 'OSError: [WinError 10038]' twice
-                # TODO: investigate the causes
-
-                go_on = self._on_disconnected(self)
-                # Reset the fields
-                self.close_code = self.reason = None
-                if not go_on:
-                    # TODO: why not reraise as ConnectionTerminated?
-                    raise
-                continue
-
-        # Successfully read the data
-
+    def recv(self):
+        data = self._execute_action(lambda: self._ws.recv())
         # Note: this may raise if PPSSPP goes mad and sends us invalid JSON
         return json.loads(data)
 
     def send(self, data: str):
-        while True:
-            try:
-                self._ws.send(data)
-                return
-            except WebSocketConnectionClosedException:
-                # TODO: is this reachable?
-                reconnect = self._on_disconnected(self)
-                if not reconnect:
-                    raise
+        self._execute_action(lambda: self._ws.send(data))
 
     def close(self):
         self._ws.close()
