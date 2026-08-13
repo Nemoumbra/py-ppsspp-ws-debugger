@@ -4,8 +4,6 @@ import asyncio
 from asyncio.tasks import Task
 from logging import getLogger
 
-# from adaptix import Omitted
-
 from ppsspp.async_connection import AsyncPpssppConnection
 from ppsspp.exceptions.connection_terminated import ConnectionTerminated
 from ppsspp.exceptions.request_failed_error import RequestFailedError
@@ -72,9 +70,9 @@ async def process_events(queue: AsyncCloseableQueue[BaseEvent], event_handler_ma
             except QueueClosedError:
                 logger.debug("Queue closed, 'process_events' returning...")
                 return
-            except Exception as e:
+            except Exception:
                 # TODO: this is probably unreachable due to TaskGroup's exception semantics
-                logger.debug(f"Process events error: {e}")
+                logger.exception(f"Process events error")
                 continue
 
 

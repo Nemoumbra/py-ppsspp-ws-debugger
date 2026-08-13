@@ -46,18 +46,15 @@ def populate_event_queue(queue: CloseableQueue[BaseEvent], connection: PpssppCon
             event = dispatcher.parse_event(data)
             queue.put(event)
         except json.JSONDecodeError as e:
-            logger.debug(f"JSONDecodeError in 'populate_event_queue': {e}")
-            print(e)
+            logger.error(e)
         except EventParseError as e:
-            logger.debug(f"EventParseError in 'populate_event_queue' : {e}")
+            logger.error(e)
         except ConnectionTerminated:
             logger.debug("ConnectionTerminated, 'populate_event_queue' returning...")
             return
         except QueueClosedError:
             logger.debug("Queue closed, 'populate_event_queue' returning...")
             return
-        # except Exception as e:
-        #     print(data)
     pass
 
 
@@ -92,6 +89,13 @@ class Session:
         self._running: bool = False
 
     def run(self, connection: PpssppConnection):
+        """
+        Initiates the PPSSPP debugging session.
+
+        Pre-condition: the call to 'connection.connect' has completed.
+        :param connection: the connection to be used by the session
+        :return: None
+        """
         self.producer_thread = Thread(
             target=populate_event_queue, name="PpssppEventReader",
             args=(self._event_queue, connection, self._event_dispatcher)
@@ -102,6 +106,12 @@ class Session:
         self._running = True
 
     def stop(self):
+        """
+        Terminates the PPSSPP debugging session. Automatically closes the connection.
+        Keep in mind that this will most likely trigger the 'on_disconnected' handler. Reconnecting is meaningless:
+        the internal queue will be closed by then, so the session will shut down nonetheless.
+        :return: None
+        """
         if not self._running:
             return False
 
@@ -115,11 +125,29 @@ class Session:
         return True
 
     def get_queue(self) -> QueueReader[BaseEvent]:
+        """
+        Returns a queue reader object which makes it possible to access the events coming from PPSSPP directly
+        :return: the queue reader
+        """
         return QueueReader(self._event_queue)
 
     def send_request_raw(self, request: PPSSPPRequest):
+        """
+        The low-level API for sending requests to PPSSPP.
+
+        May raise ``ConnectionTerminated``.
+        :param request: the request
+        :return: None
+        """
         self._connection.send(str(request))
 
     def send_request(self, request: BaseRequest):
+        """
+        The mid-level API for sending requests to PPSSPP.
+
+        May raise ``ConnectionTerminated``.
+        :param request: the request
+        :return: None
+        """
         raw = self._request_dispatcher.make_request(request)
         self._connection.send(raw)
