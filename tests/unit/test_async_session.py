@@ -9,9 +9,6 @@ from ppsspp.exceptions.request_failed_error import RequestFailedError
 
 from ppsspp.model.events.base_event import BaseEvent
 from ppsspp.model.events.cpu.common import CpuResumeEvent
-from ppsspp.model.events.game.common import GameQuitEvent
-from ppsspp.model.events.input.analog import InputAnalogEvent
-from ppsspp.model.events.other.log import LogEvent
 from ppsspp.model.ppsspp_objects.input.analog_stick import AnalogStick
 from ppsspp.model.ppsspp_objects.logs.log_level import LogLevel
 from ppsspp.model.requests.other.version import VersionRequest
