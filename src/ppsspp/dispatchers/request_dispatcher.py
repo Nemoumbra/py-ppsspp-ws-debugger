@@ -18,11 +18,11 @@ from ppsspp.model.requests.cpu.debugging import (
     CpuStepIntoRequest, CpuStepOverRequest, CpuStepOutRequest, CpuRunUntilRequest, CpuNextHleRequest
 )
 from ppsspp.model.requests.cpu.registers import (
-    CpuGetAllRegsRequest, CpuGetRegRequest, CpuGetRegByNameRequest, CpuGetRegByIdxAndCategoryRequest,
-    CpuSetRegRequest, CpuSetRegByNameRequest, CpuSetRegByIdxAndCategoryRequest
+    CpuGetAllRegsRequest, CpuGetRegByNameRequest, CpuGetRegByIdxAndCategoryRequest,
+    CpuSetRegByNameRequest, CpuSetRegByIdxAndCategoryRequest
 )
 from ppsspp.model.requests.disassembly.common import (
-    MemoryBaseRequest, MemoryDisasmRequest, MemoryDisasmByCountRequest, MemoryDisasmByEndAddrRequest,
+    MemoryBaseRequest, MemoryDisasmByCountRequest, MemoryDisasmByEndAddrRequest,
     MemorySearchDisasmRequest, MemoryAssembleRequest
 )
 from ppsspp.model.requests.game.common import (
@@ -105,15 +105,12 @@ def _make_retort():
         dumper(CpuNextHleRequest, lambda x: x | {"event": "cpu.nextHLE"}, Chain.LAST),
 
         dumper(CpuGetAllRegsRequest, lambda x: x | {"event": "cpu.getAllRegs"}, Chain.LAST),
-        dumper(CpuGetRegRequest, lambda x: x | {"event": "cpu.getReg"}, Chain.LAST),
         dumper(CpuGetRegByNameRequest, lambda x: x | {"event": "cpu.getReg"}, Chain.LAST),
         dumper(CpuGetRegByIdxAndCategoryRequest, lambda x: x | {"event": "cpu.getReg"}, Chain.LAST),
-        dumper(CpuSetRegRequest, lambda x: x | {"event": "cpu.setReg"}, Chain.LAST),
         dumper(CpuSetRegByNameRequest, lambda x: x | {"event": "cpu.setReg"}, Chain.LAST),
         dumper(CpuSetRegByIdxAndCategoryRequest, lambda x: x | {"event": "cpu.setReg"}, Chain.LAST),
 
         dumper(MemoryBaseRequest, lambda x: x | {"event": "memory.base"}, Chain.LAST),
-        dumper(MemoryDisasmRequest, lambda x: x | {"event": "memory.disasm"}, Chain.LAST),
         dumper(MemoryDisasmByCountRequest, lambda x: x | {"event": "memory.disasm"}, Chain.LAST),
         dumper(MemoryDisasmByEndAddrRequest, lambda x: x | {"event": "memory.disasm"}, Chain.LAST),
         dumper(MemorySearchDisasmRequest, lambda x: x | {"event": "memory.searchDisasm"}, Chain.LAST),

@@ -19,11 +19,11 @@ from ppsspp.model.requests.cpu.debugging import (
     CpuStepIntoRequest, CpuStepOverRequest, CpuStepOutRequest, CpuRunUntilRequest, CpuNextHleRequest
 )
 from ppsspp.model.requests.cpu.registers import (
-    CpuGetAllRegsRequest, CpuGetRegRequest, CpuGetRegByNameRequest, CpuGetRegByIdxAndCategoryRequest,
-    CpuSetRegRequest, CpuSetRegByNameRequest, CpuSetRegByIdxAndCategoryRequest
+    CpuGetAllRegsRequest, CpuGetRegByNameRequest, CpuGetRegByIdxAndCategoryRequest,
+    CpuSetRegByNameRequest, CpuSetRegByIdxAndCategoryRequest
 )
 from ppsspp.model.requests.disassembly.common import (
-    MemoryDisasmRequest, MemoryDisasmByCountRequest, MemoryDisasmByEndAddrRequest,
+    MemoryDisasmByCountRequest, MemoryDisasmByEndAddrRequest,
     MemorySearchDisasmRequest, MemoryAssembleRequest
 )
 from ppsspp.model.requests.game.common import GameResetRequest, GameStatusRequest
@@ -224,21 +224,6 @@ def get_request_tests():
             value=CpuGetAllRegsRequest(),
             expected={"event": "cpu.getAllRegs"}
         ),
-        # Obviously passing None for either 'category' or 'register' after passing None for 'name'
-        # won't be accepted by PPSSPP, but it's still a part of the model...
-        # TODO: maybe remove this generic request completely?
-        RequestTest(
-            value=CpuGetRegRequest(thread=None, name=None, category=None, register=None),
-            expected={"event": "cpu.getReg"}
-        ),
-        RequestTest(
-            value=CpuGetRegRequest(thread=0, name="name", category=0, register=0),
-            expected={"event": "cpu.getReg", "thread": 0, "name": "name", "category": 0, "register": 0}
-        ),
-        RequestTest(
-            value=CpuGetRegRequest(),
-            expected={"event": "cpu.getReg"}
-        ),
         RequestTest(
             value=CpuGetRegByNameRequest(thread=None, name="eax"),
             expected={"event": "cpu.getReg", "name": "eax"}
@@ -262,21 +247,6 @@ def get_request_tests():
         RequestTest(
             value=CpuGetRegByIdxAndCategoryRequest(category=0, register=0),
             expected={"event": "cpu.getReg", "category": 0, "register": 0}
-        ),
-        # Obviously passing None for either 'category' or 'register' after passing None for 'name'
-        # won't be accepted by PPSSPP, but it's still a part of the model...
-        # TODO: maybe remove this generic request completely?
-        RequestTest(
-            value=CpuSetRegRequest(thread=None, name=None, category=None, register=None, value=0),
-            expected={"event": "cpu.setReg", "value": 0}
-        ),
-        RequestTest(
-            value=CpuSetRegRequest(thread=0, name="name", category=0, register=0, value=0),
-            expected={"event": "cpu.setReg", "thread": 0, "name": "name", "category": 0, "register": 0, "value": 0}
-        ),
-        RequestTest(
-            value=CpuSetRegRequest(value=0),
-            expected={"event": "cpu.setReg", "value": 0}
         ),
         RequestTest(
             value=CpuSetRegByNameRequest(thread=None, name="eax", value=0),
@@ -304,22 +274,6 @@ def get_request_tests():
         ),
 
         # Disassembly
-
-        # Obviously passing None for 'end' after passing None for 'count' won't be accepted by PPSSPP,
-        # but it's still a part of the model...
-        # TODO: maybe remove this generic request completely?
-        RequestTest(
-            value=MemoryDisasmRequest(thread=None, address=0, count=None, end=None, display_symbols=None),
-            expected={"event": "memory.disasm", "address": 0}
-        ),
-        RequestTest(
-            value=MemoryDisasmRequest(thread=0, address=0, count=0, end=0, display_symbols=False),
-            expected={"event": "memory.disasm", "thread": 0, "address": 0, "count": 0, "end": 0, "displaySymbols": False}
-        ),
-        RequestTest(
-            value=MemoryDisasmRequest(address=0),
-            expected={"event": "memory.disasm", "address": 0}
-        ),
         RequestTest(
             value=MemoryDisasmByCountRequest(thread=None, address=0, count=0, display_symbols=None),
             expected={"event": "memory.disasm", "address": 0, "count": 0}
