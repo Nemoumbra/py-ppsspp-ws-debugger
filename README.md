@@ -1,7 +1,6 @@
 
 # Python websocket debugger for PPSSPP
 This library provides low- and middle-level primitives for interacting with PPSSPP's remote websocket debugger API.
-*Note: the project is in its beta stage and needs help with testing.*
 
 ## Installation
 Right now there's no distribution available at pypi.org, so you'll have to install it from here:
@@ -38,9 +37,9 @@ All events inherit from the base class `BaseEvent`, which stores the string name
 This library uses [adaptix](https://github.com/reagento/adaptix) for data model conversions.
 
 ## Usage
-The library presents an asynchronous API (`asyncio` and [websockets](https://github.com/python-websockets/websockets))
-and also unfinished hard-to-use synchronous API ([websocket-client](https://github.com/websocket-client/websocket-client)).
-The following docs focus on the async API.
+The library presents a full-fledged asynchronous API (`asyncio` and [websockets](https://github.com/python-websockets/websockets))
+and also hard-to-use synchronous API (also [websockets](https://github.com/python-websockets/websockets)).
+The following docs focus on the async API. The details on the sync API are listed [at the end](#sync-API).
 
 The classes you need are `AsyncSession` and `AsyncConnection`.
 
@@ -183,6 +182,18 @@ Pass `None` for the target to install a so-called promiscuous listener that will
 > [!TIP]
 > Return `True` from any handler to remove it from the list of handlers.
 > This is not necessary for the ticket subscribers as they get removed automatically once PPSSPP answers.
+
+### Sync API
+The `AsyncConnection` is replaced by `Connection` with the same semantics and `AsyncSession` is replaced by `Session`.
+The difference between `AsyncSession`'s and `Session`'s methods is that the latter doesn't let you register callbacks.
+Instead, you can acquire an instance of class `QueueReader[BaseEvent]` by calling `session.get_queue()`.
+
+You are supposed to manually react to the incoming events and implement your own state machine / observer to run handlers.
+This is mostly because of the problems which arise from using `threading` in Python - it doesn't scale well.
+
+`queue_reader.get()` (with optional timeout) returns the next item from the queue, `session.send_request{_raw}` methods
+mimic the methods from `AsyncSession`, except they don't accept handlers.
+
 ## Contributing
 PRs and Issues are always welcome! It also would mean a lot to me if anyone simply gives this library a try and
 checks if it's convenient to use.
