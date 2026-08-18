@@ -157,14 +157,6 @@ def _make_retort():
             lambda x: x | {"event": "gpu.buffer.clut", "type": "base64"}, Chain.LAST
         ),
 
-
-        dumper(GpuBufferScreenshotRequest, lambda x: x | {"event": "gpu.buffer.screenshot"}, Chain.LAST),
-        dumper(GpuBufferRenderColorRequest, lambda x: x | {"event": "gpu.buffer.renderColor"}, Chain.LAST),
-        dumper(GpuBufferRenderDepthRequest, lambda x: x | {"event": "gpu.buffer.renderDepth"}, Chain.LAST),
-        dumper(GpuBufferRenderStencilRequest, lambda x: x | {"event": "gpu.buffer.renderStencil"}, Chain.LAST),
-        dumper(GpuBufferTextureRequest, lambda x: x | {"event": "gpu.buffer.texture"}, Chain.LAST),
-        dumper(GpuBufferClutRequest, lambda x: x | {"event": "gpu.buffer.clut"}, Chain.LAST),
-
         dumper(GpuRecordDumpRequest, lambda x: x | {"event": "gpu.record.dump"}, Chain.LAST),
         dumper(GpuStatsGetRequest, lambda x: x | {"event": "gpu.stats.get"}, Chain.LAST),
         dumper(GpuStatsFeedRequest, lambda x: x | {"event": "gpu.stats.feed"}, Chain.LAST),

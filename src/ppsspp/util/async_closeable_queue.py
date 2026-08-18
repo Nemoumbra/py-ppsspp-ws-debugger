@@ -42,7 +42,7 @@ class AsyncCloseableQueue(Generic[T]):
             # Someone called 'get' after getting a poison pill, let's feed them with another pill
             return None
 
-    async def get(self) -> BaseEvent:
+    async def get(self) -> T:
         """
         Tries to fetch an item from the queue. If queue is empty and closed, raises ``QueueClosedError``.
         Otherwise, awaits for the item to be inserted.
