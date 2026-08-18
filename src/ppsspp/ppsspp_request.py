@@ -15,7 +15,9 @@ class PPSSPPRequest:
     def __init__(self, event: str):
         self._args: dict = {"event": event}
 
-    def add(self, name: str | None = None, value: Any | None = None, /, **kwargs):
+    kSentinel = object()
+
+    def add(self, name: str | None = None, value: Any = kSentinel, /, **kwargs):
         """
         Appends the arguments to the request. If some of the arguments can't be added as kwargs, they can be included
         manually, one-by-one, using the first 2 positional arguments.
@@ -25,7 +27,7 @@ class PPSSPPRequest:
         :param kwargs: the pack of arguments which are not reserved Python identifiers
         :return:
         """
-        if (name is not None) and (value is not None):
+        if (name is not None) and (value is not PPSSPPRequest.kSentinel):
             self._args[name] = value
         self._args.update(kwargs)
 
