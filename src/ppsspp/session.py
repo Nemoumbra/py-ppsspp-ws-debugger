@@ -122,6 +122,7 @@ class Session:
         logger.debug("Producer joined!")
 
         self._connection = None
+        self._running = False
         return True
 
     def get_queue(self) -> QueueReader[BaseEvent]:

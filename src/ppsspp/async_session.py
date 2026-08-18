@@ -149,6 +149,7 @@ class AsyncSession:
         self._event_handler_man.clear()
 
         self._connection = None
+        self._running = False
         return True
 
     def log_handler(self):

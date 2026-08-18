@@ -260,6 +260,9 @@ async def test_stopping(log_ev):
     connection.proceed()
     await session.stop()
 
+    # Stopping a stopped connection should be safe
+    await session.stop()
+
 
 async def test_errors():
     session = AsyncSession()
