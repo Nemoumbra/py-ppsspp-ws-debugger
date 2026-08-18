@@ -47,10 +47,14 @@ class AsyncEventHandlerManager:
     async def handle_event(self, event: BaseEvent):
         # TODO: should we use the caller's TaskGroup?
         async with asyncio.TaskGroup() as tg:
-            tg.create_task(self._report_to_listeners(event))
+            if self._listeners or self._promiscuous_listeners:
+                tg.create_task(self._report_to_listeners(event))
+
             if type(event) in kBroadcastEvents:
                 tg.create_task(self._on_broadcast(event))
-            tg.create_task(self._report_to_subscriber(event))
+
+            if event.ticket is not None:
+                tg.create_task(self._report_to_subscriber(event))
 
     async def _on_broadcast(self, event: BaseEvent):
         event_type = type(event)
@@ -64,10 +68,7 @@ class AsyncEventHandlerManager:
             await run_handlers(event, self._input_handlers)
 
     async def _report_to_subscriber(self, event: BaseEvent):
-        # Of course, there may not be a subscriber (for instance, if that's a Log event)
         ticket = event.ticket
-        if ticket is None:
-            return
 
         # That shouldn't happen, but let's make a check anyway
         if ticket not in self._subscribers:
