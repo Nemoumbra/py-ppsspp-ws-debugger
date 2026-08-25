@@ -18,7 +18,11 @@ AsyncEventHandler = Callable[[BaseEvent], Awaitable[bool | None]]
 async def run_handler(event: BaseEvent, handler: AsyncEventHandler, all_handlers: list[AsyncEventHandler]):
     result = await handler(event)
     if result:
-        all_handlers.remove(handler)
+        try:
+            all_handlers.remove(handler)
+        except ValueError:
+            # Well, good for us, I guess?
+            pass
 
 
 async def run_handlers(event: BaseEvent, handlers: list[AsyncEventHandler]):
