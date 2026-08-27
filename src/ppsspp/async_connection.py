@@ -83,4 +83,5 @@ class AsyncPpssppConnection:
         Closes the underlying websockets connection (performs the closing handshake)
         :return:
         """
-        await self._ws.close()
+        if self._ws:
+            await self._ws.close()

@@ -54,4 +54,5 @@ class PpssppConnection:
         self._execute_action(lambda: self._ws.send(data))
 
     def close(self):
-        self._ws.close()
+        if self._ws:
+            self._ws.close()
