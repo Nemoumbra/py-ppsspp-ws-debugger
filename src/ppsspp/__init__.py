@@ -1,5 +1,6 @@
 # Async API
-from .async_connection import AsyncOnDisconnectedHandler, AsyncPpssppConnection
+from .abstract_async_connection import AsyncOnDisconnectedHandler
+from .async_connection import AsyncPpssppConnection
 from .async_session import AsyncSession
 
 # Sync API (meh)

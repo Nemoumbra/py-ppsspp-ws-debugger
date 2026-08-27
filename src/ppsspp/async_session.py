@@ -4,6 +4,7 @@ import asyncio
 from asyncio.tasks import Task
 from logging import getLogger
 
+from ppsspp.abstract_async_connection import AbstractAsyncPpssppConnection
 from ppsspp.async_connection import AsyncPpssppConnection
 from ppsspp.exceptions.connection_terminated import ConnectionTerminated
 from ppsspp.exceptions.request_failed_error import RequestFailedError
@@ -37,7 +38,7 @@ from ppsspp.exceptions.queue_closed_error import QueueClosedError
 logger = getLogger("ppsspp.async_session")
 
 
-async def populate_event_queue(queue: AsyncCloseableQueue[BaseEvent], connection: AsyncPpssppConnection, dispatcher: EventDispatcher):
+async def populate_event_queue(queue: AsyncCloseableQueue[BaseEvent], connection: AbstractAsyncPpssppConnection, dispatcher: EventDispatcher):
     logger.debug("'populate_event_queue' started!")
     while True:
         try:
@@ -111,7 +112,7 @@ class AsyncSession:
     def include_router(self, router: Router):
         self._event_handler_man.include_router(router)
 
-    async def run(self, connection: AsyncPpssppConnection):
+    async def run(self, connection: AbstractAsyncPpssppConnection):
         """
         Initiates the PPSSPP debugging session.
 

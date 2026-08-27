@@ -2,11 +2,14 @@ import asyncio
 import json
 from collections import deque
 
+from ppsspp.abstract_async_connection import AbstractAsyncPpssppConnection
 from ppsspp.exceptions.connection_terminated import ConnectionTerminated
 
 
-class MockConnection:
+class MockConnection(AbstractAsyncPpssppConnection):
     def __init__(self, exhausted: asyncio.Event, events: list):
+        super().__init__()
+
         self.gen = (event for event in events)
         self.exhausted = exhausted
 
@@ -29,8 +32,10 @@ class MockConnection:
         pass
 
 
-class MockStepByStepConnection:
+class MockStepByStepConnection(AbstractAsyncPpssppConnection):
     def __init__(self, events: list, recv_requested: asyncio.Event | None = None, *, manual: bool):
+        super().__init__()
+
         self.gen = (event for event in events)
         self.proceed_requested = asyncio.Event()
         self.recv_requested = recv_requested
@@ -65,8 +70,10 @@ class MockStepByStepConnection:
         self.proceed_requested.set()
 
 
-class MockTicketMonitorConnection:
+class MockTicketMonitorConnection(AbstractAsyncPpssppConnection):
     def __init__(self, events: list[dict]):
+        super().__init__()
+
         self.gen = (event for event in events)
         self.proceed_requested = asyncio.Event()
         self.tickets: deque[str] = deque()
@@ -104,8 +111,10 @@ class MockTicketMonitorConnection:
         self.proceed_requested.set()
 
 
-class MockRequestValidatorConnection:
+class MockRequestValidatorConnection(AbstractAsyncPpssppConnection):
     def __init__(self, events: list[dict]):
+        super().__init__()
+
         self.gen = (event for event in events)
         self.proceed_requested = asyncio.Event()
         self.dict_requests = []

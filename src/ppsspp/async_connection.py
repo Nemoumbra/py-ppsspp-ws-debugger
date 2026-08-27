@@ -1,27 +1,20 @@
 import json
-from typing import Callable, Awaitable
+from collections.abc import Callable, Awaitable
 
 import websockets
 from websockets import ConnectionClosedOK, ConnectionClosed
 from websockets.asyncio.client import ClientConnection
 
+from ppsspp.abstract_async_connection import AbstractAsyncPpssppConnection
 from ppsspp.exceptions.connection_terminated import ConnectionTerminated
 
-# Returns whether the connection was reestablished
-AsyncOnDisconnectedHandler = Callable[['AsyncPpssppConnection'], Awaitable[bool]]
 
-
-async def _default_on_disconnect_handler(connection: 'AsyncPpssppConnection'):
-    return False
-
-
-class AsyncPpssppConnection:
+class AsyncPpssppConnection(AbstractAsyncPpssppConnection):
     def __init__(self):
+        super().__init__()
         self._ws: ClientConnection | None = None
         self.closed_ok = True
         self.close_info: ConnectionClosed | None = None
-
-        self._on_disconnected: AsyncOnDisconnectedHandler = _default_on_disconnect_handler
 
     async def connect(self, uri: str):
         """
@@ -32,18 +25,6 @@ class AsyncPpssppConnection:
         self._ws = await websockets.connect(uri, max_size=None)
         # I surely hope that no one can recv or send between these 2 lines.
         self.close_info = None
-
-    def set_disconnected_handler(self, handler: AsyncOnDisconnectedHandler):
-        self._on_disconnected = handler
-
-    def on_disconnected(self, handler: AsyncOnDisconnectedHandler):
-        # For some reason the wrong signature for the @ syntax doesn't trigger any warnings:
-        # @connection.on_disconnected
-        # def wrong(arg: int, value: str):
-        #     return [1.5, 2.5]
-
-        self.set_disconnected_handler(handler)
-        return handler
 
     async def _execute_action(self, action: Callable[[], Awaitable]):
         while True:
