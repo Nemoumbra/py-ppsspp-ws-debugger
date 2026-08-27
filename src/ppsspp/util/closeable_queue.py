@@ -1,6 +1,5 @@
 
 from queue import SimpleQueue, Empty
-from ppsspp.model.events.base_event import BaseEvent
 from ppsspp.exceptions.queue_closed_error import QueueClosedError
 
 from typing import TypeVar, Generic

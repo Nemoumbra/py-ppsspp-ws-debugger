@@ -25,7 +25,7 @@ from ppsspp.parsers.detailed_parsers.replay import ReplayEventParser
 from ppsspp.parsers.detailed_parsers.version import VersionEventParser
 
 from ppsspp.ticket_manager import TicketManager
-from ppsspp.async_event_handler_manager import AsyncEventHandlerManager, AsyncEventHandler
+from ppsspp.async_event_handler_manager import AsyncEventHandlerManager, AsyncEventHandler, Router
 from ppsspp.dispatchers.event_dispatcher import EventDispatcher
 from ppsspp.exceptions.event_parse_error import EventParseError
 from ppsspp.dispatchers.request_dispatcher import RequestDispatcher
@@ -108,6 +108,9 @@ class AsyncSession:
         self._connection: AsyncPpssppConnection | None = None
         self._running: bool = False
 
+    def include_router(self, router: Router):
+        self._event_handler_man.include_router(router)
+
     async def run(self, connection: AsyncPpssppConnection):
         """
         Initiates the PPSSPP debugging session.
@@ -151,49 +154,6 @@ class AsyncSession:
         self._connection = None
         self._running = False
         return True
-
-    def log_handler(self):
-        def decorator(handler_func: AsyncEventHandler):
-            self._event_handler_man.subscribe_log(handler_func)
-            return handler_func
-
-        return decorator
-
-    def stepping_handler(self):
-        def decorator(handler_func: AsyncEventHandler):
-            self._event_handler_man.subscribe_stepping(handler_func)
-            return handler_func
-
-        return decorator
-
-    def game_handler(self):
-        def decorator(handler_func: AsyncEventHandler):
-            self._event_handler_man.subscribe_game(handler_func)
-            return handler_func
-
-        return decorator
-
-    def input_handler(self):
-        def decorator(handler_func: AsyncEventHandler):
-            self._event_handler_man.subscribe_input(handler_func)
-            return handler_func
-
-        return decorator
-
-    def listen_for(self, target: type[BaseEvent] | None):
-        """
-        Installs a listener for all incoming events or a particular event
-        :param target: pass the type of the event or ``None`` to listen for all events
-        :return: the original function
-        """
-        def decorator(handler_func: AsyncEventHandler):
-            if target is None:
-                self._event_handler_man.install_promiscuous_listener(handler_func)
-            else:
-                self._event_handler_man.install_listener(target, handler_func)
-            return handler_func
-
-        return decorator
 
     async def send_request_raw(self, request: PPSSPPRequest, handler: AsyncEventHandler | None = None):
         """

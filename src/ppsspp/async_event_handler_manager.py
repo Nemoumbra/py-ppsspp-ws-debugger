@@ -31,68 +31,15 @@ async def run_handlers(event: BaseEvent, handlers: list[AsyncEventHandler]):
             tg.create_task(run_handler(event, handler, handlers))
 
 
-class AsyncEventHandlerManager:
-    def __init__(self, ticket_manager: TicketManager):
-        self.ticket_manager = ticket_manager
-
+class Router:
+    def __init__(self):
         self._log_handlers: list[AsyncEventHandler] = []
         self._stepping_handlers: list[AsyncEventHandler] = []
         self._game_handlers: list[AsyncEventHandler] = []
         self._input_handlers: list[AsyncEventHandler] = []
 
-        self._subscribers: dict[str, AsyncEventHandler] = {}
-
         self._listeners: dict[type[BaseEvent], list[AsyncEventHandler]] = defaultdict(list)
         self._promiscuous_listeners: list[AsyncEventHandler] = []
-
-    def subscribe(self, ticket: str, handler: AsyncEventHandler):
-        self._subscribers[ticket] = handler
-
-    async def handle_event(self, event: BaseEvent):
-        # TODO: should we use the caller's TaskGroup?
-        async with asyncio.TaskGroup() as tg:
-            if self._listeners or self._promiscuous_listeners:
-                tg.create_task(self._report_to_listeners(event))
-
-            if type(event) in kBroadcastEvents:
-                tg.create_task(self._on_broadcast(event))
-
-            if event.ticket is not None:
-                tg.create_task(self._report_to_subscriber(event))
-
-    async def _on_broadcast(self, event: BaseEvent):
-        event_type = type(event)
-        if event_type in kLoggingEvents:
-            await run_handlers(event, self._log_handlers)
-        elif event_type in kCpuEvents:
-            await run_handlers(event, self._stepping_handlers)
-        elif event_type in kGameEvents:
-            await run_handlers(event, self._game_handlers)
-        elif event_type in kInputEvents:
-            await run_handlers(event, self._input_handlers)
-
-    async def _report_to_subscriber(self, event: BaseEvent):
-        ticket = event.ticket
-
-        # That shouldn't happen, but let's make a check anyway
-        if ticket not in self._subscribers:
-            raise RuntimeError(f"Unknown ticket {ticket}")
-
-        # Run the callback
-        await self._subscribers[ticket](event)
-
-        # The ticket has been dealt with!
-        self._subscribers.pop(ticket)
-        self.ticket_manager.finalize_ticket(ticket)
-        pass
-
-    async def _report_to_listeners(self, event: BaseEvent):
-        exact_listeners = self._listeners[type(event)]
-        async with asyncio.TaskGroup() as tg:
-            for listener in exact_listeners:
-                tg.create_task(run_handler(event, listener, exact_listeners))
-            for listener in self._promiscuous_listeners:
-                tg.create_task(run_handler(event, listener, self._promiscuous_listeners))
 
     def subscribe_log(self, event_handler: AsyncEventHandler):
         self._log_handlers.append(event_handler)
@@ -112,11 +59,116 @@ class AsyncEventHandlerManager:
     def install_promiscuous_listener(self, handler: AsyncEventHandler):
         self._promiscuous_listeners.append(handler)
 
+    def log_handler(self):
+        def decorator(handler_func: AsyncEventHandler):
+            self.subscribe_log(handler_func)
+            return handler_func
+
+        return decorator
+
+    def stepping_handler(self):
+        def decorator(handler_func: AsyncEventHandler):
+            self.subscribe_stepping(handler_func)
+            return handler_func
+
+        return decorator
+
+    def game_handler(self):
+        def decorator(handler_func: AsyncEventHandler):
+            self.subscribe_game(handler_func)
+            return handler_func
+
+        return decorator
+
+    def input_handler(self):
+        def decorator(handler_func: AsyncEventHandler):
+            self.subscribe_input(handler_func)
+            return handler_func
+
+        return decorator
+
+    def listen_for(self, target: type[BaseEvent] | None):
+        """
+        Installs a listener for all incoming events or a particular event
+        :param target: pass the type of the event or ``None`` to listen for all events
+        :return: the original function
+        """
+        def decorator(handler_func: AsyncEventHandler):
+            if target is None:
+                self.install_promiscuous_listener(handler_func)
+            else:
+                self.install_listener(target, handler_func)
+            return handler_func
+
+        return decorator
+
     def clear(self):
         self._log_handlers.clear()
         self._stepping_handlers.clear()
         self._input_handlers.clear()
         self._game_handlers.clear()
-        self._subscribers.clear()
         self._listeners.clear()
         self._promiscuous_listeners.clear()
+
+
+class AsyncEventHandlerManager:
+    def __init__(self, ticket_manager: TicketManager):
+        self.ticket_manager = ticket_manager
+        self._router = Router()
+        self._subscribers: dict[str, AsyncEventHandler] = {}
+
+    def include_router(self, router: Router):
+        self._router = router
+
+    def subscribe(self, ticket: str, handler: AsyncEventHandler):
+        self._subscribers[ticket] = handler
+
+    async def handle_event(self, event: BaseEvent):
+        # TODO: should we use the caller's TaskGroup?
+        async with asyncio.TaskGroup() as tg:
+            if self._router._listeners or self._router._promiscuous_listeners:
+                tg.create_task(self._report_to_listeners(event))
+
+            if type(event) in kBroadcastEvents:
+                tg.create_task(self._on_broadcast(event))
+
+            if event.ticket is not None:
+                tg.create_task(self._report_to_subscriber(event))
+
+    async def _on_broadcast(self, event: BaseEvent):
+        event_type = type(event)
+        if event_type in kLoggingEvents:
+            await run_handlers(event, self._router._log_handlers)
+        elif event_type in kCpuEvents:
+            await run_handlers(event, self._router._stepping_handlers)
+        elif event_type in kGameEvents:
+            await run_handlers(event, self._router._game_handlers)
+        elif event_type in kInputEvents:
+            await run_handlers(event, self._router._input_handlers)
+
+    async def _report_to_subscriber(self, event: BaseEvent):
+        ticket = event.ticket
+
+        # That shouldn't happen, but let's make a check anyway
+        if ticket not in self._subscribers:
+            raise RuntimeError(f"Unknown ticket {ticket}")
+
+        # Run the callback
+        await self._subscribers[ticket](event)
+
+        # The ticket has been dealt with!
+        self._subscribers.pop(ticket)
+        self.ticket_manager.finalize_ticket(ticket)
+        pass
+
+    async def _report_to_listeners(self, event: BaseEvent):
+        exact_listeners = self._router._listeners[type(event)]
+        promiscuous_listeners = self._router._promiscuous_listeners
+        async with asyncio.TaskGroup() as tg:
+            for listener in exact_listeners:
+                tg.create_task(run_handler(event, listener, exact_listeners))
+            for listener in promiscuous_listeners:
+                tg.create_task(run_handler(event, listener, promiscuous_listeners))
+
+    def clear(self):
+        self._subscribers.clear()

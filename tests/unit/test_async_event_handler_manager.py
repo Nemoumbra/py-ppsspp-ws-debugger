@@ -1,4 +1,4 @@
-from ppsspp.async_event_handler_manager import AsyncEventHandlerManager
+from ppsspp.async_event_handler_manager import AsyncEventHandlerManager, Router
 from ppsspp.model.events.base_event import BaseEvent
 from ppsspp.model.events.cpu.common import CpuResumeEvent
 from ppsspp.model.events.game.common import GameQuitEvent
@@ -47,6 +47,8 @@ def input_ev():
 
 async def test_broadcasts(log_ev, cpu_ev, game_ev, input_ev):
     event_handler_man = AsyncEventHandlerManager(TicketManager(ticket_length=4))
+    router = Router()
+    event_handler_man.include_router(router)
 
     log_count = 0
     cpu_count = 0
@@ -56,22 +58,22 @@ async def test_broadcasts(log_ev, cpu_ev, game_ev, input_ev):
     async def handle_log(ev: BaseEvent):
         nonlocal log_count
         log_count += 1
-    event_handler_man.subscribe_log(handle_log)
+    router.subscribe_log(handle_log)
 
     async def handle_cpu(ev: BaseEvent):
         nonlocal cpu_count
         cpu_count += 1
-    event_handler_man.subscribe_stepping(handle_cpu)
+    router.subscribe_stepping(handle_cpu)
 
     async def handle_game(ev: BaseEvent):
         nonlocal game_count
         game_count += 1
-    event_handler_man.subscribe_game(handle_game)
+    router.subscribe_game(handle_game)
 
     async def handle_input(ev: BaseEvent):
         nonlocal input_count
         input_count += 1
-    event_handler_man.subscribe_input(handle_input)
+    router.subscribe_input(handle_input)
 
     await event_handler_man.handle_event(log_ev)
     assert (log_count, cpu_count, game_count, input_count) == (1, 0, 0, 0)
@@ -108,6 +110,8 @@ async def test_subscribers():
 
 async def test_listeners(cpu_ev, game_ev):
     event_handler_man = AsyncEventHandlerManager(TicketManager(ticket_length=4))
+    router = Router()
+    event_handler_man.include_router(router)
 
     count = 0
     count_all = 0
@@ -115,12 +119,12 @@ async def test_listeners(cpu_ev, game_ev):
     async def listen(ev: BaseEvent):
         nonlocal count
         count += 1
-    event_handler_man.install_listener(CpuResumeEvent, listen)
+    router.install_listener(CpuResumeEvent, listen)
 
     async def listen_all(ev: BaseEvent):
         nonlocal count_all
         count_all += 1
-    event_handler_man.install_promiscuous_listener(listen_all)
+    router.install_promiscuous_listener(listen_all)
 
     await event_handler_man.handle_event(cpu_ev)
     assert (count, count_all) == (1, 1)
@@ -131,6 +135,8 @@ async def test_listeners(cpu_ev, game_ev):
 async def test_combined(log_ev, cpu_ev, game_ev, input_ev):
     ticket_man = TicketManager(ticket_length=4)
     event_handler_man = AsyncEventHandlerManager(ticket_man)
+    router = Router()
+    event_handler_man.include_router(router)
 
     log_count = 0
     cpu_count = 0
@@ -140,22 +146,22 @@ async def test_combined(log_ev, cpu_ev, game_ev, input_ev):
     async def handle_log(ev: BaseEvent):
         nonlocal log_count
         log_count += 1
-    event_handler_man.subscribe_log(handle_log)
+    router.subscribe_log(handle_log)
 
     async def handle_cpu(ev: BaseEvent):
         nonlocal cpu_count
         cpu_count += 1
-    event_handler_man.subscribe_stepping(handle_cpu)
+    router.subscribe_stepping(handle_cpu)
 
     async def handle_game(ev: BaseEvent):
         nonlocal game_count
         game_count += 1
-    event_handler_man.subscribe_game(handle_game)
+    router.subscribe_game(handle_game)
 
     async def handle_input(ev: BaseEvent):
         nonlocal input_count
         input_count += 1
-    event_handler_man.subscribe_input(handle_input)
+    router.subscribe_input(handle_input)
 
     count = 0
     count_all = 0
@@ -163,12 +169,12 @@ async def test_combined(log_ev, cpu_ev, game_ev, input_ev):
     async def listen(ev: BaseEvent):
         nonlocal count
         count += 1
-    event_handler_man.install_listener(type(cpu_ev), listen)
+    router.install_listener(type(cpu_ev), listen)
 
     async def listen_all(ev: BaseEvent):
         nonlocal count_all
         count_all += 1
-    event_handler_man.install_promiscuous_listener(listen_all)
+    router.install_promiscuous_listener(listen_all)
 
     ticket = ticket_man.get_ticket()
     called = False
@@ -200,6 +206,8 @@ async def test_combined(log_ev, cpu_ev, game_ev, input_ev):
 async def test_clearing(log_ev, cpu_ev, game_ev, input_ev):
     ticket_man = TicketManager(ticket_length=4)
     event_handler_man = AsyncEventHandlerManager(ticket_man)
+    router = Router()
+    event_handler_man.include_router(router)
 
     log_count = 0
     cpu_count = 0
@@ -233,12 +241,12 @@ async def test_clearing(log_ev, cpu_ev, game_ev, input_ev):
         nonlocal count_all
         count_all += 1
 
-    event_handler_man.subscribe_log(handle_log)
-    event_handler_man.subscribe_stepping(handle_cpu)
-    event_handler_man.subscribe_game(handle_game)
-    event_handler_man.subscribe_input(handle_input)
-    event_handler_man.install_listener(type(cpu_ev), listen)
-    event_handler_man.install_promiscuous_listener(listen_all)
+    router.subscribe_log(handle_log)
+    router.subscribe_stepping(handle_cpu)
+    router.subscribe_game(handle_game)
+    router.subscribe_input(handle_input)
+    router.install_listener(type(cpu_ev), listen)
+    router.install_promiscuous_listener(listen_all)
 
     assert (log_count, cpu_count, game_count, input_count, count, count_all) == (0, 0, 0, 0, 0, 0)
     await event_handler_man.handle_event(log_ev)
@@ -249,7 +257,9 @@ async def test_clearing(log_ev, cpu_ev, game_ev, input_ev):
     assert (log_count, cpu_count, game_count, input_count, count, count_all) == (1, 1, 1, 0, 1, 3)
     await event_handler_man.handle_event(input_ev)
     assert (log_count, cpu_count, game_count, input_count, count, count_all) == (1, 1, 1, 1, 1, 4)
+
     event_handler_man.clear()
+    router.clear()
 
     # The values don't change
     assert (log_count, cpu_count, game_count, input_count, count, count_all) == (1, 1, 1, 1, 1, 4)
@@ -266,6 +276,8 @@ async def test_clearing(log_ev, cpu_ev, game_ev, input_ev):
 async def test_unsubscribe(log_ev, cpu_ev, game_ev, input_ev):
     ticket_man = TicketManager(ticket_length=4)
     event_handler_man = AsyncEventHandlerManager(ticket_man)
+    router = Router()
+    event_handler_man.include_router(router)
 
     log_count = 0
     cpu_count = 0
@@ -306,12 +318,12 @@ async def test_unsubscribe(log_ev, cpu_ev, game_ev, input_ev):
         if count_all == 9:
             return True
 
-    event_handler_man.subscribe_log(handle_log)
-    event_handler_man.subscribe_stepping(handle_cpu)
-    event_handler_man.subscribe_game(handle_game)
-    event_handler_man.subscribe_input(handle_input)
-    event_handler_man.install_listener(type(cpu_ev), listen)
-    event_handler_man.install_promiscuous_listener(listen_all)
+    router.subscribe_log(handle_log)
+    router.subscribe_stepping(handle_cpu)
+    router.subscribe_game(handle_game)
+    router.subscribe_input(handle_input)
+    router.install_listener(type(cpu_ev), listen)
+    router.install_promiscuous_listener(listen_all)
 
     assert (log_count, cpu_count, game_count, input_count, count, count_all) == (0, 0, 0, 0, 0, 0)
 

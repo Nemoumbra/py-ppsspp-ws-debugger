@@ -3,6 +3,7 @@ import dataclasses
 from dataclasses import dataclass
 
 from ppsspp import AsyncSession, PPSSPPRequest
+from ppsspp.async_event_handler_manager import Router
 from ppsspp.model.events.base_event import BaseEvent
 from ppsspp.model.events.error_event import ErrorEvent
 from ppsspp.model.events.event_groups import kBroadcastEvents
@@ -867,6 +868,9 @@ def with_ticket(request: BaseEvent, ticket: str):
 async def test_parsing():
     # Parsing events
     session = AsyncSession()
+    router = Router()
+    session.include_router(router)
+
     event_tests = get_event_tests()
     raw_events, expected = split_event_tests(event_tests)
     # Inject tickets
@@ -885,7 +889,7 @@ async def test_parsing():
     count = 0
     done = asyncio.Event()
     # Promiscuous listener
-    @session.listen_for(None)
+    @router.listen_for(None)
     async def handle_all(ev: BaseEvent):
         nonlocal count
         count += 1

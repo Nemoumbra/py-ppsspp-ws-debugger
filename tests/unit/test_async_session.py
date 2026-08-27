@@ -5,6 +5,7 @@ from json import JSONDecodeError
 import pytest
 
 from ppsspp import AsyncSession, PPSSPPRequest
+from ppsspp.async_event_handler_manager import Router
 from ppsspp.exceptions.request_failed_error import RequestFailedError
 
 from ppsspp.model.events.base_event import BaseEvent
@@ -145,6 +146,9 @@ async def test_auto_tickets():
 
 async def test_subscriptions(log_ev, cpu_ev, game_ev, input_ev):
     session = AsyncSession()
+    router = Router()
+    session.include_router(router)
+
     log_count = 0
     cpu_count = 0
     game_count = 0
@@ -161,28 +165,28 @@ async def test_subscriptions(log_ev, cpu_ev, game_ev, input_ev):
 
     await session.run(connection)
 
-    @session.log_handler()
+    @router.log_handler()
     async def handle_log(ev: BaseEvent):
         nonlocal log_count
         log_count += 1
         notifier.set()
         notifier.clear()
 
-    @session.stepping_handler()
+    @router.stepping_handler()
     async def handle_cpu(ev: BaseEvent):
         nonlocal cpu_count
         cpu_count += 1
         notifier.set()
         notifier.clear()
 
-    @session.game_handler()
+    @router.game_handler()
     async def handle_game(ev: BaseEvent):
         nonlocal game_count
         game_count += 1
         notifier.set()
         notifier.clear()
 
-    @session.input_handler()
+    @router.input_handler()
     async def handle_input(ev: BaseEvent):
         nonlocal input_count
         input_count += 1
@@ -191,7 +195,7 @@ async def test_subscriptions(log_ev, cpu_ev, game_ev, input_ev):
 
     listen_notifier = asyncio.Event()
 
-    @session.listen_for(CpuResumeEvent)
+    @router.listen_for(CpuResumeEvent)
     async def listen(ev: BaseEvent):
         nonlocal count
         count += 1
@@ -200,7 +204,7 @@ async def test_subscriptions(log_ev, cpu_ev, game_ev, input_ev):
 
     prom_notifier = asyncio.Event()
 
-    @session.listen_for(None)
+    @router.listen_for(None)
     async def listen_all(ev: BaseEvent):
         nonlocal count_all
         count_all += 1

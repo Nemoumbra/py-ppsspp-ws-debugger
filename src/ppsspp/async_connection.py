@@ -2,7 +2,7 @@ import json
 from typing import Callable, Awaitable
 
 import websockets
-from websockets import ConnectionClosedOK, ConnectionClosedError, ConnectionClosed
+from websockets import ConnectionClosedOK, ConnectionClosed
 from websockets.asyncio.client import ClientConnection
 
 from ppsspp.exceptions.connection_terminated import ConnectionTerminated
