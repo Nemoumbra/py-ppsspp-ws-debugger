@@ -1,4 +1,5 @@
-
+import asyncio
+import collections
 from asyncio.queues import Queue, QueueEmpty
 from ppsspp.exceptions.queue_closed_error import QueueClosedError
 
@@ -66,3 +67,52 @@ class AsyncCloseableQueue(Generic[T]):
         # Poison pill
         await self._queue.put(None)
         self._pill_inserted = True
+
+
+class FastAsyncCloseableQueue(Generic[T]):
+    """
+        Multi-producer, single-consumer unbounded async queue.
+        Essentially a closeable ``asyncio.queues.Queue[T]``.
+        """
+
+    # Note: Python doesn't support queue shutdown until Python 3.13.
+    def __init__(self):
+        self._buffer = collections.deque()
+        self._lock = asyncio.Lock()
+        self._modified = asyncio.Condition(self._lock)
+        self._closed = False
+
+    async def put(self, item: T):
+        """
+        Tries to put an object into the queue. If the queue is closed, raises QueueClosedError.
+        :param item: the object to be inserted
+        :return:
+        """
+        async with self._lock:
+            if self._closed:
+                raise QueueClosedError
+
+            self._buffer.append(item)
+            self._modified.notify(1)
+
+    async def get(self) -> T:
+        """
+        Tries to fetch an item from the queue. If queue is empty and closed, raises ``QueueClosedError``.
+        Otherwise, awaits for the item to be inserted.
+        :return: the extracted item
+        """
+        async with self._modified:
+            while not self._closed and not self._buffer:
+                await self._modified.wait()
+            if self._buffer:
+                return self._buffer.popleft()
+            raise QueueClosedError
+
+    async def close(self):
+        """
+        Closes the queue: it won't accept new items anymore. If necessary, the only consumer will be notified.
+        :return:
+        """
+        async with self._lock:
+            self._closed = True
+            self._modified.notify(1)
