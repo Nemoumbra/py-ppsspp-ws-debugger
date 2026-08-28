@@ -31,7 +31,7 @@ class PpssppConnection:
         return handler
 
     def connect(self, uri: str):
-        self._ws = websockets_sync.connect(uri, max_size=None)
+        self._ws = websockets_sync.connect(uri, max_size=None, ping_timeout=None)
         # I surely hope that no one can recv or send between these 2 lines.
         self.close_info = None
 
