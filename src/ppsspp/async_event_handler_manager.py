@@ -162,7 +162,7 @@ class AsyncEventHandlerManager:
         pass
 
     async def _report_to_listeners(self, event: BaseEvent):
-        exact_listeners = self._router._listeners[type(event)]
+        exact_listeners = self._router._listeners.get(type(event), ())
         promiscuous_listeners = self._router._promiscuous_listeners
         async with asyncio.TaskGroup() as tg:
             for listener in exact_listeners:
