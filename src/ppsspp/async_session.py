@@ -179,6 +179,7 @@ class AsyncSession:
             else:
                 self._ticket_man.add_custom_ticket(ticket)
 
+            # We know this doesn't overwrite a subscriber
             self._event_handler_man.subscribe(ticket, handler)
 
         await self._connection.send(str(request))
@@ -244,6 +245,7 @@ class AsyncSession:
             else:
                 self._ticket_man.add_custom_ticket(ticket)
 
+            # We know this doesn't overwrite a subscriber
             self._event_handler_man.subscribe(ticket, handler)
 
         raw = self._request_dispatcher.make_request(request)
