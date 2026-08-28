@@ -161,19 +161,25 @@ covers almost a half of use-cases. Then there are unexpected broadcast events...
 3) Input events: `InputAnalogEvent`, `InputButtonsEvent`. Sent in response to user's interaction with the PSP controls.
 4) Stepping info events: `CpuSteppingEvent`, `CpuResumeEvent`. Sent once PPSSPP detects that the CPU status has changed.
 
-You can subscribe to these groups by using the session's decorators.
+You can subscribe to these groups by using the `Router` class.
 ```py
-@session.log_handler()
+router = Router()
+...
+
+@router.log_handler()
 async def log_broadcast(event: BaseEvent):
     event = cast(LogEvent, event)
     print(f"{event.timestamp}: {event.message}")
 ```
+A router is a collection of handlers which can be applied to a session: just call `session.include_router(router)`.
+The session holds a reference to the router, so you can update the handlers in runtime.
+Moreover, you can modify multiple sessions which share the same router.
 
 Lastly, there are events which are broadcast by PPSSPP as a feed response to a request. So far the only instance of this
 behavior is the `gpu.stats.feed` request. To support this and also give you more control over how to handle
-events in general, there is one last decorator: `session.listen_for(target)`
+events in general, there is one last decorator: `router.listen_for(target)`
 ```py
-@session.listen_for(GpuStatsGetEvent)
+@router.listen_for(GpuStatsGetEvent)
 async def listener(event: BaseEvent):
     assert isinstance(event, GpuStatsGetEvent)
     report_stats(event)
@@ -183,11 +189,14 @@ Pass `None` for the target to install a so-called promiscuous listener that will
 > Return `True` from any handler to remove it from the list of handlers.
 > This is not necessary for the ticket subscribers as they get removed automatically once PPSSPP answers.
 
+The router also has non-decorator methods if you prefer a more imperative callback registration.
+
 ### Sync API
 The `AsyncConnection` is replaced by `Connection` with the same semantics and `AsyncSession` is replaced by `Session`.
-The difference between `AsyncSession`'s and `Session`'s methods is that the latter doesn't let you register callbacks.
+The difference between `AsyncSession`'s and `Session`'s methods is that the latter doesn't let you apply a router.
 Instead, you can acquire an instance of class `QueueReader[BaseEvent]` by calling `session.get_queue()`.
 
+Not having a router implies not having a builtin callback management routine.
 You are supposed to manually react to the incoming events and implement your own state machine / observer to run handlers.
 This is mostly because of the problems which arise from using `threading` in Python - it doesn't scale well.
 
