@@ -78,8 +78,7 @@ class FastAsyncCloseableQueue(Generic[T]):
     # Note: Python doesn't support queue shutdown until Python 3.13.
     def __init__(self):
         self._buffer = collections.deque()
-        self._lock = asyncio.Lock()
-        self._modified = asyncio.Condition(self._lock)
+        self._modified = asyncio.Event()
         self._closed = False
 
     async def put(self, item: T):
@@ -88,12 +87,11 @@ class FastAsyncCloseableQueue(Generic[T]):
         :param item: the object to be inserted
         :return:
         """
-        async with self._lock:
-            if self._closed:
-                raise QueueClosedError
+        if self._closed:
+            raise QueueClosedError
 
-            self._buffer.append(item)
-            self._modified.notify(1)
+        self._buffer.append(item)
+        self._modified.set()
 
     async def get(self) -> T:
         """
@@ -101,18 +99,17 @@ class FastAsyncCloseableQueue(Generic[T]):
         Otherwise, awaits for the item to be inserted.
         :return: the extracted item
         """
-        async with self._modified:
-            while not self._closed and not self._buffer:
-                await self._modified.wait()
-            if self._buffer:
-                return self._buffer.popleft()
-            raise QueueClosedError
+        while not self._closed and not self._buffer:
+            await self._modified.wait()
+            self._modified.clear()
+        if self._buffer:
+            return self._buffer.popleft()
+        raise QueueClosedError
 
     async def close(self):
         """
         Closes the queue: it won't accept new items anymore. If necessary, the only consumer will be notified.
         :return:
         """
-        async with self._lock:
-            self._closed = True
-            self._modified.notify(1)
+        self._closed = True
+        self._modified.set()
