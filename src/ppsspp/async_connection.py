@@ -22,7 +22,7 @@ class AsyncPpssppConnection(AbstractAsyncPpssppConnection):
         :param uri: the URI to be used for the connection
         :return: None
         """
-        self._ws = await websockets.connect(uri, max_size=None)
+        self._ws = await websockets.connect(uri, max_size=None, ping_timeout=None)
         # I surely hope that no one can recv or send between these 2 lines.
         self.close_info = None
 
