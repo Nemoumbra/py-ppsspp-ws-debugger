@@ -31,6 +31,10 @@ def test_nullable_arg():
     d = json.loads(str(request))
     assert d == {"event": "name", "nothing": None}
 
+    request.add("break", None)
+    d = json.loads(str(request))
+    assert d == {"event": "name", "nothing": None, "break": None}
+
 
 def test_tickets():
     request = PPSSPPRequest("name")
