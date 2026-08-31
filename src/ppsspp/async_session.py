@@ -112,21 +112,21 @@ class AsyncSession:
     def include_router(self, router: Router):
         self._event_handler_man.include_router(router)
 
-    async def run(self, connection: AbstractAsyncPpssppConnection):
+    async def run(self, connection: AbstractAsyncPpssppConnection, tg: asyncio.TaskGroup):
         """
         Initiates the PPSSPP debugging session.
 
         Pre-condition: the call to 'connection.connect' has completed.
-        :param connection: the connection to be used by the session
+        :param connection: the connection to be used by the session.
+        :param tg: the taskgroup (nursery) where the background tasks will be spawned
         :return: None
         """
-        self.producer_task = asyncio.create_task(
+        self.producer_task = tg.create_task(
             populate_event_queue(self._event_queue, connection, self._event_dispatcher), name="PpssppEventReader"
         )
-        self.consumer_task = asyncio.create_task(
+        self.consumer_task = tg.create_task(
             process_events(self._event_queue, self._event_handler_man), name="PpssppEventHandler"
         )
-        # TODO: think about monitoring the state of these tasks
         self._connection = connection
         self._running = True
 
