@@ -7,69 +7,50 @@ from typing import TypeVar, Generic
 T = TypeVar('T')
 
 
-class AsyncCloseableQueue(Generic[T]):
+class _MPSCEvent:
     """
-    Multi-producer, single-consumer unbounded async queue.
-    Essentially a closeable ``asyncio.queues.Queue[T]``.
+    Multi-producer single-consumer event (simplified ``asyncio.Event``).
     """
-
-    # Note: Python doesn't support queue shutdown until Python 3.13.
     def __init__(self):
-        self._queue: Queue[T | None] = Queue(maxsize=0)
-        self._closed = False
-        self._pill_inserted = False
+        self._waiter = None
+        self._value = False
 
-    async def put(self, item: T):
+    def set(self):
+        """Set the internal flag to true. The coroutine waiting for it to
+        become true is awakened. Coroutine that call wait() once the flag is
+        true will not block at all.
         """
-        Tries to put an object into the queue. If the queue is closed, raises QueueClosedError.
-        :param item: the object to be inserted
-        :return:
+        if not self._value:
+            self._value = True
+            fut = self._waiter
+            if fut is not None and not fut.done():
+                fut.set_result(True)
+
+    def clear(self):
+        """Reset the internal flag to false. Subsequently, coroutines calling
+        wait() will block until set() is called to set the internal flag
+        to true again."""
+        self._value = False
+
+    async def wait(self):
+        """Block until the internal flag is true.
+
+        If the internal flag is true on entry, return True
+        immediately.  Otherwise, block until another coroutine calls
+        set() to set the flag to true, then return True.
         """
-        if self._closed:
-            raise QueueClosedError
+        if self._value:
+            return True
 
-        assert item is not None
-        await self._queue.put(item)
-
-    async def _extract(self) -> T | None:
-        # If the poison pill wasn't inserted, then wait
-        if not self._pill_inserted:
-            return await self._queue.get()
-        # Otherwise we know there won't be any more items
+        fut = asyncio.get_event_loop().create_future()
+        self._waiter = fut
         try:
-            return self._queue.get_nowait()
-        except QueueEmpty:
-            # Someone called 'get' after getting a poison pill, let's feed them with another pill
-            return None
+            await fut
+            return True
+        finally:
+            self._waiter = None
 
-    async def get(self) -> T:
-        """
-        Tries to fetch an item from the queue. If queue is empty and closed, raises ``QueueClosedError``.
-        Otherwise, awaits for the item to be inserted.
-        :return: the extracted item
-        """
-        item = await self._extract()
-        if item is None:
-            # Poison pill
-            raise QueueClosedError
-
-        return item
-
-    async def close(self):
-        """
-        Closes the queue: it won't accept new items anymore. If necessary, the only consumer will be notified.
-        :return:
-        """
-        self._closed = True
-        if self._pill_inserted:
-            return
-
-        # Poison pill
-        await self._queue.put(None)
-        self._pill_inserted = True
-
-
-class FastAsyncCloseableQueue(Generic[T]):
+class AsyncCloseableQueue(Generic[T]):
     """
         Multi-producer, single-consumer unbounded async queue.
         Essentially a closeable ``asyncio.queues.Queue[T]``.
@@ -78,7 +59,7 @@ class FastAsyncCloseableQueue(Generic[T]):
     # Note: Python doesn't support queue shutdown until Python 3.13.
     def __init__(self):
         self._buffer = collections.deque()
-        self._modified = asyncio.Event()
+        self._modified = _MPSCEvent()
         self._closed = False
 
     async def put(self, item: T):
