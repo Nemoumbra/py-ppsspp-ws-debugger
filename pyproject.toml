@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "py-ppsspp-ws-debugger"
-version = "1.0.0b3"
+version = "1.0.0b4"
 requires-python = ">= 3.11"
 description = "Unofficial low-level and middle-level websocket debugger for PPSSPP"
 readme = "README.md"
