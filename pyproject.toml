@@ -7,6 +7,12 @@ name = "py-ppsspp-ws-debugger"
 version = "1.0.0b3"
 requires-python = ">= 3.11"
 description = "Unofficial low-level and middle-level websocket debugger for PPSSPP"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
 license = "Apache-2.0"
 license-files = ["LICENSE"]
 dependencies = [
@@ -22,3 +28,4 @@ tests = [
 
 [project.urls]
 Repository = "https://github.com/Nemoumbra/py-ppsspp-ws-debugger.git"
+Issues = "https://github.com/Nemoumbra/py-ppsspp-ws-debugger/issues"
