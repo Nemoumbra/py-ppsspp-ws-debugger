@@ -104,10 +104,10 @@ async def on_disconnected(conn: AsyncPpssppConnection):
 ```
 
 ### AsyncSession
-This is the actual facade you have to use for communicating with PPSSPP. Create an instance, then await a call to `run(connection)`.
+This is the actual facade you have to use for communicating with PPSSPP. Create an instance, then await a call to `run(connection, taskgroup)`.
 The code assumes that the connection has been opened prior to calling `run`. This kicks off the internal tasks of the session
 which recv from the connection, deserialize the events coming from PPSSPP, store them for later processing into a queue,
-drain the queue and invoke event handlers if necessary.
+drain the queue and invoke event handlers if necessary. These tasks are created inside the provided `asyncio.TaskGroup`.
 
 Call `await session.stop()` to fully shut down the internals and the connection. Of course, it will trigger the `on_disconnected` handler. Reconnecting is meaningless at that point:
 the internal queue will be closed by then, so the session will shut down nonetheless. Just return `False`.
