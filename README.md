@@ -11,6 +11,7 @@ Pip is smart enough to install from GitHub. Alternatively, you can clone the rep
 This package is using `setuptools` so make sure it's present and not too old.
 
 ---
+
 If your PyCharm is struggling with the package installed as editable, try reinstalling with this command instead:
 ```
 pip install -e /path/to/cloned/repo --config-settings editable_mode=compat
