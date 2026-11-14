@@ -7,6 +7,7 @@ name = "py-ppsspp-ws-debugger"
 version = "1.0.0b3"
 requires-python = ">= 3.11"
 description = "Unofficial low-level and middle-level websocket debugger for PPSSPP"
+readme = "README.md"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Operating System :: OS Independent",
